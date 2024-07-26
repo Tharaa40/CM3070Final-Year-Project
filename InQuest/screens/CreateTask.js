@@ -160,7 +160,7 @@ export default function CreateTask({navigation, route}){
     };
 
     const cancelTask = async() => {
-        navigation.navigate('Home Page');
+        navigation.navigate('HomePage');
     }
 
    
