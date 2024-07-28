@@ -1,12 +1,12 @@
 import React, {useState, useEffect}  from "react";
 import { ScrollView, View, Text, TouchableOpacity, StyleSheet, Modal, FlatList } from "react-native";
 import Icon from 'react-native-vector-icons/FontAwesome6';
-import { useNavigation } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import moment from "moment";
 import Svg, {Circle} from "react-native-svg";
 
 import { collection, getDocs, updateDoc, doc } from "firebase/firestore";
-import { FIRESTORE_DB } from "../firebaseConfig";
+import { FIREBASE_AUTH, FIRESTORE_DB } from "../firebaseConfig";
 
 export default function HomePage(){
     const [tasks, setTasks] = useState([]);
@@ -17,16 +17,61 @@ export default function HomePage(){
 
     const navigation = useNavigation();
 
-    useEffect(() => {
-        const fetchTasks = async () => {
-            const querySnapshot = await getDocs(collection(FIRESTORE_DB, 'tasks'));
-            const tasksData = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-            setTasks(tasksData);
-            categorizeTasks(tasksData);
-        };
+    const isFocused = useIsFocused();
 
-        fetchTasks();
-    }, []);
+    // useEffect(() => {
+    //     const fetchTasks = async () => {
+    //         const querySnapshot = await getDocs(collection(FIRESTORE_DB, 'tasks'));
+    //         const tasksData = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+    //         setTasks(tasksData);
+    //         categorizeTasks(tasksData);
+    //     };
+
+    //     fetchTasks();
+    // }, []);
+
+    const fetchTasks = async () => {
+        const querySnapshot = await getDocs(collection(FIRESTORE_DB, 'tasks'));
+        const tasksList = [];
+        querySnapshot.forEach((doc) => {
+            tasksList.push({...doc.data(), id: doc.id});
+        });
+        
+        // const tasksData = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+        setTasks(tasksList);
+        categorizeTasks(tasksList);
+    };
+    useEffect(() => {
+        if(isFocused) {
+            fetchTasks();
+        }   
+    }, [isFocused]);
+
+
+
+    // useEffect(() => {
+    //     const fetchTasks = async() => {
+    //         try{
+    //             const user = FIREBASE_AUTH.currentUser;
+    //             if(!user) {
+    //                 throw new Error ('No authenticated user found');
+    //             }
+    //             const q = query(
+    //                 collection(FIRESTORE_DB, "tasks"),
+    //                 where ("userId", "==", user.uid)
+    //             );
+    //             const querySnapshot = await getDocs(q);
+    //             const fetchedTasks = [];
+    //             querySnapshot.forEach((doc) => {
+    //                 fetchedTasks.push({id: doc.id, ...doc.data()});
+    //             });
+    //             setTasks(fetchedTasks);
+    //         }catch(error){
+    //             console.error("Error fetching tasks: ", error);
+    //         }
+    //     };
+    //     fetchTasks();
+    // }, []);
 
     const categorizeTasks = (tasks) => {
         const today = moment().startOf('day');

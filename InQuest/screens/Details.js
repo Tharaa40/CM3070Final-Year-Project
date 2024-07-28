@@ -1,28 +1,52 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import { View, Text, FlatList, TouchableOpacity, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import { FIRESTORE_DB } from '../firebaseConfig';
 import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { useIsFocused } from '@react-navigation/native';
 
 export default function Details({navigation}){
     const [tasks, setTasks] = useState([]);
+    const isFocused = useIsFocused();
 
+    // useEffect(() => {
+    //     const fetchTasks = async () => {
+    //         try{
+    //             const querySnapshot = await getDocs(collection(FIRESTORE_DB, 'tasks'));
+    //             const tasksArray = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    //             setTasks(tasksArray);
+    //         }catch(error){
+    //             console.error('Error fetching tasks: ', error);
+    //         }
+    //     };
+    //     fetchTasks();
+    // }, []);
+
+    
+    const fetchTasks = async () => {
+        try{
+            const querySnapshot = await getDocs(collection(FIRESTORE_DB, 'tasks'));
+            const tasksList=[];
+            querySnapshot.forEach((doc) => {
+                tasksList.push({...doc.data(), id: doc.id});
+            });
+            setTasks(tasksList);
+            // const tasksArray = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            // setTasks(tasksArray);
+        }catch(error){
+            console.error('Error fetching tasks: ', error);
+        }
+    };
     useEffect(() => {
-        const fetchTasks = async () => {
-            try{
-                const querySnapshot = await getDocs(collection(FIRESTORE_DB, 'tasks'));
-                const tasksArray = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                setTasks(tasksArray);
-            }catch(error){
-                console.error('Error fetching tasks: ', error);
-            }
-        };
-        fetchTasks();
-    }, []);
+        if(isFocused){
+            fetchTasks();
+        }
+    }, [isFocused]);
+   
 
     const handleEdit = (task) => {
-        navigation.navigate('Create Task', {task});
+        navigation.navigate('CreateTaskStack', {task});
     };
 
     const handleDelete = async (taskId) => {

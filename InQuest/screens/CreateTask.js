@@ -6,7 +6,7 @@ import DateTimePicker from '@react-native-community/datetimepicker'; //Calendar 
 import { Picker } from "@react-native-picker/picker";
 import moment from "moment";
 
-import { FIRESTORE_DB } from "../firebaseConfig";
+import { FIRESTORE_DB, FIREBASE_AUTH } from "../firebaseConfig";
 import { collection, addDoc, updateDoc, doc } from "firebase/firestore";
 
 
@@ -105,7 +105,14 @@ export default function CreateTask({navigation, route}){
     };
 
     //Priority
+    // const [selectedPriority, setSelectedPriority] = useState(null);
+    const [priority, setPriority] = useState([
+        {label: 'Low', value: 'Low'},
+        {label: 'Medium', value: 'Medium'},
+        {label: 'High', value: 'High'}
+    ]);
     const [selectedPriority, setSelectedPriority] = useState(null);
+    // const priorities = ['Low', 'Medium', 'High'];
 
     //Category
     const [category, setCategory] = useState([
@@ -153,11 +160,50 @@ export default function CreateTask({navigation, route}){
                 });
                 console.log('Task saved');
             }
-            navigation.navigate('Task Collections');
+            navigation.navigate('Details');
         }catch(error){
             console.error('Error saving task: ', error);
         }
     };
+
+    // const saveTask = async() => {
+    //     try{
+    //         const user = FIREBASE_AUTH.currentUser;
+    //         if(!user){
+    //             throw new Error('No authenticated user found');
+    //         }
+
+    //         if(taskId){
+    //             const taskRef = doc(FIRESTORE_DB, 'tasks', taskId);
+    //             await updateDoc(taskRef,{
+    //                 title, 
+    //                 description, 
+    //                 subtasks, 
+    //                 deadline, 
+    //                 selectedPriority,
+    //                 category: selectedCategory,
+    //                 updatedAt: new Date().toISOString(),
+    //                 userId: user.uid,
+    //             });
+    //             console.log('Task updated');
+    //         }else{
+    //             await addDoc(collection(FIRESTORE_DB, 'tasks'), {
+    //                 title, 
+    //                 description, 
+    //                 subtasks, 
+    //                 deadline, 
+    //                 selectedPriority,
+    //                 category: selectedCategory, 
+    //                 createdAt: new Date().toISOString(),
+    //                 userId: uid,
+    //             });
+    //             console.log('Task saved');
+    //         }
+    //         navigation.navigate('Details');
+    //     }catch(error){
+    //         console.error('Error saving task: ', error);
+    //     }
+    // };
 
     const cancelTask = async() => {
         navigation.navigate('HomePage');
@@ -316,7 +362,7 @@ export default function CreateTask({navigation, route}){
                 <View style={styles.section}>
                     <Text style={styles.sectionHeader}> Priority </Text>
                     <View style={styles.pickerContainer}>
-                        <Picker
+                        {/* <Picker
                             selectedValue={selectedPriority}
                             style={styles.picker}
                             // style={{height: 50, width: 150}}
@@ -325,6 +371,18 @@ export default function CreateTask({navigation, route}){
                             <Picker.Item label="Low" value="low" />
                             <Picker.Item label="Medium" value="medium" />
                             <Picker.Item label="High" value="high" />
+                        </Picker> */}
+
+                        <Picker
+                            selectedValue={selectedPriority}
+                            style={styles.picker}
+                            // style={{height: 50, width: 150}}
+                            onValueChange={(value) => setSelectedPriority(value)}
+                        >
+                            <Picker.Item label="Select a priority" value={null}/>
+                            {priority.map((item, index) => (
+                                <Picker.Item key={index} label={item.label} value={item.value} />
+                            ))}
                         </Picker>
                     </View>
                 </View>
