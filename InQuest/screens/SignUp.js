@@ -1,13 +1,12 @@
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
-import { useNavigation } from "@react-navigation/native";
+// import { useNavigation } from "@react-navigation/native";
 
-export default function SignUps(){
-    const navigation = useNavigation();
+export default function SignUps({navigation}){
     return(
         <View style={styles.container}>
             <Text style = {styles.title} > InQuest </Text>  
-            <TouchableOpacity style = {styles.buttonEmail} onPress={() => navigation.navigate('Email Sign Up')}>
+            <TouchableOpacity style = {styles.buttonEmail} onPress={() => navigation.navigate('EmailSignUp')}>
                 <Text style={styles.buttonText}>Sign Up with Email</Text>
             </TouchableOpacity>
             <TouchableOpacity style = {styles.buttonGoogle}>
@@ -24,7 +23,7 @@ const styles = StyleSheet.create({
         flex:1, 
         alignItems: 'center',
         paddingHorizontal: 20,
-        backgroundColor: '#040D12'
+        // backgroundColor: '#040D12'
     },
     title: {
         fontSize: 24,

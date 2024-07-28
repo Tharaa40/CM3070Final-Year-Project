@@ -1,5 +1,5 @@
 import React, {useEffect, useState, useCallback} from 'react';
-import { View, Text, FlatList, TouchableOpacity, Alert } from 'react-native';
+import { SafeAreaView, View, Text, FlatList, TouchableOpacity, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import { FIRESTORE_DB } from '../firebaseConfig';
@@ -89,13 +89,13 @@ export default function Details({navigation}){
     );
 
     return(
-        <View>
+        <SafeAreaView>
             <FlatList
                 data={tasks}
                 renderItem={renderItem}
                 keyExtractor={item => item.id}
             />
-        </View>
+        </SafeAreaView>
     );
     
 }

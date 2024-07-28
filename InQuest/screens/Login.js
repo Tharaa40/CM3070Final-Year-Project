@@ -1,9 +1,37 @@
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from "react-native";
-import { useState } from "react";
+import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, ActivityIndicator } from "react-native";
+import { useEffect, useState } from "react";
+import { FIREBASE_AUTH } from "../firebaseConfig";
+import { onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
+import { useNavigation } from "@react-navigation/native";
 
  export default function Login (){
-    const [username, setUsername] = useState("")
-    const [password, setPassword] = useState("")
+    const [email, setEmail] = useState('');
+    // const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    
+   
+    const navigation = useNavigation();
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, user => {
+            if(user){
+                navigation.navigate('MainTabs')
+            }
+        })
+
+        return unsubscribe
+    }, [])
+
+    const handleLogin = () => {
+        signInWithEmailAndPassword(FIREBASE_AUTH, email, password)
+        .then(userCredentials => {
+            const user = userCredentials.user;
+            console.log('Logged in with: ', user.email);
+        }).catch(error => alert(error.message))
+    }
+    
+    
+    
     return(
         <View style={styles.container}>
             <Text style = {styles.title} > Sign In </Text>  
@@ -11,27 +39,34 @@ import { useState } from "react";
                 style = {styles.input}
                 placeholder="Email/Username"
                 placeholderTextColor= "#93B1A6"
-                value={username}
-                onChangeText={setUsername}
+                value={email}
+                // onChangeText={setEmail}
+                onChangeText={text => setEmail(text)}
             />
             <TextInput
                 style = {styles.input}
                 placeholder="Password"
                 placeholderTextColor= "#93B1A6"
                 value={password}
-                onChangeText={setPassword}
+                // onChangeText={setPassword}
+                onChangeText={text => setPassword(text)}
                 secureTextEntry    
             />
-            {/* <Button
-                title="Sign In"
-                onPress={() => {
-                    //Sign-In logic 
-                }}
-            /> */}
-            <TouchableOpacity style={styles.signInButton} onPress={() => {
-                //Sign In Logic
-            }}>
+            
+            <TouchableOpacity 
+                style={styles.signInButton} 
+                onPress={handleLogin}
+            >
                 <Text style={styles.signInButtonText}>Sign In</Text>
+
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+                style={styles.signInButton} 
+                onPress={() => navigation.navigate('SignUp')}
+            >
+                {/* Sign Up logic */}
+                <Text style={styles.signInButtonText}>Sign Up</Text>
 
             </TouchableOpacity>
         </View>
@@ -72,7 +107,8 @@ import { useState } from "react";
         paddingHorizontal: 20,
         borderRadius: 20, // Rounded corners
         alignSelf: 'flex-end', // Align to the right
-        marginRight: 37
+        marginRight: 37,
+        marginVertical: 5
     },
     signInButtonText: {
         color: 'white',
