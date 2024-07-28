@@ -1,34 +1,60 @@
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, ActivityIndicator } from "react-native";
-import { useEffect, useState } from "react";
-import { FIREBASE_AUTH } from "../firebaseConfig";
+import React ,{ useEffect, useState } from "react";
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, Switch } from "react-native";
+import { FIREBASE_AUTH, FIRESTORE_DB } from "../firebaseConfig";
 import { onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigation } from "@react-navigation/native";
+import { collection, getDocs, where, query } from "firebase/firestore";
 
  export default function Login (){
-    const [email, setEmail] = useState('');
-    // const [username, setUsername] = useState('');
+    // const [email, setEmail] = useState('');
+    const [identifier, setIdentifier] = useState('');
     const [password, setPassword] = useState('');
+    const [username, setUsername] = useState(false);
     
    
     const navigation = useNavigation();
 
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, user => {
-            if(user){
-                navigation.navigate('MainTabs')
+    // useEffect(() => {
+    //     const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, user => {
+    //         if(user){
+    //             navigation.navigate('MainTabs')
+    //         }
+    //     })
+
+    //     return unsubscribe;
+    // }, []);
+
+
+    // const handleLogin = () => {
+    //     signInWithEmailAndPassword(FIREBASE_AUTH, email, password)
+    //     .then(userCredentials => {
+    //         const user = userCredentials.user;
+    //         console.log('Logged in with: ', user.email);
+    //     }).catch(error => alert(error.message))
+    // }
+
+    const handleLogin = async () => {
+        try{
+            let email = identifier;
+            if(username){
+                const q = query(collection(FIRESTORE_DB, "users"), where ("username", "==", identifier));
+                const querySnapshot = await getDocs(q);
+                if(querySnapshot.empty){
+                    Alert.alert("Login Error", "No user found with this username.");
+                    return;
+                }
+                const userDoc = querySnapshot.docs[0];
+                email = userDoc.data().email;
             }
-        })
-
-        return unsubscribe
-    }, [])
-
-    const handleLogin = () => {
-        signInWithEmailAndPassword(FIREBASE_AUTH, email, password)
-        .then(userCredentials => {
+            //Login using email and password 
+            const userCredentials = await signInWithEmailAndPassword(FIREBASE_AUTH, email, password);
             const user = userCredentials.user;
             console.log('Logged in with: ', user.email);
-        }).catch(error => alert(error.message))
-    }
+            navigation.navigate('MainTabs');
+        }catch(error){
+            Alert.alert("Login Error", error.message);
+        }
+    };
     
     
     
@@ -37,11 +63,13 @@ import { useNavigation } from "@react-navigation/native";
             <Text style = {styles.title} > Sign In </Text>  
             <TextInput
                 style = {styles.input}
-                placeholder="Email/Username"
+                // placeholder="Email/Username"
+                placeholder={username ? "Username" : "Email"}
                 placeholderTextColor= "#93B1A6"
-                value={email}
-                // onChangeText={setEmail}
-                onChangeText={text => setEmail(text)}
+                // value={email}
+                // onChangeText={text => setEmail(text)}
+                value={identifier}
+                onChangeText={text => setIdentifier(text)}
             />
             <TextInput
                 style = {styles.input}
@@ -52,6 +80,13 @@ import { useNavigation } from "@react-navigation/native";
                 onChangeText={text => setPassword(text)}
                 secureTextEntry    
             />
+            <View style={styles.switchContainer}>
+                <Text>Login with username</Text>
+                <Switch
+                    value={username}
+                    onValueChange={text => setUsername(text)}
+                />
+            </View>
             
             <TouchableOpacity 
                 style={styles.signInButton} 
@@ -80,7 +115,7 @@ import { useNavigation } from "@react-navigation/native";
         alignItems: 'center',
         // justifyContent: 'center',
         paddingHorizontal: 20,
-        backgroundColor: '#040D12'
+        // backgroundColor: '#040D12'
     },
     title: {
         fontSize: 24,
@@ -100,6 +135,12 @@ import { useNavigation } from "@react-navigation/native";
         paddingHorizontal: 10,
         borderRadius: 5,
         alignSelf: 'center',
+        color: 'white'
+    },
+    switchContainer:{
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginVertical: 10,
     },
     signInButton: {
         backgroundColor: '#5C8374', // Change this to your desired button color

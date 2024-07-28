@@ -1,35 +1,99 @@
-import React from "react";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity } from "react-native";
+import React, { useState } from "react";
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Button,ActivityIndicator, KeyboardAvoidingView } from "react-native";
+import { FIREBASE_AUTH, FIRESTORE_DB } from "../firebaseConfig";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
-export default function EmailSignUp(){
+import { doc, setDoc } from "firebase/firestore";
+
+
+export default function EmailSignUp({navigation}){
+    const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [reenterPassword, setReenterPassword] = useState('');
+
+    // const handleSignUp = () => {
+    //     createUserWithEmailAndPassword(FIREBASE_AUTH, email, password)
+    //     .then(userCredentials => {
+    //         const user = userCredentials.user;
+    //         console.log('Signed up with: ', user.email);
+    //     }).catch(error => alert(error.message))
+    // }
+
+
+    const handleSignUp = () => {
+        if(password !== reenterPassword){
+            alert("Passwords do not match");
+            return;
+        }
+        createUserWithEmailAndPassword(FIREBASE_AUTH, email, password)
+        .then(async(userCredentials) => {
+            const user = userCredentials.user; 
+            console.log('Signed up with: ', user.email);
+
+            //Save username to Firestore 
+            await setDoc(doc(FIRESTORE_DB, "users", user.uid), {
+                email: user.email, 
+                username: username,
+            });
+            //Navigate to Homepage
+            navigation.navigate('MainTabs');
+        }).catch(error => alert(error.message))
+    }
+
+
     return(
-        <View style = {styles.container}>
-            <Text style = {styles.title} > InQuest </Text> 
-            <TextInput
-                style = {styles.input}
-                placeholder="Email"
-                placeholderTextColor= "#93B1A6"
-            /> 
-            <TextInput 
-                style = {styles.input}
-                placeholder="Username"
-                placeholderTextColor= "#93B1A6"
-            />
-            <TextInput 
-                style = {styles.input}
-                placeholder="Password"
-                placeholderTextColor= "#93B1A6"
-            />
-            <TextInput 
-                style = {styles.input}
-                placeholder="Re-enter Password"
-                placeholderTextColor= "#93B1A6"
-            />
-            <TouchableOpacity style = {styles.createButton}>
-                <Text style={styles.createButtonText}> Create Account </Text>
-            </TouchableOpacity>
-        </View>
-    );
+        <KeyboardAvoidingView 
+            style={styles.container}
+            behavior="padding"
+        >
+            <View style={styles.inputContainer}>
+                <TextInput
+                    placeholder="Email"
+                    placeholderTextColor='#93B1A6'
+                    autoCapitalize="none"
+                    value={email}
+                    onChangeText={setEmail}
+                    style={styles.input}
+                />
+                <TextInput
+                    placeholder="Username"
+                    placeholderTextColor='#93B1A6'
+                    autoCapitalize="none"
+                    value={username}
+                    onChangeText={setUsername}
+                    style={styles.input}
+                />
+                <TextInput
+                    placeholder="Password"
+                    placeholderTextColor='#93B1A6'
+                    autoCapitalize="none"
+                    secureTextEntry={true}
+                    value={password}
+                    onChangeText={setPassword}
+                    style={styles.input}
+                />
+                <TextInput
+                    placeholder="Re-enter Password"
+                    placeholderTextColor='#93B1A6'
+                    secureTextEntry={true}
+                    value={reenterPassword}
+                    onChangeText={setReenterPassword}
+                    style={styles.input}
+                />
+                {/* <Button title="Create Account" onPress={handleSignUp}/> */}
+                {/* <Button title="Create Account"/> */}
+            </View>
+            <View style={styles.buttonContainer}>
+                <TouchableOpacity
+                    onPress={handleSignUp}
+                    style = {styles.createButton}
+                >
+                    <Text>Sign Up</Text>
+                </TouchableOpacity>
+            </View>
+        </KeyboardAvoidingView>
+    )
 }
 
 
@@ -40,7 +104,7 @@ const styles = StyleSheet.create({
       flex: 1,
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: '#040D12',
+    //   backgroundColor: '#040D12',
     },
     title: {
         fontSize: 24,
@@ -60,6 +124,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         borderRadius: 5,
         alignSelf: 'center',
+        color: 'white'
     },
     createButton: {
         backgroundColor: '#5C8374', // Change this to your desired button color
@@ -69,9 +134,9 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-end', // Align to the right
         marginRight: 37
     },
-    createButtonText:{
-        color: 'white',
-        fontSize: 16,
-        fontWeight: 'bold',
-    }
+    // createButtonText:{
+    //     color: 'white',
+    //     fontSize: 16,
+    //     fontWeight: 'bold',
+    // }
 });

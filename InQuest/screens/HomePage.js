@@ -5,7 +5,7 @@ import { useIsFocused, useNavigation } from "@react-navigation/native";
 import moment from "moment";
 import Svg, {Circle} from "react-native-svg";
 
-import { collection, getDocs, updateDoc, doc } from "firebase/firestore";
+import { collection, getDocs, updateDoc, doc, getDoc } from "firebase/firestore";
 import { FIREBASE_AUTH, FIRESTORE_DB } from "../firebaseConfig";
 
 export default function HomePage(){
@@ -14,21 +14,11 @@ export default function HomePage(){
     const [otherTasks, setOtherTasks] = useState([]);
     const [selectedTask, setSelectedTask] = useState(null);
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [username, setUsername] = useState('');
 
     const navigation = useNavigation();
 
     const isFocused = useIsFocused();
-
-    // useEffect(() => {
-    //     const fetchTasks = async () => {
-    //         const querySnapshot = await getDocs(collection(FIRESTORE_DB, 'tasks'));
-    //         const tasksData = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-    //         setTasks(tasksData);
-    //         categorizeTasks(tasksData);
-    //     };
-
-    //     fetchTasks();
-    // }, []);
 
     const fetchTasks = async () => {
         const querySnapshot = await getDocs(collection(FIRESTORE_DB, 'tasks'));
@@ -37,41 +27,29 @@ export default function HomePage(){
             tasksList.push({...doc.data(), id: doc.id});
         });
         
-        // const tasksData = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
         setTasks(tasksList);
         categorizeTasks(tasksList);
     };
+
+    const fetchUserData = async () => {
+        const user = FIREBASE_AUTH.currentUser;
+        if(user){
+            const userDoc = await getDoc(doc(FIRESTORE_DB, "users", user.uid));
+            if(userDoc.exists()){
+                const userData = userDoc.data();
+                setUsername(userData.username);
+            }
+        }
+    };
+
     useEffect(() => {
         if(isFocused) {
             fetchTasks();
+            fetchUserData();
         }   
     }, [isFocused]);
 
 
-
-    // useEffect(() => {
-    //     const fetchTasks = async() => {
-    //         try{
-    //             const user = FIREBASE_AUTH.currentUser;
-    //             if(!user) {
-    //                 throw new Error ('No authenticated user found');
-    //             }
-    //             const q = query(
-    //                 collection(FIRESTORE_DB, "tasks"),
-    //                 where ("userId", "==", user.uid)
-    //             );
-    //             const querySnapshot = await getDocs(q);
-    //             const fetchedTasks = [];
-    //             querySnapshot.forEach((doc) => {
-    //                 fetchedTasks.push({id: doc.id, ...doc.data()});
-    //             });
-    //             setTasks(fetchedTasks);
-    //         }catch(error){
-    //             console.error("Error fetching tasks: ", error);
-    //         }
-    //     };
-    //     fetchTasks();
-    // }, []);
 
     const categorizeTasks = (tasks) => {
         const today = moment().startOf('day');
@@ -105,18 +83,6 @@ export default function HomePage(){
             return tdyTaskDeadline.isSame(today, 'day');
         });
 
-
-
-    
-        // const otherTasks = tasks.filter(task => {
-        //     console.log(`Task Deadline for Other: ${task.deadline}`);
-        //     const taskDeadline = moment(task.deadline, 'MM/DD/YYYY h:mm A'); // Ensure your date format matches here
-        //     if (!taskDeadline.isValid()) {
-        //         console.warn(`Invalid other task deadline format: ${task.deadline}`);
-        //         return false;
-        //     }
-        //     return taskDeadline.isAfter(today, 'day') && taskDeadline.isSameOrBefore(threeDaysFromNow, 'day');
-        // });
 
 
         const otherTasks = tasks.filter(task => { //2nd method
@@ -221,6 +187,7 @@ export default function HomePage(){
 
     return(
         <ScrollView style={styles.container}>
+            <Text style={styles.header}> Hello, {username} </Text>
             <Text style={styles.header}> Today </Text>
             <FlatList
                 data={todayTasks}
