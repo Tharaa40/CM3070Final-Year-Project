@@ -8,6 +8,7 @@ import moment from "moment";
 
 import { FIRESTORE_DB, FIREBASE_AUTH } from "../firebaseConfig";
 import { collection, addDoc, updateDoc, doc } from "firebase/firestore";
+import { onAuthStateChanged } from "firebase/auth";
 
 
 
@@ -15,6 +16,7 @@ export default function CreateTask({navigation, route}){
 
     //Firebase
     const [taskId, setTaskId] = useState(null);
+    const [userId, setUserId] = useState(null);
     useEffect(() => {
         if (route.params?.task) {
             const { task } = route.params;
@@ -27,6 +29,17 @@ export default function CreateTask({navigation, route}){
             setTaskId(task.id);
         }
     }, [route.params?.task]);
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, (user) => {
+            if(user){
+                setUserId(user.uid);
+            }else{
+                navigation.navigate('Login');
+            }
+        });
+        return unsubscribe;
+    }, []);
 
     //Title, Description
     const [title, setTitle] = useState('');
@@ -135,6 +148,11 @@ export default function CreateTask({navigation, route}){
 
     //Save and close 
     const saveTask = async() => {
+        //added this for user 
+        if(!userId){
+            console.error('User not authenticated');
+            return;
+        }
         try{
             if(taskId){
                 const taskRef = doc(FIRESTORE_DB, 'tasks', taskId);
@@ -146,6 +164,7 @@ export default function CreateTask({navigation, route}){
                     selectedPriority,
                     category: selectedCategory,
                     updatedAt: new Date().toISOString(),
+                    userId //added this for user
                 });
                 console.log('Task updated');
             }else{
@@ -157,6 +176,7 @@ export default function CreateTask({navigation, route}){
                     selectedPriority,
                     category: selectedCategory, 
                     createdAt: new Date().toISOString(),
+                    userId //added this for user
                 });
                 console.log('Task saved');
             }

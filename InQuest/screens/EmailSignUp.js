@@ -12,15 +12,6 @@ export default function EmailSignUp({navigation}){
     const [password, setPassword] = useState('');
     const [reenterPassword, setReenterPassword] = useState('');
 
-    // const handleSignUp = () => {
-    //     createUserWithEmailAndPassword(FIREBASE_AUTH, email, password)
-    //     .then(userCredentials => {
-    //         const user = userCredentials.user;
-    //         console.log('Signed up with: ', user.email);
-    //     }).catch(error => alert(error.message))
-    // }
-
-
     const handleSignUp = () => {
         if(password !== reenterPassword){
             alert("Passwords do not match");

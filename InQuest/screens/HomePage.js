@@ -17,7 +17,6 @@ export default function HomePage(){
     const [username, setUsername] = useState('');
 
     const navigation = useNavigation();
-
     const isFocused = useIsFocused();
 
     const fetchTasks = async () => {
@@ -30,6 +29,22 @@ export default function HomePage(){
         setTasks(tasksList);
         categorizeTasks(tasksList);
     };
+
+    // const fetchTasks = async () => {
+    //     const user = FIREBASE_AUTH.currentUser; 
+    //     if (!user) return;
+
+    //     const q = query(collection(FIRESTORE_DB, 'tasks'), where('userId', '==', user.uid));
+    //     const querySnapshot = await getDocs(q);
+    //     // const querySnapshot = await getDocs(collection(FIRESTORE_DB, 'tasks'));
+    //     const tasksList = [];
+    //     querySnapshot.forEach((doc) => {
+    //         tasksList.push({...doc.data(), id: doc.id});
+    //     });
+        
+    //     setTasks(tasksList);
+    //     categorizeTasks(tasksList);
+    // };
 
     const fetchUserData = async () => {
         const user = FIREBASE_AUTH.currentUser;
@@ -57,18 +72,6 @@ export default function HomePage(){
     
         console.log(`Today: ${today.format()}`);
         console.log(`Three Days From Now: ${threeDaysFromNow.format()}`);
-
-        
-    
-        // const todayTasks = tasks.filter(task => {
-        //     console.log(`Task Deadline for Today: ${task.deadline}`);
-        //     const taskDeadline = moment(task.deadline, 'MM/DD/YYYY h:mm A'); // Ensure your date format matches here
-        //     if (!taskDeadline.isValid()) {
-        //         console.warn(`Invalid today task deadline format: ${task.deadline}`);
-        //         return false;
-        //     }
-        //     return taskDeadline.isSame(today, 'day');
-        // });
         
         
         const todayTasks = tasks.filter(task => { //2nd method

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer, useIsFocused } from '@react-navigation/native';
@@ -12,6 +12,11 @@ import Details from './screens/Details';
 import Calendar from './screens/Calendar';
 import Settings from './screens/Settings';
 import Timer from './screens/Timer';
+import Login from './screens/Login';
+import SignUps from './screens/SignUp';
+import EmailSignUp from './screens/EmailSignUp';
+import Landing from './screens/Landing';
+
 
 // import Login from './screens/Login';
 // import SignUps from './screens/SignUp';
@@ -85,6 +90,13 @@ function MainTabs() {
           headerShown: false
         }}
       />
+      <Tab.Screen
+        name='Settings'
+        component={Settings}
+        options={{
+          headerShown: false
+        }}
+      />
     </Tab.Navigator>
   );
 }
@@ -103,7 +115,7 @@ function CreateTaskStack() {
   );
 }
 
-// Stack Navigator for Timer screen
+// Stack Navigator for Calendar screen
 function CalendarStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -112,10 +124,17 @@ function CalendarStack() {
   );
 }
 
+
+
+
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false}}>
+      <Stack.Navigator screenOptions={{ headerShown: false}} initialRouteName='HomePage'>
+        {/* <Stack.Screen name='Landing' component={Landing}/> */}
+        <Stack.Screen name='Login' component={Login}/>
+        <Stack.Screen name='SignUp' component={SignUps}/>
+        <Stack.Screen name='EmailSignUp' component={EmailSignUp}/>
         <Stack.Screen name='MainTabs' component={MainTabs} />
       </Stack.Navigator>
     </NavigationContainer>

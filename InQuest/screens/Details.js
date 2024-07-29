@@ -2,13 +2,16 @@ import React, {useEffect, useState, useCallback} from 'react';
 import { SafeAreaView, View, Text, FlatList, TouchableOpacity, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-import { FIRESTORE_DB } from '../firebaseConfig';
-import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { FIREBASE_AUTH, FIRESTORE_DB } from '../firebaseConfig';
+import { collection, getDocs, deleteDoc, doc, query } from 'firebase/firestore';
 import { useIsFocused } from '@react-navigation/native';
 
 export default function Details({navigation}){
     const [tasks, setTasks] = useState([]);
     const isFocused = useIsFocused();
+
+    // const [username, setUsername] = useState('');
+    
 
     // useEffect(() => {
     //     const fetchTasks = async () => {
@@ -23,6 +26,32 @@ export default function Details({navigation}){
     //     fetchTasks();
     // }, []);
 
+
+    // const fetchTasks = async () => {
+    //     const user = FIREBASE_AUTH.currentUser;
+    //     if(!user) return;
+        
+    //     const q = query(collection(FIRESTORE_DB, 'tasks'), where('userId', '==', user.uid));
+    //     const querySnapshot = await getDocs(q);
+    //     const tasksList=[];
+    //     querySnapshot.forEach((doc) => {
+    //         tasksList.push({...doc.data(), id: doc.id});
+    //     });
+    //     setTasks(tasksList);
+    //     console.error('Error fetching tasks: ', error);
+        
+    // };
+
+    const fetchUserData = async() => {
+        const user = FIREBASE_AUTH.currentUser; 
+        if(user){
+            const userDoc = await getDoc(doc(FIRESTORE_DB, 'users', user.uid));
+            if(userDoc.exists()){
+                const userData = userData.data();
+                setUsername(userData.username);
+            }
+        }
+    };
     
     const fetchTasks = async () => {
         try{
@@ -41,6 +70,7 @@ export default function Details({navigation}){
     useEffect(() => {
         if(isFocused){
             fetchTasks();
+            // fetchUserData();
         }
     }, [isFocused]);
    

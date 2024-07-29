@@ -5,33 +5,12 @@ import { onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigation } from "@react-navigation/native";
 import { collection, getDocs, where, query } from "firebase/firestore";
 
+
  export default function Login (){
-    // const [email, setEmail] = useState('');
     const [identifier, setIdentifier] = useState('');
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState(false);
-    
-   
     const navigation = useNavigation();
-
-    // useEffect(() => {
-    //     const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, user => {
-    //         if(user){
-    //             navigation.navigate('MainTabs')
-    //         }
-    //     })
-
-    //     return unsubscribe;
-    // }, []);
-
-
-    // const handleLogin = () => {
-    //     signInWithEmailAndPassword(FIREBASE_AUTH, email, password)
-    //     .then(userCredentials => {
-    //         const user = userCredentials.user;
-    //         console.log('Logged in with: ', user.email);
-    //     }).catch(error => alert(error.message))
-    // }
 
     const handleLogin = async () => {
         try{
@@ -63,11 +42,8 @@ import { collection, getDocs, where, query } from "firebase/firestore";
             <Text style = {styles.title} > Sign In </Text>  
             <TextInput
                 style = {styles.input}
-                // placeholder="Email/Username"
                 placeholder={username ? "Username" : "Email"}
                 placeholderTextColor= "#93B1A6"
-                // value={email}
-                // onChangeText={text => setEmail(text)}
                 value={identifier}
                 onChangeText={text => setIdentifier(text)}
             />
