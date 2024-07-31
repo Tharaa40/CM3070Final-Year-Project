@@ -51,7 +51,11 @@ export default function Details({navigation}){
    
 
     const handleEdit = (task) => {
-        navigation.navigate('CreateTask', {task});
+        navigation.navigate('CreateTaskStack',{
+            screen: 'CreateTask',
+            params: {task}
+        });
+        // navigation.navigate('CreateTask', {task});
     };
 
     const handleDelete = async (taskId) => {

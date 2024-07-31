@@ -121,7 +121,11 @@ export default function HomePage(){
     };
 
     const handleEditTask = (task) => {
-        navigation.navigate('Create Task', { task });
+        navigation.navigate('CreateTaskStack',{
+            screen: 'CreateTask',
+            params: {task}
+        });
+        // navigation.navigate('CreateTask', { task });
     };
 
     const handleTaskPress = (task) => {
