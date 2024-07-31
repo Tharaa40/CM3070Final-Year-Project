@@ -3,80 +3,55 @@ import { SafeAreaView, View, Text, FlatList, TouchableOpacity, Alert } from 'rea
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import { FIREBASE_AUTH, FIRESTORE_DB } from '../firebaseConfig';
-import { collection, getDocs, deleteDoc, doc, query } from 'firebase/firestore';
+import { collection, getDocs, deleteDoc, doc, query, where, getDoc } from 'firebase/firestore';
 import { useIsFocused } from '@react-navigation/native';
 
 export default function Details({navigation}){
     const [tasks, setTasks] = useState([]);
+    const [username, setUsername] = useState('');
+
     const isFocused = useIsFocused();
 
-    // const [username, setUsername] = useState('');
-    
-
-    // useEffect(() => {
-    //     const fetchTasks = async () => {
-    //         try{
-    //             const querySnapshot = await getDocs(collection(FIRESTORE_DB, 'tasks'));
-    //             const tasksArray = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    //             setTasks(tasksArray);
-    //         }catch(error){
-    //             console.error('Error fetching tasks: ', error);
-    //         }
-    //     };
-    //     fetchTasks();
-    // }, []);
-
-
-    // const fetchTasks = async () => {
-    //     const user = FIREBASE_AUTH.currentUser;
-    //     if(!user) return;
-        
-    //     const q = query(collection(FIRESTORE_DB, 'tasks'), where('userId', '==', user.uid));
-    //     const querySnapshot = await getDocs(q);
-    //     const tasksList=[];
-    //     querySnapshot.forEach((doc) => {
-    //         tasksList.push({...doc.data(), id: doc.id});
-    //     });
-    //     setTasks(tasksList);
-    //     console.error('Error fetching tasks: ', error);
-        
-    // };
-
-    const fetchUserData = async() => {
-        const user = FIREBASE_AUTH.currentUser; 
+    {/** This is to fetch and display tasks after creating tasks for specific user */}
+    const fetchTasks = async() => {
+        const user = FIREBASE_AUTH.currentUser;
         if(user){
-            const userDoc = await getDoc(doc(FIRESTORE_DB, 'users', user.uid));
-            if(userDoc.exists()){
-                const userData = userData.data();
-                setUsername(userData.username);
-            }
-        }
-    };
-    
-    const fetchTasks = async () => {
-        try{
-            const querySnapshot = await getDocs(collection(FIRESTORE_DB, 'tasks'));
-            const tasksList=[];
+            const user_Id = user.uid;
+            const tasksCollection = collection(FIRESTORE_DB, 'tasks');
+            const q = query(tasksCollection, where('userId' , '==', user_Id));
+            const querySnapshot = await getDocs(q);
+            const tasksList = [];
             querySnapshot.forEach((doc) => {
                 tasksList.push({...doc.data(), id: doc.id});
             });
             setTasks(tasksList);
-            // const tasksArray = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            // setTasks(tasksArray);
-        }catch(error){
-            console.error('Error fetching tasks: ', error);
+            categorizeTasks(tasksList);
         }
     };
-    useEffect(() => {
-        if(isFocused){
-            fetchTasks();
-            // fetchUserData();
+
+    const fetchUserData = async () => {
+        const user = FIREBASE_AUTH.currentUser;
+        if(user){
+            const userDoc = await getDoc(doc(FIRESTORE_DB, "users", user.uid));
+            if(userDoc.exists()){
+                const userData = userDoc.data();
+                setUsername(userData.username);
+            }
         }
+    };
+
+    useEffect(() => {
+        if(isFocused) {
+            fetchTasks();
+            fetchUserData();
+        }   
     }, [isFocused]);
+    {/** End of specific user code */}
+
    
 
     const handleEdit = (task) => {
-        navigation.navigate('CreateTaskStack', {task});
+        navigation.navigate('CreateTask', {task});
     };
 
     const handleDelete = async (taskId) => {

@@ -5,7 +5,7 @@ import { useIsFocused, useNavigation } from "@react-navigation/native";
 import moment from "moment";
 import Svg, {Circle} from "react-native-svg";
 
-import { collection, getDocs, updateDoc, doc, getDoc } from "firebase/firestore";
+import { collection, getDocs, updateDoc, doc, getDoc, query, where } from "firebase/firestore";
 import { FIREBASE_AUTH, FIRESTORE_DB } from "../firebaseConfig";
 
 export default function HomePage(){
@@ -19,24 +19,8 @@ export default function HomePage(){
     const navigation = useNavigation();
     const isFocused = useIsFocused();
 
-    const fetchTasks = async () => {
-        const querySnapshot = await getDocs(collection(FIRESTORE_DB, 'tasks'));
-        const tasksList = [];
-        querySnapshot.forEach((doc) => {
-            tasksList.push({...doc.data(), id: doc.id});
-        });
-        
-        setTasks(tasksList);
-        categorizeTasks(tasksList);
-    };
-
     // const fetchTasks = async () => {
-    //     const user = FIREBASE_AUTH.currentUser; 
-    //     if (!user) return;
-
-    //     const q = query(collection(FIRESTORE_DB, 'tasks'), where('userId', '==', user.uid));
-    //     const querySnapshot = await getDocs(q);
-    //     // const querySnapshot = await getDocs(collection(FIRESTORE_DB, 'tasks'));
+    //     const querySnapshot = await getDocs(collection(FIRESTORE_DB, 'tasks'));
     //     const tasksList = [];
     //     querySnapshot.forEach((doc) => {
     //         tasksList.push({...doc.data(), id: doc.id});
@@ -45,6 +29,23 @@ export default function HomePage(){
     //     setTasks(tasksList);
     //     categorizeTasks(tasksList);
     // };
+
+    {/** This is to fetch and display tasks after creating tasks for specific user */}
+    const fetchTasks = async() => {
+        const user = FIREBASE_AUTH.currentUser;
+        if(user){
+            const user_Id = user.uid;
+            const tasksCollection = collection(FIRESTORE_DB, 'tasks');
+            const q = query(tasksCollection, where('userId' , '==', user_Id));
+            const querySnapshot = await getDocs(q);
+            const tasksList = [];
+            querySnapshot.forEach((doc) => {
+                tasksList.push({...doc.data(), id: doc.id});
+            });
+            setTasks(tasksList);
+            categorizeTasks(tasksList);
+        }
+    };
 
     const fetchUserData = async () => {
         const user = FIREBASE_AUTH.currentUser;
@@ -63,6 +64,21 @@ export default function HomePage(){
             fetchUserData();
         }   
     }, [isFocused]);
+    {/** End of specific user code */}
+
+    // useEffect(() => {
+    //     const fetchTasks = async() => {
+    //         const user_Id = FIREBASE_AUTH.currentUser.uid;
+    //         const tasksList = collection(FIRESTORE_DB, "tasks");
+    //         const q = query(tasksList, where('userId' == user_Id));
+    //         const taskSnapshot = await getDocs(q);
+    //         setTasks (taskSnapshot.docs.map(doc => ({...doc.data(), id: doc.id})));
+    //         categorizeTasks(tasksList);
+    //     };
+
+    //     fetchTasks();
+    //     fetchUserData();
+    // }, [isFocused]);
 
 
 

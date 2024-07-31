@@ -14,9 +14,35 @@ import { onAuthStateChanged } from "firebase/auth";
 
 export default function CreateTask({navigation, route}){
 
-    //Firebase
     const [taskId, setTaskId] = useState(null);
     const [userId, setUserId] = useState(null);
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [subtasks, setSubtasks] = useState([]);
+    const [deadline, setDeadline] = useState('');
+    const [date, setDate] = useState(new Date()); //monitoring the current date of the picker 
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const [showTimePicker, setShowTimePicker] = useState(false);
+    const [priority, setPriority] = useState([
+        {label: 'Low', value: 'Low'},
+        {label: 'Medium', value: 'Medium'},
+        {label: 'High', value: 'High'}
+    ]);
+    const [selectedPriority, setSelectedPriority] = useState(null);
+    // const priorities = ['Low', 'Medium', 'High'];
+
+    //Category
+    const [category, setCategory] = useState([
+        { label: 'Work', value: 'work' },
+        { label: 'Personal', value: 'personal' },
+        { label: 'Other', value: 'other' }
+    ]);
+    const [selectedCategory, setSelectedCategory] = useState(null);
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [newTag, setNewTag] = useState('');
+
+
+
     useEffect(() => {
         if (route.params?.task) {
             const { task } = route.params;
@@ -41,12 +67,9 @@ export default function CreateTask({navigation, route}){
         return unsubscribe;
     }, []);
 
-    //Title, Description
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
+
 
     //Subtask
-    const [subtasks, setSubtasks] = useState([]);
     const addSubtask = () => {
         setSubtasks([...subtasks, { text: '', checked: false }]);
     };
@@ -62,10 +85,7 @@ export default function CreateTask({navigation, route}){
     };
 
     //Deadline
-    const [deadline, setDeadline] = useState('');
-    const [date, setDate] = useState(new Date()); //monitoring the current date of the picker 
-    const [showDatePicker, setShowDatePicker] = useState(false);
-    const [showTimePicker, setShowTimePicker] = useState(false);
+  
 
     const toggleDatepicker = () => { //this toggles the visibility  DEADLINE - WORKING 
         // setShowPicker(!showPicker); //if it is visible, it will be hidden
@@ -117,26 +137,7 @@ export default function CreateTask({navigation, route}){
         toggleTimepicker();
     };
 
-    //Priority
-    // const [selectedPriority, setSelectedPriority] = useState(null);
-    const [priority, setPriority] = useState([
-        {label: 'Low', value: 'Low'},
-        {label: 'Medium', value: 'Medium'},
-        {label: 'High', value: 'High'}
-    ]);
-    const [selectedPriority, setSelectedPriority] = useState(null);
-    // const priorities = ['Low', 'Medium', 'High'];
-
-    //Category
-    const [category, setCategory] = useState([
-        { label: 'Work', value: 'work' },
-        { label: 'Personal', value: 'personal' },
-        { label: 'Other', value: 'other' }
-    ]);
-    const [selectedCategory, setSelectedCategory] = useState(null);
-    const [isModalVisible, setIsModalVisible] = useState(false);
-    const [newTag, setNewTag] = useState('');
-
+    //Priority   
     const addNewTag = () => {
         if(newTag){
             setCategory([...category, { label: newTag, value: newTag.toLowerCase()}])
@@ -228,10 +229,6 @@ export default function CreateTask({navigation, route}){
     const cancelTask = async() => {
         navigation.navigate('HomePage');
     }
-
-   
-
-
 
     return(
         <View style={styles.screenContainer}>
