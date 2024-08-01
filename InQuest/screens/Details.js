@@ -1,10 +1,11 @@
 import React, {useEffect, useState, useCallback} from 'react';
-import { SafeAreaView, View, Text, FlatList, TouchableOpacity, Alert } from 'react-native';
+import { SafeAreaView, View, Text, FlatList, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import { FIREBASE_AUTH, FIRESTORE_DB } from '../firebaseConfig';
 import { collection, getDocs, deleteDoc, doc, query, where, getDoc } from 'firebase/firestore';
 import { useIsFocused } from '@react-navigation/native';
+import moment from 'moment';
 
 export default function Details({navigation}){
     const [tasks, setTasks] = useState([]);
@@ -79,6 +80,24 @@ export default function Details({navigation}){
         );
     };
 
+
+
+
+    const groupTasksByMonth = (tasks) => {
+        return tasks.reduce((groups, task) => {
+            const month = moment(task.deadline, 'M/D/YYYY').format('MMMM YYYY');
+            if (!groups[month]){
+                groups[month] = [];
+            }
+            groups[month].push(task);
+            return groups;
+        }, {});
+    };
+    const groupedTasks = groupTasksByMonth(tasks);
+
+
+
+
     const renderItem = ({item}) =>(
         <View style={{flexDirection: 'row', alignItems: 'center', marginBottom: 10}}>
             <View style={{flex:1}}>
@@ -97,14 +116,46 @@ export default function Details({navigation}){
         </View>
     );
 
+
+    const renderMonthTasks = (tasks, month) => (
+        <View key={month} style={{ marginBottom: 20 }}>
+            <Text style={{ fontSize: 20, fontWeight: 'bold' }}> {month} </Text>
+            {tasks.length > 3 ? (
+                <View>
+                    {tasks.slice(0,3).map(task => (
+                        <View key={task.id} style={{marginBottom: 10}}>
+                            {renderItem({item: task})}
+                        </View>
+                    ))}
+                    <TouchableOpacity onPress={() => Alert.alert('Show more tasks')}>
+                        <Text style={{color: 'blue'}}> Show more... </Text>
+                    </TouchableOpacity>
+                </View>
+            ): (
+                tasks.map(task => (
+                    <View key={task.id} style={{marginBottom: 10}}>
+                        {renderItem({item: task})}
+                    </View>
+                ))
+            )}
+        </View>
+    )
+
     return(
         <SafeAreaView>
-            <FlatList
-                data={tasks}
-                renderItem={renderItem}
-                keyExtractor={item => item.id}
-            />
+            <ScrollView>
+                {Object.keys(groupedTasks).map(month => (
+                    renderMonthTasks(groupedTasks[month], month)
+                ))}
+            </ScrollView>
         </SafeAreaView>
+        // <SafeAreaView>
+        //     <FlatList
+        //         data={tasks}
+        //         renderItem={renderItem}
+        //         keyExtractor={item => item.id}
+        //     />
+        // </SafeAreaView>
     );
     
 }

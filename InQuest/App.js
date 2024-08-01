@@ -16,6 +16,7 @@ import Login from './screens/Login';
 import SignUps from './screens/SignUp';
 import EmailSignUp from './screens/EmailSignUp';
 import Landing from './screens/Landing';
+import CalendarView from './screens/Calendar';
 
 
 // import Login from './screens/Login';
@@ -66,7 +67,8 @@ function MainTabs() {
       <Tab.Screen 
         name='Details' 
         component={Details} 
-        options={{ headerShown: false}} 
+        options = {{ title: 'Tasks of the Year'}}
+        // options={{ headerShown: false}} 
       />
       <Tab.Screen 
         name='CreateTaskStack' 
@@ -80,7 +82,8 @@ function MainTabs() {
         name='CalendarStack' 
         component={CalendarStack}  
         options={{ 
-          tabBarStyle: {display: 'none'} 
+          tabBarStyle: {display: 'none'}, 
+          headerShown: false
         }}  
       />
       <Tab.Screen 
@@ -119,7 +122,7 @@ function CreateTaskStack() {
 function CalendarStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Calendar" component={Calendar} />
+      <Stack.Screen name="Calendar" component={CalendarView} />
     </Stack.Navigator>
   );
 }
