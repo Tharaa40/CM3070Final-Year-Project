@@ -17,6 +17,7 @@ import SignUps from './screens/SignUp';
 import EmailSignUp from './screens/EmailSignUp';
 import Landing from './screens/Landing';
 import CalendarView from './screens/Calendar';
+import CalendarView2 from './screens/Calendar2';
 
 
 // import Login from './screens/Login';
@@ -122,7 +123,7 @@ function CreateTaskStack() {
 function CalendarStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Calendar" component={CalendarView} />
+      <Stack.Screen name="Calendar" component={CalendarView2} />
     </Stack.Navigator>
   );
 }
