@@ -1,5 +1,5 @@
 import React, {useState, useRef, useEffect} from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Pressable, Platform, Modal, Button } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Pressable, Platform, Button } from "react-native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import DateTimePicker from '@react-native-community/datetimepicker'; //Calendar and time selection
 // import RNPickerSelect from 'react-native-picker-select'; //for both category and priority
@@ -7,8 +7,9 @@ import { Picker } from "@react-native-picker/picker";
 import moment from "moment";
 
 import { FIRESTORE_DB, FIREBASE_AUTH } from "../firebaseConfig";
-import { collection, addDoc, updateDoc, doc } from "firebase/firestore";
+import { collection, addDoc, updateDoc, doc, setDoc, getDoc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
+import { Menu, Modal, Portal, Provider } from "react-native-paper";
 
 
 
@@ -31,15 +32,81 @@ export default function CreateTask({navigation, route}){
     const [selectedPriority, setSelectedPriority] = useState(null);
     // const priorities = ['Low', 'Medium', 'High'];
 
-    //Category
-    const [category, setCategory] = useState([
-        { label: 'Work', value: 'work' },
-        { label: 'Personal', value: 'personal' },
-        { label: 'Other', value: 'other' }
-    ]);
-    const [selectedCategory, setSelectedCategory] = useState(null);
-    const [isModalVisible, setIsModalVisible] = useState(false);
-    const [newTag, setNewTag] = useState('');
+    //Category -OLD
+    // const [category, setCategory] = useState([
+    //     { label: 'Work', value: 'work' },
+    //     { label: 'Personal', value: 'personal' },
+    //     { label: 'Other', value: 'other' }
+    // ]);
+    // const [selectedCategory, setSelectedCategory] = useState(null);
+    // const [isModalVisible, setIsModalVisible] = useState(false);
+    // const [newTag, setNewTag] = useState('');
+
+
+
+    //CATEGORY - NEW 
+    const [inputCat, setInputCat] = useState('');
+    const [tags, setTags] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState('');
+    const [menuVisible, setMenuVisible] = useState(false);
+
+    // const showModal = () => setVisible(true);
+    // const hideModal = () => setVisible(false);
+
+    const fetchTags = async (userId, setTags) => {
+        try {
+          const userDocRef = doc(FIRESTORE_DB, 'users', userId);
+          const userDoc = await getDoc(userDocRef);
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            setTags(userData.tags || []);
+          }
+        } catch (error) {
+          console.error('Error fetching tags: ', error);
+        }
+    };
+
+    useEffect(() => {
+        if(userId){
+            fetchTags(userId, setTags);
+        }
+    }, [userId]);
+
+    const handleAddTag = () => {
+        if (inputCat.trim() !== '' && !tags.find(tag => tag.text === inputCat.trim())) {
+          const newTag = { text: inputCat.trim(), color: getRandomColor() };
+          const updatedTags = [...tags, newTag];
+          setTags(updatedTags);
+          setInputCat('');
+          saveCatTags([...tags, newTag]);
+        }
+    };
+    const handleRemoveTag = (tag) => {
+        const updatedTags = tags.filter((t) => t.text !== tag.text);
+        setTags(updatedTags);
+        saveCatTags(updatedTags);
+    };
+    const handleTagClick = (tag) => {
+        setSelectedCategory(tag.text);
+        setInputCat(tag.text);
+    };
+
+    const getRandomColor = () => {
+        const r = Math.floor(Math.random() * 256);
+        const g = Math.floor(Math.random() * 256);
+        const b = Math.floor(Math.random() * 256);
+        return `rgb(${r},${g},${b})`;
+    };
+    const saveCatTags = async(tags) => {
+        try{
+            const userDocRef = doc(FIRESTORE_DB, 'users', userId);
+            await setDoc(userDocRef, {tags}, {merge: true});
+        }catch(error){
+            console.error('Error saving tags: ', error);
+        }
+    }
+    
+ 
 
 
 
@@ -51,7 +118,7 @@ export default function CreateTask({navigation, route}){
             setSubtasks(task.subtasks);
             setDeadline(task.deadline);
             setSelectedPriority(task.selectedPriority);
-            setSelectedCategory(task.category);
+            // setSelectedCategory(task.category);
             setTaskId(task.id);
         }
     }, [route.params?.task]);
@@ -85,8 +152,6 @@ export default function CreateTask({navigation, route}){
     };
 
     //Deadline
-  
-
     const toggleDatepicker = () => { //this toggles the visibility  DEADLINE - WORKING 
         // setShowPicker(!showPicker); //if it is visible, it will be hidden
         setShowDatePicker(!showDatePicker)
@@ -137,17 +202,55 @@ export default function CreateTask({navigation, route}){
         toggleTimepicker();
     };
 
-    //Priority   
-    const addNewTag = () => {
-        if(newTag){
-            setCategory([...category, { label: newTag, value: newTag.toLowerCase()}])
-            setSelectedCategory(newTag.toLowerCase());
-            setNewTag('');
-            setIsModalVisible(false);
-        }
-    };
+    //Category   
+    // const addNewTag = () => {
+    //     if(newTag){
+    //         setCategory([...category, { label: newTag, value: newTag.toLowerCase()}])
+    //         setSelectedCategory(newTag.toLowerCase());
+    //         setNewTag('');
+    //         setIsModalVisible(false);
+    //     }
+    // };
 
     //Save and close 
+    // const saveTask = async() => {
+    //     //added this for user 
+    //     if(!userId){
+    //         console.error('User not authenticated');
+    //         return;
+    //     }
+    //     try{
+    //         if(taskId){
+    //             const taskRef = doc(FIRESTORE_DB, 'tasks', taskId);
+    //             await updateDoc(taskRef,{
+    //                 title, 
+    //                 description, 
+    //                 subtasks, 
+    //                 deadline, 
+    //                 selectedPriority,
+    //                 // category: selectedCategory,
+    //                 updatedAt: new Date().toISOString(),
+    //                 userId //added this for user
+    //             });
+    //             console.log('Task updated');
+    //         }else{
+    //             await addDoc(collection(FIRESTORE_DB, 'tasks'), {
+    //                 title, 
+    //                 description, 
+    //                 subtasks, 
+    //                 deadline, 
+    //                 selectedPriority,
+    //                 // category: selectedCategory, 
+    //                 createdAt: new Date().toISOString(),
+    //                 userId //added this for user
+    //             });
+    //             console.log('Task saved');
+    //         }
+    //         navigation.navigate('Details');
+    //     }catch(error){
+    //         console.error('Error saving task: ', error);
+    //     }
+    // };
     const saveTask = async() => {
         //added this for user 
         if(!userId){
@@ -181,50 +284,25 @@ export default function CreateTask({navigation, route}){
                 });
                 console.log('Task saved');
             }
+
+            //Save the tags
+            // const userDocRef = doc(FIRESTORE_DB, 'users', userId);
+            // const userDoc = await getDoc(userDocRef);
+            // if(userDoc.exists()){
+            //     const existingTags = userDoc.data().tags || [];
+            //     const newTags = tags.filter(tag => !existingTags.find(t => t.text === tag.text));
+            //     const updatedTags = [...existingTags, ...newTags];
+            //     await setDoc(userDocRef, {tags:updatedTags}, {merge: true});
+            // }else{
+            //     await setDoc(userDocRef, {tags}, {merge: true});
+            // }
             navigation.navigate('Details');
         }catch(error){
             console.error('Error saving task: ', error);
         }
     };
 
-    // const saveTask = async() => {
-    //     try{
-    //         const user = FIREBASE_AUTH.currentUser;
-    //         if(!user){
-    //             throw new Error('No authenticated user found');
-    //         }
 
-    //         if(taskId){
-    //             const taskRef = doc(FIRESTORE_DB, 'tasks', taskId);
-    //             await updateDoc(taskRef,{
-    //                 title, 
-    //                 description, 
-    //                 subtasks, 
-    //                 deadline, 
-    //                 selectedPriority,
-    //                 category: selectedCategory,
-    //                 updatedAt: new Date().toISOString(),
-    //                 userId: user.uid,
-    //             });
-    //             console.log('Task updated');
-    //         }else{
-    //             await addDoc(collection(FIRESTORE_DB, 'tasks'), {
-    //                 title, 
-    //                 description, 
-    //                 subtasks, 
-    //                 deadline, 
-    //                 selectedPriority,
-    //                 category: selectedCategory, 
-    //                 createdAt: new Date().toISOString(),
-    //                 userId: uid,
-    //             });
-    //             console.log('Task saved');
-    //         }
-    //         navigation.navigate('Details');
-    //     }catch(error){
-    //         console.error('Error saving task: ', error);
-    //     }
-    // };
 
     const cancelTask = async() => {
         navigation.navigate('HomePage');
@@ -408,7 +486,56 @@ export default function CreateTask({navigation, route}){
                 <View style={styles.section}>
                     <Text style={styles.sectionHeader}> Category </Text>
                     <View style={styles.pickerContainer}>
-                        <Picker
+                        {/* <Menu
+                            visible={menuVisible}
+                            onDismiss={() => setMenuVisible(false)}
+                            anchor={
+                                <TextInput
+                                    style={styles.input}
+                                    value={inputCat}
+                                    onChangeText={setInputCat}
+                                    onFocus={() => setMenuVisible(true)}
+                                    placeholder="Enter a tag and press enter"
+                                    onSubmitEditing={handleAddTag}
+                                />
+                            }
+                        >
+                            {tags.map((tag, index) => (
+                                <Menu.Item
+                                    key={index}
+                                    onPress={() => handleTagClick(tag)}
+                                    title={tag.text}
+                                />
+                            ))}
+                        </Menu> */}
+                        <TextInput      THIS COMMENTED PORTION WORKS
+                            style = {styles.input}
+                            value={inputCat}
+                            onChangeText={setInputCat}
+                            onSubmitEditing={handleAddTag}
+                            placeholder="Enter a tag and press enter 2"
+                        />
+                         <View style={styles.tagsContainer}>
+                            {tags.map((tag, index) => (
+                                <TouchableOpacity key={index} onPress={() => handleTagClick(tag)} style={[styles.tag, { backgroundColor: tag.color }]}>
+                                    <Text style={styles.tagText}>{tag.text}</Text>
+                                    <TouchableOpacity onPress={() => handleRemoveTag(tag)}>
+                                        <Text style={styles.removeTag}>x</Text>
+                                    </TouchableOpacity>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+                        {/* <View style={styles.tagsContainer}>
+                            {tags.map((tag, index) => (
+                                <View key={index} style={[styles.text, {backgroundColor: tag.color}]}>
+                                    <Text style={styles.tagText}>{tag.text}</Text>
+                                    <TouchableOpacity onPress={() => handleRemoveTag(tag)}>
+                                        <Text style={styles.removeTag}> x </Text>
+                                    </TouchableOpacity>
+                                </View>
+                            ))}
+                        </View> */}
+                        {/* <Picker
                             selectedValue={selectedCategory}
                             style={styles.picker}
                             onValueChange={(value) => setSelectedCategory(value)}
@@ -417,13 +544,13 @@ export default function CreateTask({navigation, route}){
                             {category.map((item, index) => (
                                 <Picker.Item key={index} label={item.label} value={item.value} />
                             ))}
-                        </Picker>
+                        </Picker> */}
                     </View>
-                    <TouchableOpacity style={styles.addTagButton} onPress={() => setIsModalVisible(true)}>
+                    {/* <TouchableOpacity style={styles.addTagButton} onPress={() => setIsModalVisible(true)}>
                         <Text style={styles.addTagButtonText}> Add New Tag</Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                 </View>
-                <Modal
+                {/* <Modal
                     animationType="slide"
                     transparent={true}
                     visible={isModalVisible}
@@ -447,7 +574,7 @@ export default function CreateTask({navigation, route}){
                             </View>
                         </View>
                     </View>
-                </Modal>
+                </Modal> */}
 
 
                 {/**Save & Close Buttons */}
@@ -624,6 +751,32 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontWeight: 'bold',
     },
+
+    tagsContainer:{
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        marginTop: 10,
+    },
+    tag: {
+        borderRadius: 15, 
+        padding: 5, 
+        paddingHorizontal: 10, 
+        margin: 5,
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    tagText: {
+        marginRight: 5,
+    },
+    removeTag: {
+        color: '#ff0000',
+        fontWeight: 'bold',
+    },
+
+
+
+
+
 
     //save & close
     buttonContainer:{
