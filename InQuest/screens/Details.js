@@ -26,7 +26,7 @@ export default function Details({navigation}){
                 tasksList.push({...doc.data(), id: doc.id});
             });
             setTasks(tasksList);
-            categorizeTasks(tasksList);
+            // categorizeTasks(tasksList);
         }
     };
 

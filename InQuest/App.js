@@ -5,6 +5,7 @@ import { NavigationContainer, useIsFocused } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/FontAwesome6';
+import { PaperProvider } from 'react-native-paper';
 
 import HomePage from './screens/HomePage';
 import CreateTask from './screens/CreateTask';
@@ -18,6 +19,7 @@ import EmailSignUp from './screens/EmailSignUp';
 import Landing from './screens/Landing';
 import CalendarView from './screens/Calendar';
 import CalendarView2 from './screens/Calendar2';
+import Avatar from './screens/Avatar';
 
 
 // import Login from './screens/Login';
@@ -133,15 +135,18 @@ function CalendarStack() {
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false}} initialRouteName='HomePage'>
-        {/* <Stack.Screen name='Landing' component={Landing}/> */}
-        <Stack.Screen name='Login' component={Login}/>
-        <Stack.Screen name='SignUp' component={SignUps}/>
-        <Stack.Screen name='EmailSignUp' component={EmailSignUp}/>
-        <Stack.Screen name='MainTabs' component={MainTabs} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <PaperProvider>
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{ headerShown: false}} initialRouteName='HomePage'>
+          {/* <Stack.Screen name='Landing' component={Landing}/> */}
+          <Stack.Screen name='Login' component={Login}/>
+          {/* <Stack.Screen name='SignUp' component={SignUps}/> */}
+          {/* <Stack.Screen name='EmailSignUp' component={EmailSignUp}/> */}
+          <Stack.Screen name='MainTabs' component={MainTabs} />
+          {/* <Stack.Screen name='Avatar' component={Avatar}/> */}
+        </Stack.Navigator>
+      </NavigationContainer>
+    </PaperProvider>
   );
 }
 

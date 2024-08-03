@@ -17,6 +17,10 @@ export default function Settings() {
         }).catch(error => alert(error.message))
     }
 
+    const handleAvatar = () => {
+        navigation.navigate('Avatar');
+    }
+
     return(
         <View style={styles.container}>
             <View style={styles.header}>
@@ -27,10 +31,10 @@ export default function Settings() {
                 <FontAwesome5  name="angle-left" size={30} color='white' />
             </View>
             <View style={styles.main}>
-                <View style={styles.textIconContainer}>
+                <TouchableOpacity style={styles.textIconContainer} onPress={() => handleAvatar}>
                     <Text style={styles.mainText}> Avatar </Text>
                     <FontAwesome5  name='user' size={30} color='#183D3D' solid={false}/>
-                </View>
+                </TouchableOpacity>
                 
                 <View style={styles.textIconContainer}>
                     <Text style={styles.mainText}> Theme </Text>
