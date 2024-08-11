@@ -147,7 +147,7 @@ import { collection, query, where, getDocs } from 'firebase/firestore';
 
 
 // The below code shows the timeline along with
-export default function CalendarView() {
+export default function CalendarView2() {
     const [items, setItems] = useState([]);
     const [selectedDate, setSelectedDate] = useState(moment().startOf('day'));
     const [filteredItems, setFilteredItems] = useState([]);

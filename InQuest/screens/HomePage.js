@@ -5,8 +5,7 @@ import {
     TouchableOpacity, 
     StyleSheet, Modal, 
     FlatList, 
-    StatusBar, 
-    Animated
+    StatusBar, Animated
 } from "react-native";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useIsFocused, useNavigation } from "@react-navigation/native";
@@ -20,7 +19,11 @@ import {
     TouchableRipple, 
     Divider
 } from 'react-native-paper';
-import AvatarImg from '../assets/assetsPack/BasicCharakterActions.png'
+// import AvatarImg from '../assets/assetsPack/BasicCharakterActions.png'
+import AvatarImg from '../assets/assetsPack/char_walk_left.gif';
+// import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+
+
 
 import { collection, getDocs, updateDoc, doc, getDoc, query, where } from "firebase/firestore";
 import { FIREBASE_AUTH, FIRESTORE_DB } from "../firebaseConfig";
@@ -34,11 +37,12 @@ export default function HomePage(){
     const [username, setUsername] = useState('');
     const [menuVisible, setMenuVisible] = useState(false);
 
+
     const navigation = useNavigation();
     const isFocused = useIsFocused();
-    const animation = useRef(new Animated.Value(0)).current;
+    // const animationValue = useSharedValue(0); 
+    const fadeAnim = useRef(new Animated.Value(0)).current;
     const [checked, setChecked] = useState(false);
-    // console.log('checked: ', checked);
 
     {/** This is to fetch and display tasks after creating tasks for specific user */}
     const fetchTasks = async() => {
@@ -75,8 +79,6 @@ export default function HomePage(){
         }   
     }, [isFocused]);
     {/** End of specific user code */}
-
-
 
 
     const categorizeTasks = (tasks) => {
@@ -119,10 +121,10 @@ export default function HomePage(){
 
     const handleEditTask = (task) => {
         navigation.navigate('CreateTaskStack',{
-            screen: 'CreateTask',
+            screen: 'Addtask',
             params: {task}
         });
-        // navigation.navigate('CreateTask', { task });
+        // navigation.navigate('Addtask', { task });
     };
 
     const handleTaskPress = (task) => {
@@ -156,57 +158,6 @@ export default function HomePage(){
         const totalSubtasks = item.subtasks ? item.subtasks.length : 0;
         const progress = totalSubtasks > 0 ? (completedSubtasks / totalSubtasks) * 100 : 0;
 
-        
-
-        // return (
-        //     <TouchableOpacity style={styles.taskCard} onPress={() => handleTaskPress(item)}>
-        //         <Text style={styles.taskTitle}>{item.title}</Text>
-        //         <Text style={styles.taskPriority}>{item.selectedPriority}</Text>
-        //         <Text style={styles.taskCategory}>{item.category}</Text>
-        //         <Text style={styles.taskDeadline}>{item.deadline}</Text>
-        //         <View style={styles.bottomRow}>
-        //             {totalSubtasks > 0 && (
-        //                 <View style={styles.progressCircleContainer}>
-        //                     <Svg height="40" width="40" viewBox="0 0 40 40">
-        //                         <Circle
-        //                             cx="20"
-        //                             cy="20"
-        //                             r="18"
-        //                             stroke="#d3d3d3"
-        //                             strokeWidth="4"
-        //                             fill="none"   
-        //                         />
-        //                         <Circle
-        //                             cx="20"
-        //                             cy="20"
-        //                             r="18"
-        //                             stroke="#4CAF50"
-        //                             strokeWidth="4"
-        //                             fill="none"
-        //                             strokeDasharray={`${2 * Math.PI * 18}`}
-        //                             strokeDashoffset={`${2 * Math.PI * 18 * ((100 - progress) / 100)}`}
-        //                         />
-        //                     </Svg>
-        //                     <View style={styles.progressInnerCircle}>
-        //                         <Text style={styles.progressText}>{Math.round(progress)}%</Text>
-        //                     </View>
-        //                 </View>
-        //             )}
-        //             <TouchableOpacity
-        //                 style={[styles.checkbox, item.completed && styles.checkboxCompleted]}
-        //                 onPress={() => handleTaskComplete(item)}
-        //             >
-        //                 {item.completed && <Icon name="check" size={16} color="#fff" />}
-        //             </TouchableOpacity>
-        //         </View>
-
-        //         <TouchableOpacity style={styles.editIcon} onPress={() => handleEditTask(item)}>
-        //             <Icon name="edit" size={20} color="#000" />
-        //         </TouchableOpacity>
-        //     </TouchableOpacity>
-        // );
-        
-        
 
         return(
             <TouchableRipple onPress={() => handleTaskPress(item)} rippleColor="rgba(0, 0, 0, .32)">
@@ -255,47 +206,22 @@ export default function HomePage(){
     }
 
     const toggleMenu = () => {
-        if(menuVisible){
-            Animated.timing(animation, {
-                toValue: 0, 
-                duration: 300, 
-                useNativeDriver: true, 
-            }).start(() => setMenuVisible(false));
-        }else{
-            setMenuVisible(true);
-            Animated.timing(animation, {
-                toValue: 1, 
-                duration: 300, 
-                useNativeDriver: true, 
-            }).start();
-        }
-    };
-
-    const animatedStyle = {
-        transform: [
-            {
-                scale: animation.interpolate({
-                    inputRange: [0,1],
-                    outputRange: [0.5, 1],
-                }),
-            },
-        ],
-        opacity: animation,
-    }
+        setMenuVisible(!menuVisible);
+        // console.log('Shown more');
+    }; 
 
     return(
         <PaperProvider>
+            <StatusBar 
+                backgroundColor='navy'
+                animated={true}            
+            />
             <ScrollView style={styles.container}>
-                <StatusBar 
-                    backgroundColor='navy'
-                    animated={true}            
-                />
-               
                 <Appbar.Header style={styles.headerContainer}>
                     <Appbar.Content title= {`Hello, ${username}`} />
                     {/* <Avatar.Icon size={30} icon="account-outline" /> */}
                     <Avatar.Image size={50} source={AvatarImg}  />
-                    <Appbar.Action icon='dots-vertical' onPress={() => {toggleMenu}} />
+                    <Appbar.Action icon='dots-vertical' onPress={toggleMenu} />
                     {/* <Text style={styles.header}> Hello, {username} </Text> */}
                 </Appbar.Header>
                 
@@ -308,12 +234,12 @@ export default function HomePage(){
                     ListEmptyComponent={<Text>No tasks for today.</Text>}
                     horizontal
                     showsHorizontalScrollIndicator={false}
-                    style={{paddingBottom: 10}}
+                    style={{paddingBottom: 20}}
                 />
 
-                <Divider style={{backgroundColor: 'red'}} />
+                <Divider style={{backgroundColor: 'black'}} />
 
-                <Text style={styles.header} variant="displaySmall">Others</Text>
+                <Text variant="displaySmall">Others</Text>
                 <FlatList
                     data={otherTasks}
                     renderItem={renderTask}
@@ -323,21 +249,33 @@ export default function HomePage(){
                     showsHorizontalScrollIndicator={false}
                     style={{paddingBottom: 10}}
                 />  
-                <Divider style={{backgroundColor: 'red'}} />
+                <Divider style={{backgroundColor: 'black'}} />
 
                 {menuVisible && (
-                    <Animated.View style={[styles.menuContainer, animatedStyle]}>
+                    <View style={styles.menuContainer}>
                         <Menu
                             visible={menuVisible}
                             onDismiss={toggleMenu}
-                            anchor={{x: 200, y: 50}}
+                            anchor={
+                                // <TouchableOpacity onPress={toggleMenu}>
+                                    <Appbar.Action icon="dots-vertical" color="white" />
+                                // /TouchableOpacity> 
+                            }
                         >
-                            <Menu.Item onPress={() => {}} title="Avatar" icon="account-circle"/>
-                            <Menu.Item onPress={() => {}} title="Theme" icon="theme-light-dark"/>
-                            <Menu.Item onPress={() => {}} title="Sound" icon="volume-high"/>
-                            <Menu.Item onPress={() => {}} title="Dark/Light" icon="bell"/>
+                            <Menu.Item
+                                onPress={() => {
+                                    navigation.navigate('Timer')
+                                }}
+                                title="Toggle Light/Dark Mode"
+                                leadingIcon="theme-light-dark"
+                            />
+                            <Menu.Item
+                                onPress={() => console.log('Settings pressed')}
+                                title="Settings"
+                                leadingIcon="cog-outline"
+                            />
                         </Menu>
-                    </Animated.View>
+                    </View>
                 )}
 
                 {selectedTask && (
@@ -373,52 +311,19 @@ export default function HomePage(){
 }
 
 const styles = StyleSheet.create({
-    container: {
+    container: { //using this
         flex: 1,
-        marginLeft: 10,
+        marginLeft: 6,
         marginTop: 5,
-        // backgroundColor: 'pink'
-        // paddingHorizontal: 10,
-        // paddingVertical: 20,
-        // padding: 20,
-        // backgroundColor: '#fff',
+    },
+    headerContainer:{ //using this
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        backgroundColor: 'lightblue',
+        marginRight: 5
     },
 
-    cardHeader:{
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        // alignItems: 'center',
-        paddingRight: 8
-    },
-    bottomRow:{ //using this
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginTop: 10,
-    },
-    progressText:{
-        fontSize: 10,
-        fontWeight: 'bold',
-    },
-    modalContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    modalContent: {
-        width: '80%',
-        backgroundColor: '#fff',
-        borderRadius: 10,
-        padding: 20,
-        alignItems: 'center',
-    },
-    modalTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 10,
-    },
-    innerShadowContainer:{
+    innerShadowContainer:{ //for task cards ; using this
         shadowColor: '#000',
         shadowOffset: { width: -2, height: -2 },
         shadowOpacity: 0.2,
@@ -428,90 +333,63 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         marginRight: 10
     },
-    card: {
-        backgroundColor: '#183D3D'
-    },
-    cardTitle:{
-        color: '#93B1A6'
-    },
-    cardText: {
-        color: '#93B1A6',
-    },
-    headerContainer:{
+    card: { //using this
+        backgroundColor: '#183D3D',
+    }, 
+    cardHeader:{ //using this
         flexDirection: 'row',
         justifyContent: 'space-between',
-        // alignItems: 'center',
-        // paddingHorizontal: 15,
-        backgroundColor: 'yellow'
-        // padding: 16,
-        // backgroundColor: '#f8f8f8',
+        paddingRight: 8,
     },
-    // header: {
-    //     fontSize: 24,
-    //     fontWeight: 'bold',
-    //     marginBottom: 10,
-    // },
-      
-    menuContainer:{
+    cardTitle:{ //using this
+        color: '#93B1A6'
+    },
+    cardText: { //using this
+        color: '#93B1A6',
+    },
+    bottomRow:{ //using this
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginTop: 10,
+    },
+    progressText:{ //using this
+        fontSize: 10,
+        fontWeight: 'bold',
+        color: 'white'
+    },
+
+    menuContainer: {
         position: 'absolute',
-        top: 50, 
-        right: 10, 
-        zIndex: 1,
+        top: 60,
+        right: 10,
+        zIndex: 1000,
     },
+
+
+    modalContainer: { //using this
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContent: { //using this
+        width: '80%',
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        padding: 20,
+        alignItems: 'center',
+    },
+    modalTitle: { //using this
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 10,
+    },
+
+
    
-   
-    // taskCard: {
-    //     backgroundColor: '#f8f8f8',
-    //     padding: 15,
-    //     borderRadius: 10,
-    //     marginBottom: 10,
-    //     position: 'relative',
-    // },
-    // taskTitle: {
-    //     fontSize: 18,
-    //     fontWeight: 'bold',
-    // },
-    // taskPriority: {
-    //     fontSize: 16,
-    //     color: '#888',
-    // },
-    // taskCategory: {
-    //     fontSize: 16,
-    //     color: '#888',
-    // },
-    // taskDeadline: {
-    //     fontSize: 16,
-    //     color: '#888',
-    // },
-    // progressCircleContainer:{
-    //     position: 'relative',
-    //     justifyContent: 'center',
-    //     alignItems: 'center'
-    // },
-    // progressInnerCircle:{
-    //     position: 'absolute',
-    //     justifyContent: 'center',
-    //     alignItems: 'center',
-    // },
-   
-    // checkbox:{
-    //     width: 24,
-    //     height: 24,
-    //     borderRadius: 12,
-    //     borderWidth: 2,
-    //     borderColor: '#d3d3d3',
-    //     justifyContent: 'center',
-    //     alignItems: 'center',
-    // },
-    // checkboxCompleted:{
-    //     backgroundColor: '#4CAF50',
-    //     borderColor: '#4CAF50',
-    // },
-    // editIcon: {
-    //     position: 'absolute',
-    //     top: 10,
-    //     right: 10,
-    // },
+ 
+  
 
 
     

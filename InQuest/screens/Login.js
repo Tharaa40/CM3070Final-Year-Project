@@ -1,5 +1,6 @@
 import React ,{ useEffect, useState } from "react";
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, Switch } from "react-native";
+import { Button } from 'react-native-paper';
 import { FIREBASE_AUTH, FIRESTORE_DB } from "../firebaseConfig";
 import { onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigation } from "@react-navigation/native";
@@ -29,7 +30,9 @@ import { collection, getDocs, where, query } from "firebase/firestore";
             const userCredentials = await signInWithEmailAndPassword(FIREBASE_AUTH, email, password);
             const user = userCredentials.user;
             console.log('Logged in with: ', user.email);
-            navigation.navigate('MainTabs');
+            // navigation.navigate('MainTabs');
+            // navigation.navigate('HomePage')
+            navigation.navigate('HomeTab');
         }catch(error){
             Alert.alert("Login Error", error.message);
         }
@@ -40,31 +43,50 @@ import { collection, getDocs, where, query } from "firebase/firestore";
     return(
         <View style={styles.container}>
             <Text style = {styles.title} > Sign In </Text>  
-            <TextInput
-                style = {styles.input}
-                placeholder={username ? "Username" : "Email"}
-                placeholderTextColor= "#93B1A6"
-                value={identifier}
-                onChangeText={text => setIdentifier(text)}
-            />
-            <TextInput
-                style = {styles.input}
-                placeholder="Password"
-                placeholderTextColor= "#93B1A6"
-                value={password}
-                // onChangeText={setPassword}
-                onChangeText={text => setPassword(text)}
-                secureTextEntry    
-            />
+            <View style={styles.inputContainer}>
+                <TextInput
+                    style = {styles.input}
+                    placeholder={username ? "Username" : "Email"}
+                    placeholderTextColor= "#93B1A6"
+                    value={identifier}
+                    onChangeText={text => setIdentifier(text)}
+                />
+                <TextInput
+                    style = {styles.input}
+                    placeholder="Password"
+                    placeholderTextColor= "#93B1A6"
+                    value={password}
+                    // onChangeText={setPassword}
+                    onChangeText={text => setPassword(text)}
+                    secureTextEntry    
+                />
+            </View>
             <View style={styles.switchContainer}>
-                <Text>Login with username</Text>
+                <Text style={styles.switchLabel}>Login with username</Text>
                 <Switch
                     value={username}
                     onValueChange={text => setUsername(text)}
                 />
             </View>
+
+            <View style = {styles.buttonContainer}>
+                <Button 
+                    mode="outlined"
+                    onPress={handleLogin}
+                    style={styles.button}
+                >
+                    Sign In 
+                </Button>
+
+                <Button 
+                    mode="outlined"
+                    onPress={() => navigation.navigate('SignUp')}
+                >
+                    Sign Up 
+                </Button>
+            </View>
             
-            <TouchableOpacity 
+            {/* <TouchableOpacity 
                 style={styles.signInButton} 
                 onPress={handleLogin}
             >
@@ -73,13 +95,13 @@ import { collection, getDocs, where, query } from "firebase/firestore";
             </TouchableOpacity>
 
             <TouchableOpacity 
-                style={styles.signInButton} 
+                style={styles.signUpButton} 
                 onPress={() => navigation.navigate('SignUp')}
             >
-                {/* Sign Up logic */}
-                <Text style={styles.signInButtonText}>Sign Up</Text>
+                Sign Up logic
+                <Text style={styles.signUpButtonText}>Sign Up</Text>
 
-            </TouchableOpacity>
+            </TouchableOpacity> */}
         </View>
   
     );
@@ -97,39 +119,92 @@ import { collection, getDocs, where, query } from "firebase/firestore";
         fontSize: 24,
         fontWeight: 'bold',
         textAlign: 'center',
-        marginBottom: 150,
-        marginTop: 150,
+        // marginBottom: 150,
+        // marginTop: 150,
+        marginTop: '50%',
+        marginBottom: '20%',
         color: '#93B1A6',
     },
+    inputContainer:{
+        width: '100%',
+        marginBottom: 10,
+    },
     input: {
-        width: '80%',
-        height: 40,
-        borderColor: '#93B1A6',
+        width: '100%',
+        height: 50,
+        borderColor: '#ddd',
         borderWidth: 1,
-        backgroundColor: '#183D3D',
-        marginBottom: 20,
-        paddingHorizontal: 10,
-        borderRadius: 5,
-        alignSelf: 'center',
-        color: 'white'
+        borderRadius: 20,
+        paddingHorizontal: 16,
+        marginBottom: 10,
+        backgroundColor: '#FFF',
+        fontSize: 16,
+        color: '#333',
+
+        // width: '80%',
+        // height: 40,
+        // borderColor: '#93B1A6',
+        // borderWidth: 1,
+        // backgroundColor: '#183D3D',
+        // marginBottom: 20,
+        // paddingHorizontal: 10,
+        // borderRadius: 5,
+        // alignSelf: 'center',
+        // color: 'white'
     },
     switchContainer:{
         flexDirection: 'row',
         alignItems: 'center',
-        marginVertical: 10,
+        // justifyContent: 'flex-end',
+        marginBottom: 20,
+        marginLeft: '35%'
+        // marginVertical: 10,
+    },
+    switchLabel:{
+        fontSize: 16,
+        color: '#333',
+        marginRight: 10,
     },
     signInButton: {
-        backgroundColor: '#5C8374', // Change this to your desired button color
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 20, // Rounded corners
-        alignSelf: 'flex-end', // Align to the right
-        marginRight: 37,
-        marginVertical: 5
+        width: '30%',
+        height: 50,
+        backgroundColor: '#007BFF',
+        borderRadius: 8,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 20,
+
+
+        // backgroundColor: '#5C8374', // Change this to your desired button color
+        // paddingVertical: 10,
+        // paddingHorizontal: 20,
+        // borderRadius: 20, // Rounded corners
+        // alignSelf: 'flex-end', // Align to the right
+        // marginRight: 37,
+        // marginVertical: 5
+    },
+    buttonContainer:{
+        marginLeft: '67%'
+    },
+    button:{
+        marginBottom: '7%'
     },
     signInButtonText: {
         color: 'white',
         fontSize: 16,
+        fontWeight: 'bold',
+    },
+    signUpButton:{
+        width: '100%',
+        height: 50,
+        backgroundColor: '#6C757D',
+        borderRadius: 8,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    signUpButtonText:{
+        color: '#FFF',
+        fontSize: 18,
         fontWeight: 'bold',
     },
 

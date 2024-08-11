@@ -1,5 +1,7 @@
-import React, {useState, useRef, useEffect} from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Pressable, Platform, Button } from "react-native";
+//THIS FILE IS NO LONGER IN USE 
+
+import React, {useState, useRef, useEffect, useMemo, useCallback} from "react";
+import { SafeAreaView ,KeyboardAvoidingView, View, TextInput, TouchableOpacity, StyleSheet, Pressable, Platform, Button } from "react-native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import DateTimePicker from '@react-native-community/datetimepicker'; //Calendar and time selection
 // import RNPickerSelect from 'react-native-picker-select'; //for both category and priority
@@ -9,11 +11,14 @@ import moment from "moment";
 import { FIRESTORE_DB, FIREBASE_AUTH } from "../firebaseConfig";
 import { collection, addDoc, updateDoc, doc, setDoc, getDoc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
-import { Menu, Modal, Portal, Provider } from "react-native-paper";
+import { PaperProvider, Text, Menu, Button as ButtonA, Modal, Portal, Provider } from "react-native-paper";
+import { useFocusEffect } from "@react-navigation/native";
+import BottomSheet, { BottomSheetModal, BottomSheetView, BottomSheetScrollView, BottomSheetModalProvider, BottomSheetBackdrop, BottomSheetTextInput} from '@gorhom/bottom-sheet';
+import { GestureHandlerRootView, ScrollView } from "react-native-gesture-handler";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 
-
-export default function CreateTask({navigation, route}){
+export default function CreateTask({ navigation, route }){ 
 
     const [taskId, setTaskId] = useState(null);
     const [userId, setUserId] = useState(null);
@@ -24,11 +29,18 @@ export default function CreateTask({navigation, route}){
     const [date, setDate] = useState(new Date()); //monitoring the current date of the picker 
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [showTimePicker, setShowTimePicker] = useState(false);
-    const [priority, setPriority] = useState([
-        {label: 'Low', value: 'Low'},
-        {label: 'Medium', value: 'Medium'},
-        {label: 'High', value: 'High'}
-    ]);
+    // const [priority, setPriority] = useState([
+    //     {label: 'Low', value: 'Low'},
+    //     {label: 'Medium', value: 'Medium'},
+    //     {label: 'High', value: 'High'}
+    // ]);
+
+    const [visiblePriority, setVisiblePriority] = useState(false);
+    const priority = [
+        { label: 'High', value: 'high' },
+        { label: 'Medium', value: 'medium' },
+        { label: 'Low', value: 'low' }
+    ];
     const [selectedPriority, setSelectedPriority] = useState(null);
     // const priorities = ['Low', 'Medium', 'High'];
 
@@ -50,9 +62,85 @@ export default function CreateTask({navigation, route}){
     const [selectedCategory, setSelectedCategory] = useState('');
     const [menuVisible, setMenuVisible] = useState(false);
 
-    // const showModal = () => setVisible(true);
-    // const hideModal = () => setVisible(false);
+    // useFocusEffect(
+    //     React.useCallback(() => {
+    //       // Reset form fields when screen is focused
+    //       setTitle('');
+    //       setDescription('');
+    //       setSubtasks([]);
+    //       setDeadline('');
+    //       setSelectedPriority('');
+    //       setSelectedCategory('');
+    //     //   setDescription('');
+    //       // Reset other task states...
+    //     }, [])
+    // );
 
+
+    useEffect(() => {
+        if(userId){
+            fetchTags(userId, setTags);
+        }
+    }, [userId]);
+
+    // useEffect(() => {
+    //     if (route.params?.task) {
+    //         const task = route.params.task;
+    //         setTitle(task.title);
+    //         setDescription(task.description);
+    //         setDeadline(task.deadline);
+    //         setSelectedPriority(task.selectedPriority);
+    //         setSelectedCategory(task.category);
+    //         setTaskId(task.id);
+    //     } else {
+    //         // Reset state if creating a new task
+    //         setTitle('');
+    //         setDescription('');
+    //         setDeadline('');
+    //         setSelectedPriority(null);
+    //         setSelectedCategory('');
+    //         setTaskId(null);
+    //     }
+    // }, [route.params?.task]);
+
+    useEffect(() => { //the form is populated when there is no existing task being edited 
+        if (route.params?.task) {
+        // if (route.params?.task && !taskId) {
+            const { task } = route.params;
+            setTitle(task.title);
+            setDescription(task.description);
+            setSubtasks(task.subtasks);
+            setDeadline(task.deadline);
+            setSelectedPriority(task.selectedPriority);
+            // setSelectedCategory(task.category);
+            setTaskId(task.id);
+        }
+    // }, [route.params?.task, taskId]);
+    }, [route.params?.task]);
+
+    // useFocusEffect( //this is to reset 
+    //     React.useCallback(() => {
+    //         setTitle('');
+    //         setDescription('');
+    //         setSubtasks([]);
+    //         setDeadline('');
+    //         setSelectedPriority(null);
+    //         setSelectedCategory('');
+    //         setTaskId(null);
+    //     }, [])
+    // );
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, (user) => {
+            if(user){
+                setUserId(user.uid);
+            }else{
+                navigation.navigate('Login');
+            }
+        });
+        return unsubscribe;
+    }, []);
+    
     const fetchTags = async (userId, setTags) => {
         try {
           const userDocRef = doc(FIRESTORE_DB, 'users', userId);
@@ -65,12 +153,6 @@ export default function CreateTask({navigation, route}){
           console.error('Error fetching tags: ', error);
         }
     };
-
-    useEffect(() => {
-        if(userId){
-            fetchTags(userId, setTags);
-        }
-    }, [userId]);
 
     const handleAddTag = () => {
         if (inputCat.trim() !== '' && !tags.find(tag => tag.text === inputCat.trim())) {
@@ -107,34 +189,6 @@ export default function CreateTask({navigation, route}){
     }
     
  
-
-
-
-    useEffect(() => {
-        if (route.params?.task) {
-            const { task } = route.params;
-            setTitle(task.title);
-            setDescription(task.description);
-            setSubtasks(task.subtasks);
-            setDeadline(task.deadline);
-            setSelectedPriority(task.selectedPriority);
-            // setSelectedCategory(task.category);
-            setTaskId(task.id);
-        }
-    }, [route.params?.task]);
-
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, (user) => {
-            if(user){
-                setUserId(user.uid);
-            }else{
-                navigation.navigate('Login');
-            }
-        });
-        return unsubscribe;
-    }, []);
-
-
 
     //Subtask
     const addSubtask = () => {
@@ -202,6 +256,12 @@ export default function CreateTask({navigation, route}){
         toggleTimepicker();
     };
 
+
+    const handlePriorityPress = (value) => { //This is for priority using Menu from 'react native paper' library
+        setSelectedPriority(value);
+        setVisiblePriority(false);
+    }
+
     //Category   
     // const addNewTag = () => {
     //     if(newTag){
@@ -251,7 +311,11 @@ export default function CreateTask({navigation, route}){
     //         console.error('Error saving task: ', error);
     //     }
     // };
-    const saveTask = async() => {
+
+
+
+
+    const saveTask = async() => { //this is working
         //added this for user 
         if(!userId){
             console.error('User not authenticated');
@@ -296,323 +360,409 @@ export default function CreateTask({navigation, route}){
             // }else{
             //     await setDoc(userDocRef, {tags}, {merge: true});
             // }
+
             navigation.navigate('Details');
         }catch(error){
             console.error('Error saving task: ', error);
         }
     };
 
-
-
     const cancelTask = async() => {
-        navigation.navigate('HomePage');
+        // navigation.navigate('HomePage');
+
+        navigation.navigate('HomeTab');
     }
 
+
+    {/**this is for bottom sheet */}
+    // const sheetRef = useRef<BottomSheet>(null);
+    const [isOpen, setIsOpen] = useState(false);
+    const sheetRef = useRef();
+    
+    const handleClosePress = () => sheetRef.current?.close();
+    const snapPoints = useMemo(() => ['50%', '100%'], []);
+
+    const showSheet = () => {
+        setIsVisible(true);
+        sheetRef.current?.present();
+    };
+
+    const hideSheet = () => {
+        setIsVisible(false);
+        sheetRef.current?.dismiss();
+    };
+
+      // callbacks
+    const handleSheetChanges = useCallback((index) => {
+        console.log('handleSheetChanges', index);
+    }, []);
+    const renderBackdrop = useCallback(
+		(props) => (
+			<BottomSheetBackdrop
+				{...props}
+				disappearsOnIndex={1}
+				appearsOnIndex={2}
+			/>
+		),
+		[]
+	);
+
+
     return(
-        <View style={styles.screenContainer}>
-            <ScrollView contentContainerStyle={styles.container}>
-                <Text style={styles.header}> Add Task </Text>
+        // <View>
+        //     <BottomSheet
+        //         ref={sheetRef}
+        //         snapPoints={snapPoints}
+        //         backgroundStyle={{backgroundColor: 'beige'}}
+        //     >
+                <PaperProvider>
+                    <ScrollView contentContainerStyle={styles.scrollViewContainer}>                 
+                        <Text variant="headlineLarge" style={styles.header}> Add Task </Text>
 
-                {/**Title */}
-                <View style={styles.section}>
-                    <Text style={styles.sectionHeader}> Title </Text>
-                    <TextInput
-                        style = {styles.input}
-                        value={title}
-                        onChangeText={setTitle}
-                        placeholder='Enter task title'
-                        placeholderTextColor= '#93B1A6'
-                    />
-                </View>
-
-                {/**description */}
-                <View style={styles.section}>
-                    <Text style={styles.sectionHeader}> Description </Text>
-                    <TextInput
-                        style = {styles.input}
-                        value={description}
-                        onChangeText={setDescription}
-                        placeholder='Enter task description'
-                        placeholderTextColor= '#93B1A6'
-                    />
-                </View>
-
-                {/**subtasks */} 
-                <View style={styles.section}>
-                    <Text style={styles.sectionHeader}> Subtasks </Text>
-                    {subtasks.map((subtask, index) => (
-                        <View key={index} style={styles.subtaskContainer}>
-                            <TouchableOpacity onPress={() => toggleSubtask(index)}>
-                                <Icon
-                                    name={subtask.checked ? 'check-square' : 'square-o'}
-                                    size={20}
-                                    color={subtask.checked ? 'green' : '#ccc'}
-                                    style={styles.checkboxIcon}
-                                />
-                            </TouchableOpacity>
+                        {/**Title */}
+                        <View style={styles.section}>
+                            <Text variant="headlineSmall" style={styles.sectionHeader}> Title </Text>
                             <TextInput
-                                style={[styles.input, {flex:1}]}
-                                value={subtask.text}
-                                onChangeText={(text) => {
-                                    const updatedSubtasks = [...subtasks];
-                                    updatedSubtasks[index].text = text;
-                                    setSubtasks(updatedSubtasks);
-                                }}
-                                placeholder="Enter subtask"
-                                placeholderTextColor='#93B1A6'
+                                style = {styles.input}
+                                value={title}
+                                onChangeText={setTitle}
+                                placeholder='Enter task title'
+                                placeholderTextColor= '#93B1A6'
                             />
-                            <TouchableOpacity onPress={() => removeSubtask(index)}>
-                                <Icon name='trash' size={20} color='white' style={{margin: 10}}/>
-                            </TouchableOpacity>
                         </View>
-                    ))}
-                    <TouchableOpacity onPress={addSubtask} style={styles.iconButton}>
-                        <Icon name='plus' size={20} color='beige' />
-                    </TouchableOpacity>
-                </View>
 
-                {/**deadline */}
-                <View style={styles.section}>
-                    <Text style={styles.sectionHeader}> Deadline </Text>
-                    <View style={styles.textInputWithIcon}>
-                        {showDatePicker && (
-                            <DateTimePicker 
-                                mode="date"
-                                display="spinner"
-                                value={date}
-                                onChange={onDateChange}
-                                style={styles.datePicker}
+                        {/**description */}
+                        <View style={styles.section}>
+                            <Text variant="headlineSmall" style={styles.sectionHeader}> Description </Text>
+                            <TextInput
+                                style = {styles.input}
+                                value={description}
+                                onChangeText={setDescription}
+                                placeholder='Enter task description'
+                                placeholderTextColor= '#93B1A6'
                             />
-                        )}
-                        {showTimePicker && (
-                            <DateTimePicker
-                                mode="time"
-                                display="spinner"
-                                value={date}
-                                onChange={onTimeChange}
-                                style={styles.datePicker}
-                            />
-                        )}
-                        {showDatePicker && Platform.OS==='ios' && (
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-                                <TouchableOpacity
-                                    style={[styles.cancelDatebutton, styles.pickerButton, { backgroundColor: '#11182711' }]}
-                                    onPress={toggleDatepicker}
-                                >
-                                    <Text style={[styles.buttonText, { color: '#075985' }]}>Cancel</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style={[styles.cancelDatebutton, styles.pickerButton]}
-                                    onPress={confirmIOSDate}
-                                >
-                                    <Text style={styles.buttonText}>Confirm</Text>
-                                </TouchableOpacity>
-                            </View>
-                        )}
-                        {showTimePicker && Platform.OS==='ios' && (
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-                                <TouchableOpacity
-                                    style={[styles.cancelDatebutton, styles.pickerButton, { backgroundColor: '#11182711' }]}
-                                    onPress={toggleTimepicker}
-                                >
-                                    <Text style={[styles.buttonText, { color: '#075985' }]}> Cancel </Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style={[styles.cancelDatebutton, styles.pickerButton]}
-                                    onPress={confirmIOSTime}
-                                >
-                                    <Text style={styles.buttonText}>Confirm</Text>
-                                </TouchableOpacity>
-                            </View>
-                        )}
-                        <TextInput
-                            style={styles.input}
-                            value={deadline}
-                            onChangeText={setDeadline}
-                            placeholder='Select deadline'
-                            editable={false}
-                            onPressIn={toggleDatepicker}
-                        />
-                        {!showDatePicker && !showTimePicker && (
-                            <Pressable
-                                style={styles.calendarIcon}
-                                onPress={toggleDatepicker}
-                            >
-                                <Icon name='calendar' size={20} color='gray' />
-                            </Pressable>
-                        )}
-                        {!showDatePicker && !showTimePicker && (
-                            <Pressable
-                                style={styles.clockIcon}
-                                onPress={toggleTimepicker}
-                            >
-                                <Icon name='clock-o' size={20} color='gray' />
+                        </View>
 
-                            </Pressable>
-                        )}
-                    </View>
-                </View>
-
-                {/**Priority */}
-                <View style={styles.section}>
-                    <Text style={styles.sectionHeader}> Priority </Text>
-                    <View style={styles.pickerContainer}>
-                        {/* <Picker
-                            selectedValue={selectedPriority}
-                            style={styles.picker}
-                            // style={{height: 50, width: 150}}
-                            onValueChange={(value) => setSelectedPriority(value)}
-                        >
-                            <Picker.Item label="Low" value="low" />
-                            <Picker.Item label="Medium" value="medium" />
-                            <Picker.Item label="High" value="high" />
-                        </Picker> */}
-
-                        <Picker
-                            selectedValue={selectedPriority}
-                            style={styles.picker}
-                            // style={{height: 50, width: 150}}
-                            onValueChange={(value) => setSelectedPriority(value)}
-                        >
-                            <Picker.Item label="Select a priority" value={null}/>
-                            {priority.map((item, index) => (
-                                <Picker.Item key={index} label={item.label} value={item.value} />
-                            ))}
-                        </Picker>
-                    </View>
-                </View>
-
-                {/**Category */}
-                <View style={styles.section}>
-                    <Text style={styles.sectionHeader}> Category </Text>
-                    <View style={styles.pickerContainer}>
-                        {/* <Menu
-                            visible={menuVisible}
-                            onDismiss={() => setMenuVisible(false)}
-                            anchor={
-                                <TextInput
-                                    style={styles.input}
-                                    value={inputCat}
-                                    onChangeText={setInputCat}
-                                    onFocus={() => setMenuVisible(true)}
-                                    placeholder="Enter a tag and press enter"
-                                    onSubmitEditing={handleAddTag}
-                                />
-                            }
-                        >
-                            {tags.map((tag, index) => (
-                                <Menu.Item
-                                    key={index}
-                                    onPress={() => handleTagClick(tag)}
-                                    title={tag.text}
-                                />
-                            ))}
-                        </Menu> */}
-                        <TextInput      THIS COMMENTED PORTION WORKS
-                            style = {styles.input}
-                            value={inputCat}
-                            onChangeText={setInputCat}
-                            onSubmitEditing={handleAddTag}
-                            placeholder="Enter a tag and press enter 2"
-                        />
-                         <View style={styles.tagsContainer}>
-                            {tags.map((tag, index) => (
-                                <TouchableOpacity key={index} onPress={() => handleTagClick(tag)} style={[styles.tag, { backgroundColor: tag.color }]}>
-                                    <Text style={styles.tagText}>{tag.text}</Text>
-                                    <TouchableOpacity onPress={() => handleRemoveTag(tag)}>
-                                        <Text style={styles.removeTag}>x</Text>
+                        {/**subtasks */} 
+                        <View style={styles.section}>
+                            <Text variant="headlineSmall" style={styles.sectionHeader}> Subtasks </Text>
+                            {subtasks.map((subtask, index) => (
+                                <View key={index} style={styles.subtaskContainer}>
+                                    <TouchableOpacity onPress={() => toggleSubtask(index)}>
+                                        <Icon
+                                            name={subtask.checked ? 'check-square' : 'square-o'}
+                                            size={20}
+                                            color={subtask.checked ? 'green' : '#ccc'}
+                                            style={styles.checkboxIcon}
+                                        />
                                     </TouchableOpacity>
-                                </TouchableOpacity>
-                            ))}
-                        </View>
-                        {/* <View style={styles.tagsContainer}>
-                            {tags.map((tag, index) => (
-                                <View key={index} style={[styles.text, {backgroundColor: tag.color}]}>
-                                    <Text style={styles.tagText}>{tag.text}</Text>
-                                    <TouchableOpacity onPress={() => handleRemoveTag(tag)}>
-                                        <Text style={styles.removeTag}> x </Text>
+                                    <TextInput
+                                        style={[styles.input, {flex:1}]}
+                                        value={subtask.text}
+                                        onChangeText={(text) => {
+                                            const updatedSubtasks = [...subtasks];
+                                            updatedSubtasks[index].text = text;
+                                            setSubtasks(updatedSubtasks);
+                                        }}
+                                        placeholder="Enter subtask"
+                                        placeholderTextColor='#93B1A6'
+                                    />
+                                    <TouchableOpacity onPress={() => removeSubtask(index)}>
+                                        <Icon name='trash' size={20} color='white' style={{margin: 10}}/>
                                     </TouchableOpacity>
                                 </View>
                             ))}
-                        </View> */}
-                        {/* <Picker
-                            selectedValue={selectedCategory}
-                            style={styles.picker}
-                            onValueChange={(value) => setSelectedCategory(value)}
-                        >
-                            <Picker.Item label="Select a category" value={null}/>
-                            {category.map((item, index) => (
-                                <Picker.Item key={index} label={item.label} value={item.value} />
-                            ))}
-                        </Picker> */}
-                    </View>
-                    {/* <TouchableOpacity style={styles.addTagButton} onPress={() => setIsModalVisible(true)}>
-                        <Text style={styles.addTagButtonText}> Add New Tag</Text>
-                    </TouchableOpacity> */}
-                </View>
-                {/* <Modal
-                    animationType="slide"
-                    transparent={true}
-                    visible={isModalVisible}
-                >
-                    <View style={styles.modalContainer}>
-                        <View style={styles.modalContent}>
-                            <Text style={styles.modalHeader}> Add New Tag</Text>
-                            <TextInput
-                                style={styles.modalInput}
-                                value={newTag}
-                                onChangeText={setNewTag}
-                                placeholder="Enter tag name"
-                            />
-                            <View style={styles.modalButtons}>
-                                <TouchableOpacity style={styles.modalButton} onPress={() => setIsModalVisible(false)}>
-                                    <Text style={styles.modalButtonText}> Cancel </Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={styles.modalButton} onPress={addNewTag}>
-                                    <Text style={styles.modalButtonText}>Add Tag </Text>
-                                </TouchableOpacity>
+                            <TouchableOpacity onPress={addSubtask} style={styles.iconButton}>
+                                <Icon name='plus' size={20} color='beige' />
+                            </TouchableOpacity>
+                        </View>
+
+                        {/**deadline */}
+                        <View style={styles.section}>
+                            <Text variant="headlineSmall" style={styles.sectionHeader}> Deadline </Text>
+                            <View style={styles.textInputWithIcon}>
+                                {showDatePicker && (
+                                    <DateTimePicker 
+                                        mode="date"
+                                        display="spinner"
+                                        value={date}
+                                        onChange={onDateChange}
+                                        style={styles.datePicker}
+                                    />
+                                )}
+                                {showTimePicker && (
+                                    <DateTimePicker
+                                        mode="time"
+                                        display="spinner"
+                                        value={date}
+                                        onChange={onTimeChange}
+                                        style={styles.datePicker}
+                                    />
+                                )}
+                                {showDatePicker && Platform.OS==='ios' && (
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+                                        <TouchableOpacity
+                                            style={[styles.cancelDatebutton, styles.pickerButton, { backgroundColor: '#11182711' }]}
+                                            onPress={toggleDatepicker}
+                                        >
+                                            <Text style={[styles.buttonText, { color: '#075985' }]}>Cancel</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            style={[styles.cancelDatebutton, styles.pickerButton]}
+                                            onPress={confirmIOSDate}
+                                        >
+                                            <Text style={styles.buttonText}>Confirm</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                )}
+                                {showTimePicker && Platform.OS==='ios' && (
+                                    <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+                                        <TouchableOpacity
+                                            style={[styles.cancelDatebutton, styles.pickerButton, { backgroundColor: '#11182711' }]}
+                                            onPress={toggleTimepicker}
+                                        >
+                                            <Text style={[styles.buttonText, { color: '#075985' }]}> Cancel </Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            style={[styles.cancelDatebutton, styles.pickerButton]}
+                                            onPress={confirmIOSTime}
+                                        >
+                                            <Text style={styles.buttonText}>Confirm</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                )}
+                                <TextInput
+                                    style={styles.input}
+                                    value={deadline}
+                                    onChangeText={setDeadline}
+                                    placeholder='Select deadline'
+                                    editable={false}
+                                    onPressIn={toggleDatepicker}
+                                />
+                                {!showDatePicker && !showTimePicker && (
+                                    <Pressable
+                                        style={styles.calendarIcon}
+                                        onPress={toggleDatepicker}
+                                    >
+                                        <Icon name='calendar' size={30} color='gray' />
+                                    </Pressable>
+                                )}
+                                {!showDatePicker && !showTimePicker && (
+                                    <Pressable
+                                        style={styles.clockIcon}
+                                        onPress={toggleTimepicker}
+                                    >
+                                        <Icon name='clock-o' size={35} color='gray' />
+
+                                    </Pressable>
+                                )}
                             </View>
                         </View>
-                    </View>
-                </Modal> */}
+
+                        {/**Priority */}
+                        <View style={styles.section}>
+                            <Text variant="headlineSmall" style={styles.sectionHeader}> Priority </Text>
+                            <View style={styles.pickerContainer}>
+                            <Menu
+                                visible={visiblePriority}
+                                onDismiss={() => setVisiblePriority(false)}
+                                anchor={
+                                    <ButtonA mode="outlined" onPress={() => setVisiblePriority(true)} style={styles.priorityButton}>
+                                        {selectedPriority ? priority.find(p => p.value === selectedPriority)?.label : "Select a priority"}
+                                    </ButtonA>
+                                }
+                            >
+                                {priority.map((item, index) => (
+                                    <Menu.Item
+                                        key={index}
+                                        title={item.label}
+                                        onPress={() => handlePriorityPress(item.value)}
+                                    />
+                                ))}
+                            </Menu>
+                                {/* <Picker
+                                    selectedValue={selectedPriority}
+                                    style={styles.picker}
+                                    // style={{height: 50, width: 150}}
+                                    onValueChange={(value) => setSelectedPriority(value)}
+                                >
+                                    <Picker.Item label="Select a priority" value={null}/>
+                                    {priority.map((item, index) => (
+                                        <Picker.Item key={index} label={item.label} value={item.value} />
+                                    ))}
+                                </Picker> */}
+                            </View>
+                        </View>
+
+                        {/**Category */}
+                        <View style={styles.section}>
+                            <Text variant="headlineSmall" style={styles.sectionHeader}> Category </Text>
+                            <View style={styles.pickerContainer}>
+                                {/* <Menu
+                                    visible={menuVisible}
+                                    onDismiss={() => setMenuVisible(false)}
+                                    anchor={
+                                        <BottomSheetTextInput
+                                            style={styles.input}
+                                            value={inputCat}
+                                            onChangeText={setInputCat}
+                                            onFocus={() => setMenuVisible(true)}
+                                            placeholder="Enter a tag and press enter"
+                                            onSubmitEditing={handleAddTag}
+                                        />
+                                    }
+                                >
+                                    {tags.map((tag, index) => ( 
+                                        <Menu.Item
+                                            key={index}
+                                            onPress={() => handleTagClick(tag)}
+                                            title={tag.text}
+                                        />
+                                    ))}
+                                </Menu>  */}
+                                {/*The above commented portion works */}
+                                <TextInput      
+                                    style = {styles.input}
+                                    value={inputCat}
+                                    onChangeText={setInputCat}
+                                    onSubmitEditing={handleAddTag}
+                                    placeholder="Enter a tag and press enter 2"
+                                    placeholderTextColor= '#93B1A6'
+                                />
+                                <View style={styles.tagsContainer}>
+                                    {tags.map((tag, index) => (
+                                        <TouchableOpacity key={index} onPress={() => handleTagClick(tag)} style={[styles.tag, { backgroundColor: tag.color }]}>
+                                            <Text style={styles.tagText}>{tag.text}</Text>
+                                            <TouchableOpacity onPress={() => handleRemoveTag(tag)}>
+                                                <Text style={styles.removeTag}>x</Text>
+                                            </TouchableOpacity>
+                                        </TouchableOpacity>
+                                    ))}
+                                </View>
+                                {/* <View style={styles.tagsContainer}>
+                                    {tags.map((tag, index) => (
+                                        <View key={index} style={[styles.text, {backgroundColor: tag.color}]}>
+                                            <Text style={styles.tagText}>{tag.text}</Text>
+                                            <TouchableOpacity onPress={() => handleRemoveTag(tag)}>
+                                                <Text style={styles.removeTag}> x </Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    ))}
+                                </View> */}
+                                {/* <Picker
+                                    selectedValue={selectedCategory}
+                                    style={styles.picker}
+                                    onValueChange={(value) => setSelectedCategory(value)}
+                                >
+                                    <Picker.Item label="Select a category" value={null}/>
+                                    {category.map((item, index) => (
+                                        <Picker.Item key={index} label={item.label} value={item.value} />
+                                    ))}
+                                </Picker> */}
+                            </View>
+                            {/* <TouchableOpacity style={styles.addTagButton} onPress={() => setIsModalVisible(true)}>
+                                <Text style={styles.addTagButtonText}> Add New Tag</Text>
+                            </TouchableOpacity> */}
+                        </View>
+                        {/* <Modal
+                            animationType="slide"
+                            transparent={true}
+                            visible={isModalVisible}
+                        >
+                            <View style={styles.modalContainer}>
+                                <View style={styles.modalContent}>
+                                    <Text style={styles.modalHeader}> Add New Tag</Text>
+                                    <TextInput
+                                        style={styles.modalInput}
+                                        value={newTag}
+                                        onChangeText={setNewTag}
+                                        placeholder="Enter tag name"
+                                    />
+                                    <View style={styles.modalButtons}>
+                                        <TouchableOpacity style={styles.modalButton} onPress={() => setIsModalVisible(false)}>
+                                            <Text style={styles.modalButtonText}> Cancel </Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity style={styles.modalButton} onPress={addNewTag}>
+                                            <Text style={styles.modalButtonText}>Add Tag </Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            </View>
+                        </Modal> */}
 
 
-                {/**Save & Close Buttons */}
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={styles.cancelButton}>
-                        <Button
-                            style={styles.buttonText}
-                            title="Cancel"
-                            onPress={cancelTask}
-                        />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.saveButton} onPress={saveTask}>
-                        <Button
-                            style={styles.buttonText}
-                            title="Save"
-                            onPress={saveTask}
-                        />
-                    </TouchableOpacity>
-                </View>
+                        {/**Save & Close Buttons */}
+                        <View style={styles.buttonContainer}>
+                            <ButtonA 
+                                mode="contained"
+                                style={styles.cancelButton}
+                                onPress={cancelTask}
+                            >  
+                                Cancel
+                            </ButtonA>
+                            <ButtonA
+                                mode="contained"
+                                style={styles.saveButton}
+                                onPress={saveTask}
+                            >  
+                                Save
+                            </ButtonA>
 
-            </ScrollView>
-        </View>
+                            {/* <TouchableOpacity style={styles.cancelButton}>
+                                <Button
+                                    style={styles.buttonText}
+                                    title="Cancel"
+                                    onPress={cancelTask}
+                                />
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.saveButton} onPress={saveTask}>
+                                <Button
+                                    style={styles.buttonText}
+                                    title="Save"
+                                    onPress={saveTask}
+                                />
+                            </TouchableOpacity> */}
+                        </View>
+
+                    </ScrollView>
+                </PaperProvider>
+            // </BottomSheet>
+        // </View>
+                          
     );
 }
 
 const styles = StyleSheet.create({
     screenContainer:{
         flex: 1, 
-        backgroundColor: '#040D12'
+        backgroundColor: 'gray'
     },
-    container:{
+    bottomSheet:{
         flexGrow:1,
-        padding: 20, 
-        backgroundColor: '#040D12'
+        // // flex: 1,
+        // backgroundColor: '#040D12'
+
+        // flex: 1,
+        backgroundColor: '#040D12', // Background color of the bottom sheet
+        paddingHorizontal: 16,
+        paddingVertical: 24,
+        borderTopLeftRadius: 16,
+        borderTopRightRadius: 16,
+
+
+    },
+    container: {
+        flex: 1,
+        justifyContent: 'flex-start',
+        // paddingHorizontal: 16,
+    },
+    scrollViewContainer:{
+        flex: 1,
+        marginHorizontal: '2%',
+        paddingBottom: 50
     },
     header:{
         textAlign: 'center',
-        fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 20,
         color: '#93B1A6'
@@ -622,11 +772,15 @@ const styles = StyleSheet.create({
        marginBottom: 20, 
     },
     sectionHeader:{
-        color: '#93B1A6'
+        color: '#93B1A6',
+        fontWeight: '500',
+        marginBottom: 3
     },
     input:{
         borderWidth: 1,
         borderColor: '#ccc',
+        // marginHorizontal: '5%',
+        marginVertical: '1%',
         padding: 10,
         borderRadius: 5,
         backgroundColor: '#183D3D',
@@ -655,9 +809,19 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
     },
+    deadlinePickerCont:{
+        borderRadius: 10, // Adjust radius as needed
+        borderWidth: 1,
+        borderColor: '#ccc', // Adjust color as needed
+        overflow: 'hidden',
+        padding: 8, // Optional: Add padding to ensure content doesn't touch edges
+        backgroundColor: 'yellow'
+    },  
     datePicker:{
-        height: 120, 
-        marginTop: -10
+        width: '100%'
+        // height: 120, 
+        // marginTop: -10,
+        // borderRadius: 35,
     },
     cancelDatebutton:{
         height: 50, 
@@ -677,80 +841,83 @@ const styles = StyleSheet.create({
         color: '#fff'
     },
     calendarIcon:{
-        padding: 10
+        paddingHorizontal: 20,
+        // paddingRight: 20
     },
 
     //priority
-    pickerContainer:{
+    priorityButton: {
+        backgroundColor: 'white', 
         borderWidth: 1, 
-        borderColor: 'gray',
-        borderRadius: 4, 
-        backgroundColor: 'white'
+        rippleColor: 'rgba(50, 92, 62, 0.8)'
     },
+    // pickerContainer:{
+    //     borderWidth: 1, 
+    //     borderColor: 'gray',
+    //     borderRadius: 20, 
+    //     backgroundColor: 'white'
+    // },
     picker:{
         height: 50, 
         width: '100%'
     },
 
     //category
-    addTagButton:{
-        // color: '#fff',
-        // fontWeight: 'bold',
-
-        marginTop: 10,
-        padding: 10,
-        backgroundColor: '#075985',
-        borderRadius: 5,
-        alignItems: 'center',
-    },
-    addTagButtonText:{
-        color: '#fff',
-        // color: 'black',
-        fontWeight: 'bold',
-    },
-    modalContainer:{
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    modalContent:{
-        width: '80%',
-        backgroundColor: 'white',
-        borderRadius: 10,
-        padding: 20,
-        alignItems: 'center',
-    },
-    modalHeader:{
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 20,
-    },
-    modalInput:{
-        width: '100%',
-        borderWidth: 1,
-        borderColor: '#ccc',
-        padding: 10,
-        borderRadius: 5,
-        marginBottom: 20,
-    },
-    modalButtons:{
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: '100%',
-    },
-    modalButton:{
-        padding: 10,
-        backgroundColor: '#075985',
-        borderRadius: 5,
-        alignItems: 'center',
-        flex: 1,
-        marginHorizontal: 5,
-    },
-    modalButtonText:{
-        color: '#fff',
-        fontWeight: 'bold',
-    },
+    // addTagButton:{
+    //     marginTop: 10,
+    //     padding: 10,
+    //     backgroundColor: '#075985',
+    //     borderRadius: 5,
+    //     alignItems: 'center',
+    // },
+    // addTagButtonText:{
+    //     color: '#fff',
+    //     // color: 'black',
+    //     fontWeight: 'bold',
+    // },
+    // modalContainer:{
+    //     flex: 1,
+    //     justifyContent: 'center',
+    //     alignItems: 'center',
+    //     backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    // },
+    // modalContent:{
+    //     width: '80%',
+    //     backgroundColor: 'white',
+    //     borderRadius: 10,
+    //     padding: 20,
+    //     alignItems: 'center',
+    // },
+    // modalHeader:{
+    //     fontSize: 18,
+    //     fontWeight: 'bold',
+    //     marginBottom: 20,
+    // },
+    // modalInput:{
+    //     width: '100%',
+    //     borderWidth: 1,
+    //     borderColor: '#ccc',
+    //     padding: 10,
+    //     borderRadius: 5,
+    //     marginBottom: 20,
+    // },
+    // modalButtons:{
+    //     flexDirection: 'row',
+    //     justifyContent: 'space-between',
+    //     width: '100%',
+    // },
+    // modalButton:{
+    //     padding: 10,
+    //     backgroundColor: '#075985',
+    //     borderRadius: 5,
+    //     alignItems: 'center',
+    //     flex: 1,
+    //     marginHorizontal: 5,
+    // },
+    // modalButtonText:{
+    //     color: '#fff',
+    //     fontWeight: 'bold',
+    // },
 
     tagsContainer:{
         flexDirection: 'row',
@@ -781,24 +948,28 @@ const styles = StyleSheet.create({
     //save & close
     buttonContainer:{
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         marginTop: 16,
+        // alignItems: 'center'
     },
     cancelButton:{
-        flex: 1,
-        marginRight: 8,
-        padding: 16,
-        borderRadius: 8,
-        backgroundColor: 'white',
-        alignItems: 'center',
+        // flex: 1,
+        marginRight: '34%',
+        marginBottom: '50%'
+        // padding: 16,
+        // borderRadius: 8,
+        // backgroundColor: 'white',
+        // alignItems: 'center',
     },
     saveButton:{
-        flex: 1,
-        marginLeft: 8,
-        padding: 16,
-        borderRadius: 8,
-        backgroundColor: 'white',
-        alignItems: 'center',
+        // flex: 1,
+        // marginLeft: 8,
+        // marginRight: '34%',
+        marginBottom: '50%'
+        // padding: 16,
+        // borderRadius: 8,
+        // backgroundColor: 'white',
+        // alignItems: 'center',
     },
     buttonText:{
         color: 'black',
