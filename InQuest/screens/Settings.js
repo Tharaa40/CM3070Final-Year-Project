@@ -1,14 +1,22 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from "react-native";
 import { FontAwesome5 } from 'react-native-vector-icons';
-import { FIREBASE_AUTH } from "../firebaseConfig";
+import { FIREBASE_AUTH, FIRESTORE_DB } from "../firebaseConfig";
 import { signOut } from "firebase/auth";
+import { getDoc, doc } from "firebase/firestore";
 import { useNavigation } from "@react-navigation/native";
+// import fetchUserData from '../components/userdata
 
 export default function Settings() {
-    const username="John";
+    const [username, setUsername] = useState('');
 
     const navigation = useNavigation();
+
+
+    useEffect(() => {
+        fetchUserData();
+    }, []);
+
 
     const handleLogout = () => {
         signOut(FIREBASE_AUTH)
@@ -21,14 +29,25 @@ export default function Settings() {
         navigation.navigate('Avatar');
     }
 
+    const fetchUserData = async () => {
+        const user = FIREBASE_AUTH.currentUser;
+        if(user){
+            const userDoc = await getDoc(doc(FIRESTORE_DB, "users", user.uid));
+            if(userDoc.exists()){
+                const userData = userDoc.data();
+                setUsername(userData.username);
+            }
+        }
+    };
+
     return(
         <View style={styles.container}>
             <View style={styles.header}>
                 <Text style={styles.headerTitle}> {`${username}'s Settings`} </Text>
-                <Text> Email: {FIREBASE_AUTH.currentUser?.email} </Text>
+                {/* <Text> Email: {FIREBASE_AUTH.currentUser?.email} </Text> */}
             </View>
             <View style={styles.icon}>
-                <FontAwesome5  name="angle-left" size={30} color='white' />
+                <FontAwesome5  name="angle-left" size={30} color='white' onPress={() => navigation.goBack()} />
             </View>
             <View style={styles.main}>
                 <TouchableOpacity style={styles.textIconContainer} onPress={() => handleAvatar}>

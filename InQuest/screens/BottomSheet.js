@@ -58,6 +58,9 @@ export default function TaskBottomSheet({ navigation, route, props}) {
             setDeadline(task.deadline);
             setSelectedPriority(task.selectedPriority);
             setTaskId(task.id);
+
+            setSelectedCategory(task.category); 
+            setInputCat(task.category);
         }
     }, [route.params?.task]);
 

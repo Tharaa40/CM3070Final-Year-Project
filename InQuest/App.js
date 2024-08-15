@@ -19,12 +19,12 @@ import CalendarView from './screens/Calendar';
 import CalendarView2 from './screens/Calendar2';
 import Avatar from './screens/Avatar';
 import CreateTask from './screens/CreateTask';
-
-import HomePage from './screens/HomePage';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { GestureDetectorProvider } from 'react-native-screens/gesture-handler'
 import TaskBottomSheet from './screens/BottomSheet';
 
+import HomePage from './screens/HomePage';
+// import HomePage2 from './screens/HomePage2';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -139,8 +139,9 @@ export default function App () {
               <Stack.Screen name='Login' component={Login} />
               <Stack.Screen name='SignUp' component={SignUps} />
               <Stack.Screen name='EmailSignUp' component={EmailSignUp}/>
-              <Stack.Screen name='HomeTab' component={BottomTab} options={{headerShown: false}} />
+              <Stack.Screen name='HomeTab' component={BottomTab}  />
               <Stack.Screen name='CreateTaskStack' component={CreateTaskStack} />
+              <Stack.Screen name='Settings' component={Settings}/>
               {/* <Stack.Screen name='Addtask' component={TaskBottomSheet} options={{headerShown: false}}/> */}
             </Stack.Navigator>
         </NavigationContainer>
