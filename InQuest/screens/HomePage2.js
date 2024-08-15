@@ -1,4 +1,4 @@
-//this file is the original HomePage
+//this file is the original HomePage before refractoring 
 
 import React, {useState, useEffect, useRef}  from "react";
 import { 

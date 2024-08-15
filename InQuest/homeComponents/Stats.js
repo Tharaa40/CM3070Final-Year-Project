@@ -50,10 +50,11 @@ export default function Stats ({ stats }){
 
 const styles = StyleSheet.create({
     statsContainer: {
-        padding: 20,
+        // padding: 20,
+        marginTop: 20,
     },
     statLabel:{
-        color: '#93B1A6',
+        // color: '#93B1A6',
         fontSize: 16,
         marginBottom: 10,
     },

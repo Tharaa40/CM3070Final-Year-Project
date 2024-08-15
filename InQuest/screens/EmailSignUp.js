@@ -28,7 +28,7 @@ export default function EmailSignUp({navigation}){
                 username: username,
             });
             //Navigate to Homepage
-            navigation.navigate('MainTabs');
+            navigation.navigate('HomeTab');
         }).catch(error => alert(error.message))
     }
 

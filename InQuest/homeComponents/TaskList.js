@@ -29,6 +29,6 @@ export default function TaskList ({ tasks, handleTaskPress, handleEditTask, hand
 
 const styles = StyleSheet.create({
     list: {
-        paddingBottom: 100,
+        paddingBottom: 20,
     },
 });

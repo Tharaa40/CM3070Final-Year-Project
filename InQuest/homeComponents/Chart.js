@@ -7,9 +7,18 @@ export default function Chart({ taskCompletionData, timeSpentData, labels }){
 
     const screenWidth = Dimensions.get('window').width;
     const chartConfig = {
-        backgroundGradientFrom: '#ffffff',
-        backgroundGradientTo: '#ffffff',
-        color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+        backgroundColor: "#e26a00",
+        backgroundGradientFrom: "#fb8c00",
+        backgroundGradientTo: "#ffa726",
+        color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+        labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+        style:{ borderRadius: 16 },
+        propsForDots: {
+            r: "6",
+            strokeWidth: "2",
+            stroke: "#ffa726"
+        }
+        // color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
     }
 
     return(
@@ -21,7 +30,11 @@ export default function Chart({ taskCompletionData, timeSpentData, labels }){
                 }}
                 width={screenWidth}
                 height={220}
+                yAxisLabel=""
+                yAxisSuffix=" tasks"
                 chartConfig={chartConfig}
+                bezier
+                style={{ marginVertical: 8, borderRadius: 16}}
             />
             <BarChart
                 data={{
@@ -30,7 +43,10 @@ export default function Chart({ taskCompletionData, timeSpentData, labels }){
                 }}
                 width={screenWidth}
                 height={220}
+                yAxisLabel=""
+                yAxisSuffix=" mins"
                 chartConfig={chartConfig}
+                style={{ marginVertical: 8, borderRadius: 16}}
             />
         </View>
     );
@@ -74,7 +90,8 @@ export default function Chart({ taskCompletionData, timeSpentData, labels }){
 
 const styles = StyleSheet.create({
     chartContainer: {
-        marginVertical: 8,
-        borderRadius: 16,
+        // marginVertical: 8,
+        // borderRadius: 16,
+        marginTop: 20, 
     },
 });

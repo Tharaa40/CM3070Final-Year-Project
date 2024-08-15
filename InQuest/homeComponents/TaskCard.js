@@ -1,5 +1,5 @@
-import React from "react";
-import { View, StyleSheet } from 'react-native';
+import React, { useState } from "react";
+import { View, StyleSheet, Modal, TouchableOpacity } from 'react-native';
 import { Card, IconButton, Text, Checkbox, TouchableRipple } from "react-native-paper";
 import { AnimatedCircularProgress } from "react-native-circular-progress";
 
@@ -11,7 +11,7 @@ export default function TaskCard({ task, onPress, onEdit, onComplete }){
 
 
     return(
-        <TouchableRipple onPress={onPress} rippleColor="rgba(0, 0, 0, .32)">
+        <TouchableRipple onPress={onPress} rippleColor="rgba(0, 0, 0, .32)"> 
             <View style={styles.innerShadowContainer}>
                 <Card onPress={onPress} style={styles.card}>
                     <View style={styles.cardHeader}>
@@ -53,6 +53,10 @@ export default function TaskCard({ task, onPress, onEdit, onComplete }){
                 </Card>
             </View>
         </TouchableRipple>
+
+            
+            
+
     );
 }
 

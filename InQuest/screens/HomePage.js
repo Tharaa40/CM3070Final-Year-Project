@@ -1,5 +1,7 @@
+//this is the homepage after refractoring
+
 import React, {useState, useEffect, useRef}  from "react";
-import { ScrollView, View, StatusBar,} from "react-native";
+import { ScrollView, View, StatusBar, Modal, StyleSheet, Dimensions, TouchableOpacity} from "react-native";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import moment from "moment";
 // import Svg, {Circle} from "react-native-svg";
@@ -9,7 +11,7 @@ import {
     Appbar, Avatar, Card, 
     Text, Checkbox, IconButton,
     TouchableRipple, 
-    Divider, FAB
+    Divider, FAB,
 } from 'react-native-paper';
 import { collection, getDocs, updateDoc, doc, getDoc, query, where } from "firebase/firestore";
 import { FIREBASE_AUTH, FIRESTORE_DB } from "../firebaseConfig";
@@ -18,9 +20,7 @@ import Stats from "../homeComponents/Stats";
 import { calculateStats } from "../homeComponents/Stats";
 import Header from "../homeComponents/Header";
 import Chart from "../homeComponents/Chart";
-
-
-
+import TaskCard from "../homeComponents/TaskCard";
 
 
 export default function HomePage(){
@@ -37,6 +37,7 @@ export default function HomePage(){
     const isFocused = useIsFocused();
     const user = FIREBASE_AUTH.currentUser;
 
+    // const theme = useTheme();
 
     const [stats, setStats] = useState({
         totalTasks: 0,
@@ -283,37 +284,71 @@ export default function HomePage(){
 
     return(
         <PaperProvider>
-            <ScrollView>
-                <StatusBar barStyle='light-content'/>
+            <StatusBar barStyle='light-content'/>
+            <ScrollView style={styles.container}>
                 <Header
                     username={username}
                     menuVisible={menuVisible}
                     handleToggleMenu={() => setMenuVisible(!menuVisible)}
                     handleMenuItemClick={(item) => console.log(item)}
                 />
-                
-                <Text variant="displaySmall" style={{ color: '#93B1A6', fontSize: 34, marginBottom: 10 }}> Today </Text>
-                <TaskList
-                    tasks={todayTasks}
-                    handleTaskPress={handleTaskPress}
-                    handleEditTask={handleEditTask}
-                    handleTaskComplete={handleTaskComplete}
-                />
+                <View style={styles.mainContainer}>
+                    <Text variant="displaySmall" style={{ color: '#93B1A6', fontSize: 34, marginBottom: 10 }}> Today </Text>
+                    <TaskList
+                        tasks={todayTasks}
+                        handleTaskPress={handleTaskPress}
+                        handleEditTask={handleEditTask}
+                        handleTaskComplete={handleTaskComplete}
+                    />
 
-                <Text variant="displaySmall" style={{ color: '#93B1A6', fontSize: 34, marginBottom: 10 }}> Upcoming </Text>
-                <TaskList
-                    tasks={otherTasks}
-                    handleTaskPress={handleTaskPress}
-                    handleEditTask={handleEditTask}
-                    handleTaskComplete={handleTaskComplete}
-                />
-                <Stats stats={stats} />
+                    <Divider style={{backgroundColor: '#5C8374', height: 2 }} />
+
+                    <Text variant="displaySmall" style={{ color: '#93B1A6', fontSize: 34, marginBottom: 10 }}> Upcoming </Text>
+                    <TaskList
+                        tasks={otherTasks}
+                        handleTaskPress={handleTaskPress}
+                        handleEditTask={handleEditTask}
+                        handleTaskComplete={handleTaskComplete}
+                    />
+
+                    <Divider style={{backgroundColor: '#5C8374', height: 2 }} />
+
+                    <Text variant="displaySmall" style={{ color: '#93B1A6', fontSize: 34, marginVertical: 10 }}>Personal Stats</Text>
+                    <Stats stats={stats} />
+                </View>
                 <Chart 
-                    taskCompletionData = {taskCompletionData}
-                    timeSpentData={timeSpentData} 
-                    label={chartLabels}
-                />
+                        taskCompletionData = {taskCompletionData}
+                        timeSpentData={timeSpentData} 
+                        label={chartLabels}
+                    /> 
                 {/* <Chart data = {timeSpentData} label={chartLabels}/> */}
+
+                {selectedTask && (
+                    <Modal
+                        visible={isModalVisible}
+                        transparent={true}
+                        animationType="slide"
+                        statusBarTranslucent={true}
+                    >
+                        <View style={styles.modalContainer}>
+                            <View style={styles.modalContent}>
+                                <Text style={styles.modalTitle}> {selectedTask.title} </Text>
+                                <Text style={{ color: '#93B1A6' }}>Description: {selectedTask.description}</Text>
+                                <Text style={{ color: '#93B1A6' }}>Deadline: {selectedTask.deadline}</Text>
+                                <Text style={{ color: '#93B1A6' }}>Priority: {selectedTask.selectedPriority}</Text>
+                                <Text style={{ color: '#93B1A6' }}>Category: {selectedTask.category}</Text>
+                                <Text style={{ color: '#93B1A6' }}>Subtasks:</Text>
+                                {selectedTask.subtasks.map((subtask, index) => (
+                                    <Text key={index} style={{ color: '#93B1A6' }}> {subtask.text} - {subtask.checked ? 'Done' : 'Not Done'} </Text>
+                                ))}
+                                <TouchableOpacity onPress={handleCloseModal}>
+                                    <Text style={styles.closeModal}> Close </Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+
+                    </Modal>
+                )}
 
             </ScrollView>
         </PaperProvider>
@@ -321,4 +356,52 @@ export default function HomePage(){
     );
 
 }
+
+
+
+const styles = StyleSheet.create({
+    container:{
+        flex: 1, 
+        // padding: 5,
+        // backgroundColor: '#040D12',
+        // backgroundColor: theme.colors.secondary
+    },
+    mainContainer:{
+        padding: 5,
+    },
+    modalContainer: { //using this
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        // backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContent: { //using this
+        // width: '80%',
+        // backgroundColor: '#fff',
+        // borderRadius: 10,
+        // padding: 20,
+        // alignItems: 'center',
+
+        width: Dimensions.get('window').width - 40,
+        // backgroundColor: '#183D3D',
+        padding: 20,
+        borderRadius: 10,
+    },
+    modalTitle: { //using this
+        // fontSize: 18,
+        // fontWeight: 'bold',
+        // marginBottom: 10,
+
+        fontSize: 20,
+        fontWeight: 'bold',
+        // color: '#93B1A6',
+        marginBottom: 10,
+    },
+    closeModal: {
+        // color: '#5C8374',
+        marginTop: 20,
+        textAlign: 'center',
+        fontSize: 16,
+    },
+});
 
