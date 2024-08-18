@@ -77,6 +77,11 @@ export default function AvatarMenu ({ menuVisible, handleToggleMenu }){
                 title='Settings'
                 leadingIcon='cog-outline'
             />
+            <Menu.Item
+                onPress={() => navigation.navigate('Progress')}
+                title = 'Progress'
+                leadingIcon='loading'
+            />
 
 
         </Menu>

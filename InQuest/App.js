@@ -5,25 +5,27 @@ import { NavigationContainer, useIsFocused } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import merge from 'deepmerge';
 import { PaperProvider } from 'react-native-paper';
 
-import Details from './screens/Details';
-import Calendar from './screens/Calendar';
-import Settings from './screens/Settings';
-import Timer from './screens/Timer';
-import Login from './screens/Login';
-import SignUps from './screens/SignUp';
-import EmailSignUp from './screens/EmailSignUp';
+import Details from './screens/Details'; //using
+import Calendar from './screens/Calendar'; //using
+import Settings from './screens/Settings'; //using
+import Timer from './screens/Timer'; //using
+import Login from './screens/Login'; //using
+import SignUps from './screens/SignUp'; //using
+import EmailSignUp from './screens/EmailSignUp'; //using
 import Landing from './screens/Landing';
 import CalendarView from './screens/Calendar';
-import CalendarView2 from './screens/Calendar2';
-import Avatar from './screens/Avatar';
-import CreateTask from './screens/CreateTask';
+import CalendarView2 from './screens/Calendar2'; //using
+import Avatar from './screens/Avatar';  //using
+import CreateTask from './screens/CreateTask'; //not using this anymore
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { GestureDetectorProvider } from 'react-native-screens/gesture-handler'
-import TaskBottomSheet from './screens/BottomSheet';
-
-import HomePage from './screens/HomePage';
+import TaskBottomSheet from './screens/BottomSheet'; //using
+import HomePage from './screens/HomePage';//using
+import Progress from './screens/Progress';
 // import HomePage2 from './screens/HomePage2';
 
 const Tab = createBottomTabNavigator();
@@ -127,29 +129,64 @@ const BottomTab = () => {
 
 
 
+// const customDarkTheme = {...MD3DarkTheme, colors: ownDarkTheme};
+// const customLightTheme = {...MD3LightTheme, colors: ownLightTheme};
+
+
+// const { LightTheme, DarkTheme } = adaptNavigationTheme({
+//   reactNavigationLight: NavigationDefaultTheme,
+//   reactNavigationDark: NavigationDarkTheme,
+// });
+
+// const CombinedDefaultTheme = merge(LightTheme, customLightTheme);
+// const CombinedDarkTheme = merge(DarkTheme, customDarkTheme);
+
+
 export default function App () {
+
+
+
+  // const colorScheme = useColorScheme();
+  // const paperTheme =
+  //   colorScheme === 'dark'
+  //     ? CombinedDefaultTheme
+  //     : CombinedDarkTheme;
+
   return(
-    <GestureHandlerRootView>
-      <GestureDetectorProvider>
-        <NavigationContainer>
-            <Stack.Navigator
-              screenOptions={{headerShown: false}}
-              initialRouteName='Login'
-            >
-              <Stack.Screen name='Login' component={Login} />
-              <Stack.Screen name='SignUp' component={SignUps} />
-              <Stack.Screen name='EmailSignUp' component={EmailSignUp}/>
-              <Stack.Screen name='HomeTab' component={BottomTab}  />
-              <Stack.Screen name='CreateTaskStack' component={CreateTaskStack} />
-              <Stack.Screen name='Settings' component={Settings}/>
-              {/* <Stack.Screen name='Addtask' component={TaskBottomSheet} options={{headerShown: false}}/> */}
-            </Stack.Navigator>
-        </NavigationContainer>
-      </GestureDetectorProvider>
-    </GestureHandlerRootView>
-      
+      // <PaperProvider theme={DarkTheme}>
+          <GestureHandlerRootView>
+            <GestureDetectorProvider>
+              <NavigationContainer>
+                  <Stack.Navigator
+                    screenOptions={{headerShown: false}}
+                    initialRouteName='Login'
+                  >
+                    <Stack.Screen name='Login' component={Login} /> 
+                    <Stack.Screen name='SignUp' component={SignUps} />
+                    <Stack.Screen name='EmailSignUp' component={EmailSignUp}/> 
+                    <Stack.Screen name='HomeTab' component={BottomTab}  />
+                    <Stack.Screen name='CreateTaskStack' component={CreateTaskStack} />
+                    <Stack.Screen name='Settings' component={Settings}/>
+                    <Stack.Screen name='Progress' component={Progress} />
+                    {/* <Stack.Screen name='Addtask' component={TaskBottomSheet} options={{headerShown: false}}/> */}
+                  </Stack.Navigator>
+              </NavigationContainer>
+            </GestureDetectorProvider>
+          </GestureHandlerRootView>
+      // </PaperProvider>
   );
 }
+
+export const ThemeContext = React.createContext();
+
+
+// export default function App(){
+//   return(
+//     <ThemeProvider>
+//       <MainApp/>
+//     </ThemeProvider>
+//   );
+// }
 
 const styles = StyleSheet.create({
   addIcon: {

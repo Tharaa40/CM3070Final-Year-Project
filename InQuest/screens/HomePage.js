@@ -13,7 +13,7 @@ import {
     TouchableRipple, 
     Divider, FAB,
 } from 'react-native-paper';
-import { collection, getDocs, updateDoc, doc, getDoc, query, where } from "firebase/firestore";
+import { collection, getDocs, updateDoc, doc, getDoc, query, where, increment, onSnapshot } from "firebase/firestore";
 import { FIREBASE_AUTH, FIRESTORE_DB } from "../firebaseConfig";
 import TaskList from "../homeComponents/TaskList";
 import Stats from "../homeComponents/Stats";
@@ -21,6 +21,7 @@ import { calculateStats } from "../homeComponents/Stats";
 import Header from "../homeComponents/Header";
 import Chart from "../homeComponents/Chart";
 import TaskCard from "../homeComponents/TaskCard";
+import { updateUserRewards } from "../rewardSystem/Points";
 
 
 export default function HomePage(){
@@ -32,6 +33,8 @@ export default function HomePage(){
     const [username, setUsername] = useState('');
     const [menuVisible, setMenuVisible] = useState(false);
     const [calculatedStats, setCalculatedStats] = useState({});
+    const [points, setPoints] = useState(0);
+    const [xp, setXp] = useState(0);
 
     const navigation = useNavigation();
     const isFocused = useIsFocused();
@@ -48,7 +51,7 @@ export default function HomePage(){
         averageTimeSpentPerTask: 0,
         streaks: 0
     });
-
+  
 
     {/** This is to fetch and display tasks after creating tasks for specific user */}
     const fetchTasks = async() => {
@@ -72,13 +75,29 @@ export default function HomePage(){
         }
     };
 
-    const fetchUserData = async () => {
+    const fetchUserData = async () => { //This is the original 
         const user = FIREBASE_AUTH.currentUser;
         if(user){
             const userDoc = await getDoc(doc(FIRESTORE_DB, "users", user.uid));
             if(userDoc.exists()){
                 const userData = userDoc.data();
                 setUsername(userData.username);
+
+                // let{points: userPoints=0, xp: userXp=0} = userData; //possible glitching
+                // if(userPoints >= 20){
+                //     userPoints = userPoints - 20;
+                // }
+                // if(userXp >= 5){
+                //     userXp = userXp - 5;
+                // }
+                // setPoints(userPoints);
+                // setXp(userXp);
+                // await updateDoc(doc(FIRESTORE_DB, "users", user.uid), {
+                //     points: userPoints,
+                //     xp: userXp,
+                // });
+                setPoints(userData.points || 0);
+                setXp(userData.xp || 0);
             }
         }
     };
@@ -90,12 +109,10 @@ export default function HomePage(){
             fetchUserData();
             const calculatedStats = calculateStats(tasks);
             setStats(calculatedStats);
-
             // calculateStats();
         }   
     }, [isFocused, tasks]);
-    {/** End of specific user code */}
-
+    {/** End of specific user code */}    
 
     const categorizeTasks = (tasks) => {
         const today = moment().startOf('day');
@@ -153,7 +170,7 @@ export default function HomePage(){
         setSelectedTask(null);
     };
 
-    const handleTaskComplete = async(task) => {
+    const handleTaskComplete = async(task) => { //This is the original 
         try{
             // //Update the task's completed status in Firestore 
             // const taskRef = doc(FIRESTORE_DB, 'tasks', task.id);
@@ -187,6 +204,22 @@ export default function HomePage(){
 
             const updatedStats = calculateStats(updatedTasks);
             setStats(updatedStats);
+
+            if(newStatus){
+                const {points: updatedPoints, xp: updatedXp} = await updateUserRewards(task);
+                // let finalPoints = updatedPoints; //possible glitching
+                // let finalXp = updatedXp;
+                // if(finalPoints >= 20){
+                //     finalPoints = finalPoints - 20;
+                // }
+                // if(finalXp >= 5){
+                //     finalXp = finalXp - 5;
+                // }
+                // setPoints(finalPoints);
+                // setXp(finalXp);
+                setPoints(updatedPoints);
+                setXp(updatedXp);
+            }
             // fetchTasks();
         }catch(error){
             console.error("Error updating tasks:", error);
@@ -292,6 +325,8 @@ export default function HomePage(){
                     handleToggleMenu={() => setMenuVisible(!menuVisible)}
                     handleMenuItemClick={(item) => console.log(item)}
                 />
+                <Text style={styles.statLabel}>Points: {points}</Text>
+                <Text style={styles.statLabel}>XP: {xp}</Text>
                 <View style={styles.mainContainer}>
                     <Text variant="displaySmall" style={{ color: '#93B1A6', fontSize: 34, marginBottom: 10 }}> Today </Text>
                     <TaskList
