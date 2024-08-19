@@ -34,20 +34,61 @@ export default function Progress() {
                     setPoints(userPoints);
                     setXp(userXp);
 
-                    const unlockedBadges = {...badges};
-                    if (userXp >= 50 && !userData.badges?.easy) {
-                        unlockedBadges.easy = true;
-                    }
-                    if (userXp >= 100 && !userData.badges?.medium) {
-                        unlockedBadges.medium = true;
-                    }
-                    if (userXp >= 200 && !userData.badges?.hard) {
-                        unlockedBadges.hard = true;
-                    }
-                    
-                    setBadges(unlockedBadges);
+                    const easyBadgeCount = Math.floor(userXp/115);
+                    const mediumBadgeCount = Math.floor(userXp/230);
+                    const hardBadgeCount = Math.floor(userXp/345);
 
-                    await updateDoc(userRef, {badges: unlockedBadges});
+                    const newBadges = {
+                        easy: easyBadgeCount, 
+                        medium: mediumBadgeCount, 
+                        hard: hardBadgeCount,
+                    };
+
+                    if(JSON.stringify(newBadges) !== JSON.stringify(badges)){
+                        setBadges(newBadges);
+
+                        await updateDoc(userRef, {badges: newBadges});
+                        
+                    }
+
+
+                    
+
+ 
+                    // const newBadges = {   ////2nd method
+                    //     easy: userXp >= 50 || userData.badges?.easy,
+                    //     medium: userXp >= 100 || userData.badges?.medium,
+                    //     hard: userXp >= 200 || userData.badges?.hard,
+                    // };
+
+                    // if(JSON.stringify(newBadges) !== JSON.stringify(badges)){
+                    //     setBadges(newBadges);
+
+                    //     if(JSON.stringify(newBadges) !== JSON.stringify(userData)){
+                    //         await updateDoc(userRef, {badges: newBadges});
+                    //     }
+                    // }
+
+                    // const unlockedBadges = {...badges}; ////1st method 
+                    // if (userXp >= 50 && !userData.badges?.easy) {
+                    //     unlockedBadges.easy = true;
+                    // }
+                    // if (userXp >= 100 && !userData.badges?.medium) {
+                    //     unlockedBadges.medium = true;
+                    // }
+                    // if (userXp >= 200 && !userData.badges?.hard) {
+                    //     unlockedBadges.hard = true;
+                    // }
+                    
+                    // setBadges(unlockedBadges);
+
+                    // if( unlockedBadges.easy !== userData.badges?.easy ||
+                    //     unlockedBadges.medium !== userData.badges?.medium ||
+                    //     unlockedBadges.hard !== userData.badges?.hard)
+                    // {
+                    //     await updateDoc(userRef, { badges: unlockedBadges });
+                    // }
+
                 }
             }
         };
@@ -61,7 +102,7 @@ export default function Progress() {
             <View style={styles.chartContainer}>
                 <Text style={styles.label}>Points</Text>
                 <ProgressBar
-                    progress={points/50}
+                    progress={points/700}
                     color = "#2196F3" 
                     style={styles.progressBar} 
                 />
@@ -69,7 +110,7 @@ export default function Progress() {
             <View style={styles.chartContainer}>
                 <Text style={styles.label}>XP</Text>
                 <ProgressBar 
-                    progress={xp / 105} 
+                    progress={xp / 1000} 
                     color="#FF5722" 
                     style={styles.progressBar} 
                 />
@@ -77,10 +118,21 @@ export default function Progress() {
             <View style={styles.badgesContainer}>
                 <Text style={styles.label}>Unlocked Badges</Text>
                 <View style={styles.badgeRow}>
+                    {Array.from({length: badges.easy}).map((_, index) => (
+                        <Image key={`easy-${index}`} source={require('../assets/badges/bronze_badge.png')} style={styles.badge}/>
+                    ))}
+                    {Array.from({length: badges.medium}).map((_, index) => (
+                        <Image key={`medium-${index}`} source={require('../assets/badges/silver_badge.png')} style={styles.badge}/>
+                    ))}
+                    {Array.from({length: badges.hard}).map((_, index) => (
+                        <Image key={`hard-${index}`} source={require('../assets/badges/gold_badge.png')} style={styles.badge}/>
+                    ))}
+                </View>
+                {/* <View style={styles.badgeRow}>
                     {badges.easy && <Image source={require('../assets/badges/bronze_badge.png')} style={styles.badge} />}
                     {badges.medium && <Image source={require('../assets/badges/silver_badge.png')} style={styles.badge} />}
                     {badges.hard && <Image source={require('../assets/badges/gold_badge.png')} style={styles.badge} />}
-                </View>
+                </View> */}
 
             </View>
         </ScrollView>

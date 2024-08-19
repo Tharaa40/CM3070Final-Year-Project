@@ -32,10 +32,21 @@ export const updateUserRewards = async (task) => {
       default:
           break;
   }
-  if(xp >= 5 && points >= 20){
-    points = 0; //reset points 
-    xp = 0; //reset xp
-  }
+  console.log("Before Reset - Points:", points, "XP:", xp); // Debugging line
+
+//   if(xp >= 45 || points >= 70){
+//     points = 0; //reset points 
+//     xp = 0; //reset xp
+//   }
+    if (xp >= 1000) {
+        xp = 0; // reset xp
+    }
+
+    if (points >= 700) {
+        points = 0; // reset points
+    }
+    console.log("After Reset - Points:", points, "XP:", xp); // Debugging line
+
 
   await updateDoc(userRef, {
       points,

@@ -170,7 +170,64 @@ export default function HomePage(){
         setSelectedTask(null);
     };
 
-    const handleTaskComplete = async(task) => { //This is the original 
+    // const handleTaskComplete = async(task) => { //This is the original 
+    //     try{
+    //         // //Update the task's completed status in Firestore 
+    //         // const taskRef = doc(FIRESTORE_DB, 'tasks', task.id);
+    //         // await updateDoc(taskRef, {completed: !task.completed, completedAt: newStatus ? new Date().toISOString() : null,  timeSpent: task.timeSpent || 0});
+    //         // // await updateDoc(taskRef, {checked: !task.checked});
+
+    //         // //Re-fetch tasks and categorise them again 
+    //         // fetchTasks();
+
+
+    //         const newStatus = !task.completed;
+    //         const taskRef = doc(FIRESTORE_DB, 'tasks', task.id);
+    //         const taskDoc = await getDoc(taskRef);
+    //         const taskData = taskDoc.data();
+
+    //         // console.log("Task data before update:", taskData);
+
+    //         await updateDoc(taskRef, {
+    //             completed: newStatus, 
+    //             completedAt: newStatus ? new Date().toISOString() : null, 
+    //             timeSpent: task.timeSpent || 0,
+    //         });
+    //         const updatedTasks = tasks.map(t => 
+    //             t.id == task.id ? { ...t, completed: !t.completed, completedAt: !task.completed ? new Date().toISOString() : null } : t
+    //         );
+    //         setTasks(updatedTasks);
+    //         categorizeTasks(updatedTasks);
+    //         //Verify the update 
+    //         const updatedTaskDoc = await getDoc(taskRef);
+    //         // console.log("Task data after update:", updatedTaskDoc.data());
+
+    //         const updatedStats = calculateStats(updatedTasks);
+    //         setStats(updatedStats);
+
+    //         if(newStatus){
+    //             const {points: updatedPoints, xp: updatedXp} = await updateUserRewards(task);
+    //             // let finalPoints = updatedPoints; //possible glitching
+    //             // let finalXp = updatedXp;
+    //             // if(finalPoints >= 20){
+    //             //     finalPoints = finalPoints - 20;
+    //             // }
+    //             // if(finalXp >= 5){
+    //             //     finalXp = finalXp - 5;
+    //             // }
+    //             // setPoints(finalPoints);
+    //             // setXp(finalXp);
+    //             setPoints(updatedPoints);
+    //             setXp(updatedXp);
+    //         }
+    //         // fetchTasks();
+    //     }catch(error){
+    //         console.error("Error updating tasks:", error);
+    //     }
+       
+    // };
+
+    const handleTaskComplete = async(task) => { 
         try{
             // //Update the task's completed status in Firestore 
             // const taskRef = doc(FIRESTORE_DB, 'tasks', task.id);
@@ -207,6 +264,7 @@ export default function HomePage(){
 
             if(newStatus){
                 const {points: updatedPoints, xp: updatedXp} = await updateUserRewards(task);
+                console.log("Updated points:", updatedPoints);
                 // let finalPoints = updatedPoints; //possible glitching
                 // let finalXp = updatedXp;
                 // if(finalPoints >= 20){
