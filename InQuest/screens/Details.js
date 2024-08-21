@@ -1,15 +1,15 @@
 import React, {useEffect, useState, useCallbac, useMemo, useRef} from 'react';
-import { SafeAreaView, View, StyleSheet, FlatList, TouchableOpacity, Alert, ScrollView, Animated, Dimensions } from 'react-native';
+import { SafeAreaView, View, StyleSheet, FlatList, TouchableOpacity, Alert, ScrollView, Animated, Dimensions,  } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import { FIREBASE_AUTH, FIRESTORE_DB } from '../firebaseConfig';
 import { collection, getDocs, deleteDoc, doc, query, where, getDoc, setDoc } from 'firebase/firestore';
 import { useIsFocused } from '@react-navigation/native';
-import moment from 'moment';
-import { PaperProvider, Text, Card } from 'react-native-paper';
+import moment, { months } from 'moment';
+import { PaperProvider, Card, Text } from 'react-native-paper';
 // import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { GestureDetector, GestureHandlerRootView, Gesture } from 'react-native-gesture-handler';
-
+import Carousel from 'react-native-reanimated-carousel';
 
 const { width } = Dimensions.get('window');
 
@@ -88,103 +88,8 @@ export default function Details({navigation}){
     };
 
 
-
-    // const groupTasksByMonth = (tasks) => {
-    //     return tasks.reduce((groups, task) => {
-    //         const month = moment(task.deadline, 'M/D/YYYY').format('MMMM YYYY');
-    //         if (!groups[month]){
-    //             groups[month] = [];
-    //         }
-    //         groups[month].push(task);
-    //         return groups;
-    //     }, {});
-    // };
-    // const groupedTasks = groupTasksByMonth(tasks);
-
-
-
-
-    // const renderItem = ({item}) =>(
-    //     <Card style={{marginBottom: 10, elevation: 3}}>
-    //         <Card.Content style={{flex: 1}}>
-    //             <Text variant='bodyMedium'>{item.title}</Text>
-    //             <Text variant='bodyMedium'>{item.description}</Text>
-    //             <Text variant='bodyMedium'>{item.deadline}</Text>
-    //             <Text variant='bodyMedium'>{item.selectedPriority}</Text>
-    //             <Text variant='bodyMedium'>{item.category}</Text>
-    //         </Card.Content>
-    //         <Card.Actions>
-    //             <TouchableOpacity onPress={() => handleEdit(item)}>
-    //                 <Icon name='edit' size={24} color='blue'/>
-    //             </TouchableOpacity>
-    //             <TouchableOpacity onPress={() => confirmDelete(item.id)}>
-    //                 <Icon name='trash' size={24} color='red' />
-    //             </TouchableOpacity>
-    //         </Card.Actions>
-    //     </Card>
-    //     // <View style={{flexDirection: 'row', alignItems: 'center', marginBottom: 10, marginLeft: 8}}>
-    //     //     <View style={{flex:1}}>
-    //     //         <Text variant='bodyMedium'>{item.title}</Text>
-    //     //         <Text variant='bodyMedium'>{item.description}</Text>
-    //     //         <Text variant='bodyMedium'>{item.deadline}</Text>
-    //     //         <Text variant='bodyMedium'>{item.selectedPriority}</Text>
-    //     //         <Text variant='bodyMedium'>{item.category}</Text>
-    //     //     </View>
-    //     //     <TouchableOpacity onPress={() => handleEdit(item)}>
-    //     //         <Icon name='edit' size={24} color='blue'/>
-    //     //     </TouchableOpacity>
-    //     //     <TouchableOpacity onPress={() => confirmDelete(item.id)}>
-    //     //         <Icon name='trash' size={24} color='red' />
-    //     //     </TouchableOpacity>
-    //     // </View>
-    // );
-
-
-    // const renderMonthTasks = (tasks, month) => (
-    //     <View key={month} style={{ marginBottom: 20 }}>
-    //         <Text variant='headlineMedium' style={{ fontSize: 20 }}> {month} </Text>
-    //         {tasks.map(task => (
-    //             <View key={task.id} style={{marginBottom: 10}}>
-    //                 {renderItem({item: task})}
-    //             </View>
-    //         ))}
-    //         {/* {tasks.length > 3 ? (
-    //             <View>
-    //                 {tasks.slice(0,3).map(task => (
-    //                     <View key={task.id} style={{marginBottom: 10}}>
-    //                         {renderItem({item: task})}
-    //                     </View>
-    //                 ))}
-    //                 <TouchableOpacity onPress={() => Alert.alert('Show more tasks')}>
-    //                     <Text style={{color: 'blue'}}> Show more... </Text>
-    //                 </TouchableOpacity>
-    //             </View>
-    //         ): (
-    //             tasks.map(task => (
-    //                 <View key={task.id} style={{marginBottom: 10}}>
-    //                     {renderItem({item: task})}
-    //                 </View>
-    //             ))
-    //         )} */}
-    //     </View>
-    // );
-
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    const groupTasksByMonth = (tasks) => {
+    const groupTasksByMonth = (tasks) => { //Original
         return tasks.reduce((groups, task) => {
             const month = moment(task.deadline, 'M/D/YYYY').format('MMMM YYYY');
             if (!groups[month]){
@@ -196,59 +101,150 @@ export default function Details({navigation}){
     };
     const groupedTasks = groupTasksByMonth(tasks);
 
-    const renderItem = ({item, index}) =>{
+    // const renderItem = ({item, index}) =>{ //Original
+    //     // Animation logic
+    //     // const translateY = new Animated.Value(index);
+    //     // const opacity = new Animated.Value(1);
+    //     return(
+    //         // <Animated.View style={{
+    //         //     transform: [{ translateY }],
+    //         //     opacity, marginBottom: 1,
+    //         // }}                
+    //         // >
+    //             <Card style={{marginBottom: 5, elevation: 3}}>
+    //                 <Card.Content style={{flex: 1}}>
+    //                     <Text variant='bodyMedium'>{item.title}</Text>
+    //                     <Text variant='bodyMedium'>{item.description}</Text>
+    //                     <Text variant='bodyMedium'>{item.deadline}</Text>
+    //                     <Text variant='bodyMedium'>{item.selectedPriority}</Text>
+    //                     <Text variant='bodyMedium'>{item.category}</Text>
+    //                 </Card.Content>
+                    // <Card.Actions>
+                    //     <TouchableOpacity onPress={() => handleEdit(item)}>
+                    //         <Icon name='edit' size={24} color='blue'/>
+                    //     </TouchableOpacity>
+                    //     <TouchableOpacity onPress={() => confirmDelete(item.id)}>
+                    //         <Icon name='trash' size={24} color='red' />
+                    //     </TouchableOpacity>
+                    // </Card.Actions>
+    //             </Card>
+    //         // </Animated.View>
+    //     );
+    // };
 
-        // Animation logic
-        const translateY = new Animated.Value(index);
-        const opacity = new Animated.Value(1);
-        return(
-            <Animated.View style={{
-                transform: [{ translateY }],
-                opacity, marginBottom: 1,
-            }}                
-            >
-                <Card style={{marginBottom: 5, elevation: 3}}>
-                    <Card.Content style={{flex: 1}}>
-                        <Text variant='bodyMedium'>{item.title}</Text>
-                        <Text variant='bodyMedium'>{item.description}</Text>
-                        <Text variant='bodyMedium'>{item.deadline}</Text>
-                        <Text variant='bodyMedium'>{item.selectedPriority}</Text>
-                        <Text variant='bodyMedium'>{item.category}</Text>
-                    </Card.Content>
-                    <Card.Actions>
-                        <TouchableOpacity onPress={() => handleEdit(item)}>
-                            <Icon name='edit' size={24} color='blue'/>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => confirmDelete(item.id)}>
-                            <Icon name='trash' size={24} color='red' />
-                        </TouchableOpacity>
-                    </Card.Actions>
-                </Card>
-            </Animated.View>
-        );
-    };
 
 
-    const renderMonthTasks = (tasks, month) => (
-        <View key={month} style={{ marginBottom: 10 }}>
-            <Text style={{ fontSize: 20, marginVertical: 5 }}> {month} </Text>
-            <FlatList
-                data={tasks}
-                renderItem={renderItem}
-                keyExtractor={task => task.id}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{ paddingHorizontal: 10 }}
 
+    // const renderMonthTasks = (tasks, month) => ( //Original
+    //     <View key={month} style={{ marginBottom: 10 }}>
+    //         <Text style={{ fontSize: 20, marginVertical: 5 }}> {month} </Text>
+    //         <FlatList
+    //             data={tasks}
+    //             renderItem={renderItem}
+    //             keyExtractor={task => task.id}
+    //             horizontal
+    //             showsHorizontalScrollIndicator={false}
+    //             contentContainerStyle={{ paddingHorizontal: 10 }}
+
+    //         />
+    //     </View>
+    // );
+
+
+
+
+    // const renderItem = ({ item }) => { //without flatlist works
+    //     return (
+    //         <Card style={styles.card}>
+    //             <Card.Content>
+    //                 <Text variant='bodyMedium'>{item.title}</Text>
+    //                 <Text variant='bodyMedium'>{item.description}</Text>
+    //                 <Text variant='bodyMedium'>{item.deadline}</Text>
+    //                 <Text variant='bodyMedium'>{item.selectedPriority}</Text>
+    //                 <Text variant='bodyMedium'>{item.category}</Text>
+    //             </Card.Content>
+                // <Card.Actions>
+                //     <TouchableOpacity onPress={() => handleEdit(item)}>
+                //         <Icon name='edit' size={24} color='blue'/>
+                //     </TouchableOpacity>
+                //     <TouchableOpacity onPress={() => confirmDelete(item.id)}>
+                //         <Icon name='trash' size={24} color='red' />
+                //     </TouchableOpacity>
+                // </Card.Actions>
+    //         </Card>
+    //     );
+    // };
+
+    const flatListData = Object.keys(groupedTasks).map(month => ({ month, tasks: groupedTasks[month] }));
+    const renderItem = ({ item }) => (
+        <View style={styles.monthContainer}>
+            <Text variant='headlineLarge' style={styles.monthTitle}>{item.month}</Text>
+            <Carousel
+                width={width}
+                height={240}
+                data={item.tasks}
+                renderItem={({ item: task }) => (
+                    <Card style={styles.card}>
+                        <Card.Content>
+                            <Text variant='bodyLarge' style={styles.cardText}>{task.title}</Text>
+                            <Text variant='bodyLarge' style={styles.cardText}>{task.description}</Text>
+                            <Text variant='bodyLarge' style={styles.cardText}>{task.deadline}</Text>
+                            <Text variant='bodyLarge' style={styles.cardText}>{task.selectedPriority}</Text>
+                            <Text variant='bodyLarge' style={styles.cardText}>{task.category}</Text>
+                        </Card.Content>
+                        <Card.Actions>
+                            <TouchableOpacity onPress={() => handleEdit(task)}>
+                                <Icon name='edit' size={24} color='#5C8374'/>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => confirmDelete(task.id)}>
+                                <Icon name='trash' size={24} color='#93B1A6' />
+                            </TouchableOpacity>
+                        </Card.Actions>
+                    </Card>
+                )}
+                keyExtractor={(task) => task.id}
+                loop={false}
+                mode="parallax"
+                modeConfig={{
+                    parallaxScrollingScale: 0.9,
+                    parallaxScrollingOffset: 50,
+                }}
+                // style={{ paddingHorizontal: 10 }}
             />
         </View>
     );
 
+    
+
+    const renderMonthTasks = (tasks, month) => ( //Carousel months
+
+        <View key={month} style={{ marginBottom: 20 }}>
+            <Text style={{ fontSize: 20, marginVertical: 5 }}> {month} </Text>
+            <Carousel
+                width={width}
+                height={400}
+                data={tasks}
+                renderItem={renderItem}
+                key={(item) => item.id}
+                loop={false}
+                mode="parallax"
+                modeConfig={{
+                    parallaxScrollingScale: 0.9,
+                    parallaxScrollingOffset: 50,
+                }}
+                // style={{ paddingHorizontal: 10 }}
+            />
+        </View>
+
+    );
 
 
+
+
+   
     return(
         <PaperProvider>
-            <SafeAreaView>
+            {/* <SafeAreaView>
                 <ScrollView contentContainerStyle={{ padding: 10 }}>
                     <View style={{ marginBottom: 10 }}>
                         <Text style={{ fontSize: 28, fontWeight: 'bold', textAlign: 'center' }}> Tasks of the Year </Text>
@@ -257,7 +253,24 @@ export default function Details({navigation}){
                         renderMonthTasks(groupedTasks[month], month)
                     ))}
                 </ScrollView>
+            </SafeAreaView> */}
+
+            
+
+            <SafeAreaView style={styles.container}>
+                <Text variant='displaySmall' style={styles.title}> Tasks of the Year </Text>
+                <FlatList
+                    data={flatListData}
+                    renderItem={renderItem}
+                    keyExtractor={(item) => item.month}
+                    showsVerticalScrollIndicator={false}
+                />
             </SafeAreaView>
+
+
+
+
+
         </PaperProvider>
 
 
@@ -284,38 +297,103 @@ export default function Details({navigation}){
 
 
 const styles=StyleSheet.create({
-    page:{
-        marginHorizontal: 10,
-        marginVertical: 10
-    },
-    title:{
-        alignItems: 'center',
-    },
-    titleText:{
-        fontWeight: 'bold'
-    },
-
-    detailsContainer: {
-        flex: 1,
-        padding: 16,
-    },
-
-
     container: {
-        // position: 'relative',
+        flex:1,
+        marginHorizontal: 10, 
+        marginVertical: 10,
+    }, 
+    title: {
+        textAlign: 'center',
+        fontWeight: 'bold',
+        fontSize: 30,
+        marginBottom: 10,
     },
-    stackCard: {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        borderRadius: 10,
-        backgroundColor: 'white',
+    monthContainer: {
+        paddingLeft: 5,
+        paddingRight: 5,
+    },
+    monthTitle: {
+        // fontSize:20, 
+        marginHorizontal: 20
+    }, 
+    card: {
+        marginRight: '10%',
+        marginBottom: 5, 
         elevation: 3,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 3,
+        backgroundColor: '#183D3D',
+        borderWidth: 3, 
+        borderColor: '#5C8374',
+        borderRadius: 30,
     },
+    cardText:{
+        color: '#93B1A6'
+
+    }
+    // page:{
+    //     marginHorizontal: 10,
+    //     marginVertical: 10
+    // },
+    // title:{
+    //     alignItems: 'center',
+    // },
+    // titleText:{
+    //     fontWeight: 'bold'
+    // },
+
+    // detailsContainer: {
+    //     flex: 1,
+    //     padding: 16,
+    // },
+
+
+  
+    // card: {
+    //     marginBottom: 5, 
+    //     elevation: 3,
+    // },
+    // taskTitle:{
+    //     fontSize: 18, 
+    //     fontWeight: 'bold'
+    // },
+    // // container: {
+    // //     flex: 1,
+    // // },
+    // // contentContainer:{
+    // //     padding: 10,
+    // // },
+    // monthContainer:{
+    //     marginBottom: '50%'
+    // },
+    // monthTitle:{
+    //     fontSize: 20, 
+    //     marginVertical: 5,
+    //     marginTop: 15,
+    // },
+
+
+    // container: {
+    //     // flex: 1
+    //     marginHorizontal: 10, 
+    //     marginVertical: 5,
+    // },
+    // title:{
+    //     textAlign: 'center',
+    //     fontWeight: 'bold',
+    //     fontSize: 28
+    // },
+    // monthContainer: {
+    //     // marginBottom: 10,
+    // },
+    // monthTitle:{
+    //     fontSize: 20,
+    //     // marginVertical: 5,
+    // },
+    // card:{
+    //     marginBottom: 10,
+    //     elevation: 3,
+    // },
+    
+
 
 
 
