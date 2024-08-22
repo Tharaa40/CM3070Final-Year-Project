@@ -38,11 +38,11 @@ export const updateUserRewards = async (task) => {
 //     points = 0; //reset points 
 //     xp = 0; //reset xp
 //   }
-    if (xp >= 1000) {
-        xp = 0; // reset xp
+    if (xp >= 800) {
+        xp >= 0; // reset xp
     }
 
-    if (points >= 700) {
+    if (points >= 300) {
         points = 0; // reset points
     }
     console.log("After Reset - Points:", points, "XP:", xp); // Debugging line

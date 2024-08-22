@@ -8,6 +8,7 @@ import { useNavigation } from "@react-navigation/native";
 // import fetchUserData from '../components/userdata
 
 export default function Settings() {
+
     const [username, setUsername] = useState('');
 
     const navigation = useNavigation();

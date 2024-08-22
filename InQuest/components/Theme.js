@@ -1,66 +1,59 @@
-// import React, { createContext, useContext, useState, useMemo } from 'react';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
-// import { customLightTheme, customDarkTheme } from './ThemeColors'; 
+import { MD3LightTheme, MD3DarkTheme } from 'react-native-paper';
+import merge from 'deepmerge';
 
-// const ThemeContext = createContext();
-
-// export const ThemeProvider = ({ children }) => {
-//   const [isDarkTheme, setIsDarkTheme] = useState(false);
-
-//   const toggleTheme = async () => {
-//     setIsDarkTheme(!isDarkTheme);
-//     await AsyncStorage.setItem('theme', JSON.stringify(!isDarkTheme));
-//   };
-
-//   const theme = useMemo(
-//     () => (isDarkTheme ? customDarkTheme : customLightTheme),
-//     [isDarkTheme]
-//   );
-
-//   return (
-//     <ThemeContext.Provider value={{ toggleTheme, theme }}>
-//       {children}
-//     </ThemeContext.Provider>
-//   );
+// const CustomLightTheme = {
+//   ...MD3LightTheme,
+//   colors: {
+//     ...MD3LightTheme.colors,
+//     primary: '#6200ee',
+//     background: 'grey',
+//     surface: '#f2f2f2',
+//     text: '#000000',
+//     // Add any other colors you want to customize
+//   },
 // };
 
-// export const useTheme = () => useContext(ThemeContext);
-
-
-
-
-
-
-
-
-
-// import { NavigationContainer, DarkTheme as NavigationDarkTheme, DefaultTheme as NavigationDefaultTheme} from '@react-navigation/native';
-// import { adaptNavigationTheme,MD3LightTheme, MD3DarkTheme } from 'react-native-paper';
-// import merge from 'deepmerge';
-
-
-// const { LightTheme, DarkTheme } = adaptNavigationTheme({
-//     reactNavigationLight: NavigationDefaultTheme,
-//     reactNavigationDark: NavigationDarkTheme,
-//   });
-
-// export const CombinedDefaultTheme = {
-//     ...MD3LightTheme,
-//     ...LightTheme,
-//     colors: {
-//         ...MD3LightTheme.colors,
-//         ...LightTheme.colors,
-//     },
+// const CustomDarkTheme = {
+//   ...MD3DarkTheme,
+//   colors: {
+//     ...MD3DarkTheme.colors,
+//     primary: '#bb86fc',
+//     background: '#121212',
+//     surface: '#333333',
+//     text: '#ffffff',
+//     // Add any other colors you want to customize
+//   },
 // };
 
-// export const CombinedDarkTheme = {
-//     ...MD3DarkTheme,
-//     ...DarkTheme,
-//     colors: {
-//         ...MD3DarkTheme.colors,
-//         ...DarkTheme.colors,
-//     },
-// };
+const CustomLightTheme = {
+    ...MD3LightTheme,
+    colors: {
+      ...MD3LightTheme.colors,
+      primary: '#4A6460',
+      background: '#F2F2F2',
+      surface: '#E1F0F0 ',
+      text: '#A3C1AD  ',
+      // Add any other colors you want to customize
+    },
+  };
+  
+  const CustomDarkTheme = {
+    ...MD3DarkTheme,
+    colors: {
+      ...MD3DarkTheme.colors,
+      primary: '#183D3D',
+      background: '#040D12',
+      surface: '#5C8374',
+      text: '#93B1A6',
+      // Add any other colors you want to customize
+    },
+  };
 
+const themes = {
+  light: CustomLightTheme,
+  dark: CustomDarkTheme,
+};
+
+export default themes;
 
 
