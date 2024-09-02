@@ -1,5 +1,3 @@
-//this is the file after carousel
-
 import React, {useEffect, useState, useCallbac, useMemo, useRef} from 'react';
 import { SafeAreaView, View, StyleSheet, FlatList, TouchableOpacity, Alert, ScrollView, Animated, Dimensions,  } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -8,7 +6,7 @@ import { FIREBASE_AUTH, FIRESTORE_DB } from '../firebaseConfig';
 import { collection, getDocs, deleteDoc, doc, query, where, getDoc, setDoc } from 'firebase/firestore';
 import { useIsFocused } from '@react-navigation/native';
 import moment, { months } from 'moment';
-import { PaperProvider, Card, Text, useTheme } from 'react-native-paper';
+import { PaperProvider, Card, Text } from 'react-native-paper';
 // import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { GestureDetector, GestureHandlerRootView, Gesture } from 'react-native-gesture-handler';
 import Carousel from 'react-native-reanimated-carousel';
@@ -104,7 +102,80 @@ export default function Details({navigation}){
     };
     const groupedTasks = groupTasksByMonth(tasks);
 
-   
+    // const renderItem = ({item, index}) =>{ //Original
+    //     // Animation logic
+    //     // const translateY = new Animated.Value(index);
+    //     // const opacity = new Animated.Value(1);
+    //     return(
+    //         // <Animated.View style={{
+    //         //     transform: [{ translateY }],
+    //         //     opacity, marginBottom: 1,
+    //         // }}                
+    //         // >
+    //             <Card style={{marginBottom: 5, elevation: 3}}>
+    //                 <Card.Content style={{flex: 1}}>
+    //                     <Text variant='bodyMedium'>{item.title}</Text>
+    //                     <Text variant='bodyMedium'>{item.description}</Text>
+    //                     <Text variant='bodyMedium'>{item.deadline}</Text>
+    //                     <Text variant='bodyMedium'>{item.selectedPriority}</Text>
+    //                     <Text variant='bodyMedium'>{item.category}</Text>
+    //                 </Card.Content>
+                    // <Card.Actions>
+                    //     <TouchableOpacity onPress={() => handleEdit(item)}>
+                    //         <Icon name='edit' size={24} color='blue'/>
+                    //     </TouchableOpacity>
+                    //     <TouchableOpacity onPress={() => confirmDelete(item.id)}>
+                    //         <Icon name='trash' size={24} color='red' />
+                    //     </TouchableOpacity>
+                    // </Card.Actions>
+    //             </Card>
+    //         // </Animated.View>
+    //     );
+    // };
+
+
+
+
+    // const renderMonthTasks = (tasks, month) => ( //Original
+    //     <View key={month} style={{ marginBottom: 10 }}>
+    //         <Text style={{ fontSize: 20, marginVertical: 5 }}> {month} </Text>
+    //         <FlatList
+    //             data={tasks}
+    //             renderItem={renderItem}
+    //             keyExtractor={task => task.id}
+    //             horizontal
+    //             showsHorizontalScrollIndicator={false}
+    //             contentContainerStyle={{ paddingHorizontal: 10 }}
+
+    //         />
+    //     </View>
+    // );
+
+
+
+
+    // const renderItem = ({ item }) => { //without flatlist works
+    //     return (
+    //         <Card style={styles.card}>
+    //             <Card.Content>
+    //                 <Text variant='bodyMedium'>{item.title}</Text>
+    //                 <Text variant='bodyMedium'>{item.description}</Text>
+    //                 <Text variant='bodyMedium'>{item.deadline}</Text>
+    //                 <Text variant='bodyMedium'>{item.selectedPriority}</Text>
+    //                 <Text variant='bodyMedium'>{item.category}</Text>
+    //             </Card.Content>
+                // <Card.Actions>
+                //     <TouchableOpacity onPress={() => handleEdit(item)}>
+                //         <Icon name='edit' size={24} color='blue'/>
+                //     </TouchableOpacity>
+                //     <TouchableOpacity onPress={() => confirmDelete(item.id)}>
+                //         <Icon name='trash' size={24} color='red' />
+                //     </TouchableOpacity>
+                // </Card.Actions>
+    //         </Card>
+    //     );
+    // };
+
     const flatListData = Object.keys(groupedTasks).map(month => ({ month, tasks: groupedTasks[month] }));
     const renderItem = ({ item }) => (
         <View style={styles.monthContainer}>
@@ -139,16 +210,18 @@ export default function Details({navigation}){
                     parallaxScrollingScale: 0.9,
                     parallaxScrollingOffset: 50,
                 }}
+                // style={{ paddingHorizontal: 10 }}
             />
         </View>
     );
 
+    const theme = useTheme();
    
     return(
 
 
         <SafeAreaView style={[styles.container, {backgroundColor: theme.colors.background}]}>
-            <Text variant='displaySmall' style={[styles.title, {color: theme.colors.primary}]}> Tasks of the Year </Text>
+            <Text variant='displaySmall' style={styles.title}> Tasks of the Year </Text>
             <FlatList
                 data={flatListData}
                 renderItem={renderItem}
@@ -158,6 +231,29 @@ export default function Details({navigation}){
         </SafeAreaView>
 
 
+
+
+
+        </PaperProvider>
+
+
+
+
+
+        // <PaperProvider>
+        //     <SafeAreaView>
+        //         <ScrollView contentContainerStyle={styles.page}>
+        //             <View style={styles.title}>
+        //                 <Text variant='displaySmall' style={styles.titleText}> Tasks of the Year </Text>
+        //             </View>
+                    
+                    
+        //             {Object.keys(groupedTasks).map(month => (
+        //                 renderMonthTasks(groupedTasks[month], month)
+        //             ))}
+        //         </ScrollView>
+        //     </SafeAreaView>
+        // </PaperProvider>
     );
     
 }
@@ -166,8 +262,8 @@ export default function Details({navigation}){
 const styles=StyleSheet.create({
     container: {
         flex:1,
-        // marginHorizontal: 10, 
-        // marginVertical: 10,
+        marginHorizontal: 10, 
+        marginVertical: 10,
     }, 
     title: {
         textAlign: 'center',

@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { View, ScrollView, Image, StyleSheet, Dimensions, TouchableOpacity } from "react-native";
+import { View, Text, ScrollView, Image, StyleSheet, Dimensions } from "react-native";
 import { FIREBASE_AUTH, FIRESTORE_DB } from "../firebaseConfig";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useNavigation } from "@react-navigation/native";
 import { ProgressBar, Text } from "react-native-paper";
 import Icon from 'react-native-vector-icons/Ionicons';
-import { FontAwesome5 } from 'react-native-vector-icons';
 import VirtualPet from '../rewardSystem/VirtualPet';
 
 
@@ -20,8 +19,6 @@ export default function Progress() {
         {easy: false, medium: false, hard: false}
     );
 
-    const [emotion, setEmotion] = useState('happy');
-
     useEffect(() => {
         const fetchUserData = async() => {
             const user = FIREBASE_AUTH.currentUser;
@@ -35,9 +32,6 @@ export default function Progress() {
                     const userXp = userData.xp || 0;
                     setPoints(userPoints);
                     setXp(userXp);
-
-                    // Retrieve happiness, hunger, and energy
-                    const { happiness = 50, hunger = 50, energy = 50 } = userData.petAttributes || {};
 
                     const easyBadgeCount = Math.floor(userXp/115);
                     const mediumBadgeCount = Math.floor(userXp/230);
@@ -58,10 +52,10 @@ export default function Progress() {
 
                     if(userData.xp < 200) {
                         setEmotion('sad');
-                    }else if(userData.xp >= 200 && userData.xp <= 300){
+                    }else if(userData.xp >= 200){
                         setEmotion('happy');
-                    }else if(userData.xp >= 300 && userData.xp < 600){
-                        if(happiness > 80 || energy > 70){
+                    }else if(userData.xp >= 500){
+                        if(happiness > 80 && energy > 70){
                             setEmotion('high-energy');
                         }else if(hunger < 30){
                             setEmotion('hungry');
@@ -81,7 +75,7 @@ export default function Progress() {
         };
         fetchUserData();
     }, [points, xp]);   
-    // if(emotion == null) return null;
+    if(emotion == null) return null;
     
     return(
         <ScrollView contentContainerStyle={styles.container}>
@@ -90,14 +84,13 @@ export default function Progress() {
                     console.log('back arrow clicked');
                     navigation.navigate('HomePage');
                 }}> */}
-                    {/* <Icon 
+                    <Icon 
                         name="chevron-back-outline" 
                         size={30} 
                         color='black' 
                         style={styles.backArrow} 
                         onPress={() => navigation.navigate('HomePage')}
-                    /> */}
-                <FontAwesome5  name="angle-left" size={30} color='black' onPress={() => navigation.goBack()} />
+                    />
                 {/* </TouchableOpacity> */}
                 <Text variant="headlineMedium" style={styles.title}>User Progress</Text>
             </View>
@@ -107,13 +100,7 @@ export default function Progress() {
             </View>
 
             <View style={styles.chartContainer}>
-                <View style={styles.labelContainer}>
-                    <Text variant="headlineSmall">Points</Text>
-                    <View style={styles.pointXPIcon}>
-                        <Text variant="titleMedium"> {points} </Text>
-                        <Icon name="heart-outline" size={30} />
-                    </View>
-                </View>
+                <Text style={styles.label}>Points</Text>
                 <ProgressBar
                     progress={points/700}
                     color = "#2196F3" 
@@ -121,50 +108,32 @@ export default function Progress() {
                 />
             </View>
             <View style={styles.chartContainer}>
-                <View style={styles.labelContainer}>
-                    <Text variant="headlineSmall">XP</Text>
-                    <View style={styles.pointXPIcon}>
-                        <Text variant="titleMedium"> {xp} </Text>
-                        <Icon name="diamond-outline" size={30} />
-                    </View>
-                </View>
+                <Text style={styles.label}>XP</Text>
                 <ProgressBar 
                     progress={xp / 1000} 
                     color="#FF5722" 
                     style={styles.progressBar} 
                 />
             </View>
-
             <View style={styles.badgesContainer}>
-                <Text variant="headlineSmall" style={styles.label}>Unlocked Badges</Text>
+                <Text style={styles.label}>Unlocked Badges</Text>
                 <View style={styles.badgeRow}>
-                    <View style={styles.badgeTextCont}>
-                        <Text variant="titleLarge" style={styles.badgeLabel}> Bronze </Text>
-                        <View style={styles.badgeCont}>
-                            {Array.from({length: badges.easy}).map((_, index) => (
-                                <Image key={`easy-${index}`} source={require('../assets/badges/pumpkin.png')} style={styles.badge}/>
-                            ))}
-                        </View>
-                    </View>
-                   
-                   <View style={styles.badgeTextCont}>
-                        <Text variant="titleLarge" style={styles.badgeLabel}> Silver </Text>
-                        <View style={styles.badgeCont}>
-                            {Array.from({length: badges.medium}).map((_, index) => (
-                                <Image key={`medium-${index}`} source={require('../assets/badges/leaves.png')} style={styles.badge} />
-                            ))}
-                        </View>
-                    </View>
-
-                    <View style={styles.badgeTextCont}>
-                        <Text variant="titleLarge" style={styles.badgeLabel}> Gold </Text>
-                        <View style={styles.badgeCont}>
-                            {Array.from({length: badges.hard}).map((_, index) => (
-                                <Image key={`hard-${index}`} source={require('../assets/badges/bamboo.png')} style={styles.badge}/>
-                            ))}
-                        </View>
-                    </View>
+                    {Array.from({length: badges.easy}).map((_, index) => (
+                        <Image key={`easy-${index}`} source={require('../assets/badges/bronze_badge.png')} style={styles.badge}/>
+                    ))}
+                    {Array.from({length: badges.medium}).map((_, index) => (
+                        <Image key={`medium-${index}`} source={require('../assets/badges/silver_badge.png')} style={styles.badge}/>
+                    ))}
+                    {Array.from({length: badges.hard}).map((_, index) => (
+                        <Image key={`hard-${index}`} source={require('../assets/badges/gold_badge.png')} style={styles.badge}/>
+                    ))}
                 </View>
+                {/* <View style={styles.badgeRow}>
+                    {badges.easy && <Image source={require('../assets/badges/bronze_badge.png')} style={styles.badge} />}
+                    {badges.medium && <Image source={require('../assets/badges/silver_badge.png')} style={styles.badge} />}
+                    {badges.hard && <Image source={require('../assets/badges/gold_badge.png')} style={styles.badge} />}
+                </View> */}
+
             </View>
         </ScrollView>
     );
@@ -172,7 +141,16 @@ export default function Progress() {
 
 }
 
+const chartConfig = {
+    backgroundGradientFrom: '#ffffff',
+    backgroundGradientTo: '#ffffff',
+    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+    barRadius: 8, // Adds rounded corners to the bars
+    fillShadowGradient: '#00bfff',
+    fillShadowGradientOpacity: 1,
 
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -180,90 +158,48 @@ const styles = StyleSheet.create({
         // justifyContent: 'center',
         // alignItems: 'center',
         backgroundColor: '#f5f5f5',
-        // margin: 20,
-        marginVertical: 7,
-        marginHorizontal: 7,
-        paddingBottom: '20%',
-    },
-    header:{
-        flexDirection: 'row',
-        alignItems: 'center', 
-        justifyContent:'center',
-        height: 60,
-        position: 'relative',
-        marginBottom: 15,
-    },
-    backArrow:{
-        position: 'absolute', 
-        left: 10
+        margin: 20,
     },
     title: {
-        flex: 1, 
-        textAlign: 'center', 
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginVertical: 20,
     },
-
-
-    chartContainer: {
-        marginVertical: 10,
-        backgroundColor: 'lightgreen',
-        paddingHorizontal: 10,
-        borderRadius: 10, 
-        padding: 10,
-        // width: '100%',
-        // marginBottom: 30,
-    },
-    labelContainer:{
-        flexDirection: 'row', 
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 8,
-    },
-    pointXPIcon:{
-        flexDirection: 'row',
-        alignItems: 'center', 
+    label: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 10,
+        color: '#333',
     },
     progressBar:{
         height: 12, 
         borderRadius: 6, 
         marginBottom: 20
     },
-
-    badgesContainer:{
-        // backgroundColor: 'yellow', 
-        // padding: 12,
-    }, 
-    label: {
-        textAlign: 'center',
-        fontWeight: 'bold', 
-        // backgroundColor: 'red', 
-        marginBottom: 15
+    badgesContainer: {
+        width: '100%',
+        alignItems: 'center',
+        marginTop: 30,
     },
-    badgeRow:{
-        flexDirection: 'column',
-    }, 
-    badgeTextCont: {
-        marginBottom: 10,
-        // backgroundColor: 'orange',
-        paddingHorizontal: 5,
-        paddingVertical: 5,
-    },
-    badgeLabel:{
-        // fontSize: 16,
-        fontWeight: 'semibold',
-        marginBottom: 5,
-    },
-    badgeCont: {
+    badgeRow: {
         flexDirection: 'row',
-        flexWrap: 'wrap',
+        justifyContent: 'space-around',
+        width: '100%',
+        marginTop: 20,
     },
     badge: {
-        width: 40,
-        height: 40,
-        marginRight: 5,
-        marginBottom: 5,
+        width: 60,
+        height: 60,
     },
-
+    // chartContainer: {
+    //     width: '100%',
+    //     marginBottom: 30,
+    // },
   
+    // chart: {
+    //     marginVertical: 8,
+    //     borderRadius: 16,
+    // },
 });
 
 
@@ -271,3 +207,28 @@ const styles = StyleSheet.create({
 
 
 
+
+// import { useNavigation } from '@react-navigation/native';
+// import React from 'react';
+// import { View, Text, Image } from 'react-native';
+// import { FontAwesome5 } from 'react-native-vector-icons';
+
+// const PetStatus = ({ points, xp, badges }) => {
+//     const navigation = useNavigation();
+
+//     // Determine pet appearance or status based on points and XP
+//     // const petImage = xp >= 150 ? 'hard_pet.png' : xp >= 75 ? 'medium_pet.png' : 'easy_pet.png';
+
+//     return (
+//         <View style={{ alignItems: 'center', margin: 20 }}>
+//             <FontAwesome5  name="angle-left" size={30} color='black' onPress={() => navigation.goBack()} />
+
+//             {/* <Image source={{ uri: petImage }} style={{ width: 100, height: 100 }} /> */}
+//             <Text>Points: {points}</Text>
+//             <Text>XP: {xp}</Text>
+//             {/* <Text>Badges: {badges.join(', ')}</Text> */}
+//         </View>
+//     );
+// };
+
+// export default PetStatus;

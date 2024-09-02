@@ -3,7 +3,7 @@ import React, { useContext, useRef } from "react";
 import { Menu, Appbar, useTheme } from "react-native-paper";
 import { Animated } from "react-native";
 
-export default function AvatarMenu ({ menuVisible, handleToggleMenu, toggleTheme }){
+export default function AvatarMenu ({ menuVisible, handleToggleMenu }){
     const navigation = useNavigation();
     const rotation = useRef(new Animated.Value(0)).current;
     const theme = useTheme();
@@ -54,7 +54,7 @@ export default function AvatarMenu ({ menuVisible, handleToggleMenu, toggleTheme
                 onPress={() => {
                     console.log("Toggle theme pressed");
                     handleToggleMenu();
-                    toggleTheme();
+                    // toggleTheme();
                 }}
                 title='Toggle theme'
                 leadingIcon='theme-light-dark'
