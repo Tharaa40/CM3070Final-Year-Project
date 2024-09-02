@@ -20,3 +20,23 @@ Testing:
 **"expo-application"**: "~5.9.1", --> peer dependency for android
 **"expo-dev-client"**: "~4.0.20", --> build application and run on the simulator like how it will work in realtime
 **"@react-native-async-storage/async-storage"**: "1.23.1" --> to save user information
+
+
+
+
+ "devDependencies": {
+    "@babel/core": "^7.20.0",
+    "@babel/preset-env": "^7.25.4",    //these are added for jest
+    "@testing-library/react-native": "^12.6.1", //these are added for jest
+    "babel-jest": "^29.7.0", //these are added for jest
+    "jest": "^29.7.0" //these are added for jest
+  },
+
+
+   "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "test": "jest" //these are added for jest
+  },

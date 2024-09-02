@@ -5,23 +5,16 @@ import { ScrollView, View, StatusBar, Modal, StyleSheet, Dimensions, TouchableOp
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import moment from "moment";
 // import Svg, {Circle} from "react-native-svg";
-import { AnimatedCircularProgress } from 'react-native-circular-progress';
-import { 
-    Menu, PaperProvider, 
-    Appbar, Avatar, Card, 
-    Text, Checkbox, IconButton,
-    TouchableRipple, 
-    Divider, FAB,
-    useTheme,
-} from 'react-native-paper';
-import { collection, getDocs, updateDoc, doc, getDoc, query, where, increment, onSnapshot } from "firebase/firestore";
+// import { AnimatedCircularProgress } from 'react-native-circular-progress';
+import {  Text, Divider, useTheme} from 'react-native-paper';
+import { collection, getDocs, updateDoc, doc, getDoc, query, where } from "firebase/firestore";
 import { FIREBASE_AUTH, FIRESTORE_DB } from "../firebaseConfig";
 import TaskList from "../homeComponents/TaskList";
 import Stats from "../homeComponents/Stats";
 import { calculateStats } from "../homeComponents/Stats";
 import Header from "../homeComponents/Header";
 import Chart from "../homeComponents/Chart";
-import TaskCard from "../homeComponents/TaskCard";
+// import TaskCard from "../homeComponents/TaskCard";
 import { updateUserRewards } from "../rewardSystem/Points";
 
 
@@ -391,7 +384,7 @@ export default function HomePage({toggleTheme}){
                 {/* <Text style={styles.statLabel}>Points: {points}</Text> */}
                 {/* <Text style={styles.statLabel}>XP: {xp}</Text> */}
                 <View style={styles.mainContainer}>
-                    <Text variant="displaySmall" style={{ color: theme.colors.text, fontSize: 34, marginBottom: 10 }}> Today </Text>
+                    <Text variant="displaySmall" style={{ color: theme.colors.primary, fontSize: 30, marginBottom: 10 }}> Today </Text>
                     <TaskList
                         tasks={todayTasks}
                         handleTaskPress={handleTaskPress}
@@ -399,9 +392,9 @@ export default function HomePage({toggleTheme}){
                         handleTaskComplete={handleTaskComplete}
                     />
 
-                    <Divider style={{backgroundColor: '#5C8374', height: 2 }} />
+                    <Divider style={{backgroundColor:theme.colors.border, height: 2 }} />
 
-                    <Text variant="displaySmall" style={{ color: theme.colors.text, fontSize: 34, marginBottom: 10 }}> Upcoming </Text>
+                    <Text variant="displaySmall" style={{ color: theme.colors.primary, fontSize: 30, marginBottom: 10 }}> Upcoming </Text>
                     <TaskList
                         tasks={otherTasks}
                         handleTaskPress={handleTaskPress}
@@ -409,9 +402,9 @@ export default function HomePage({toggleTheme}){
                         handleTaskComplete={handleTaskComplete}
                     />
 
-                    <Divider style={{backgroundColor: '#5C8374', height: 2 }} />
+                    <Divider style={{backgroundColor: theme.colors.border, height: 2 }} />
 
-                    <Text variant="displaySmall" style={{ color: theme.colors.text, fontSize: 34, marginVertical: 10 }}>Personal Stats</Text>
+                    <Text variant="displaySmall" style={{ color: theme.colors.primary, fontSize: 30, marginVertical: 10 }}>Personal Stats</Text>
                     <Stats stats={stats} />
                 </View>
                 <Chart 
@@ -429,18 +422,18 @@ export default function HomePage({toggleTheme}){
                         statusBarTranslucent={true}
                     >
                         <View style={styles.modalContainer}>
-                            <View style={styles.modalContent}>
-                                <Text style={styles.modalTitle}> {selectedTask.title} </Text>
-                                <Text style={{ color: '#93B1A6' }}>Description: {selectedTask.description}</Text>
-                                <Text style={{ color: '#93B1A6' }}>Deadline: {selectedTask.deadline}</Text>
-                                <Text style={{ color: '#93B1A6' }}>Priority: {selectedTask.selectedPriority}</Text>
-                                <Text style={{ color: '#93B1A6' }}>Category: {selectedTask.category}</Text>
-                                <Text style={{ color: '#93B1A6' }}>Subtasks:</Text>
+                            <View style={[styles.modalContent, {backgroundColor: theme.colors.surface}]}>
+                                <Text style={[styles.modalTitle, {color: theme.colors.primaryAlt}]}> {selectedTask.title} </Text>
+                                <Text style={{ color: theme.colors.textAlt }}>Description: {selectedTask.description}</Text>
+                                <Text style={{ color: theme.colors.textAlt }}>Deadline: {selectedTask.deadline}</Text>
+                                <Text style={{ color: theme.colors.textAlt  }}>Priority: {selectedTask.selectedPriority}</Text>
+                                <Text style={{ color: theme.colors.textAlt  }}>Category: {selectedTask.category}</Text>
+                                <Text style={{ color: theme.colors.textAlt  }}>Subtasks:</Text>
                                 {selectedTask.subtasks.map((subtask, index) => (
-                                    <Text key={index} style={{ color: '#93B1A6' }}> {subtask.text} - {subtask.checked ? 'Done' : 'Not Done'} </Text>
+                                    <Text key={index} style={{ color: theme.colors.textAlt  }}> {subtask.text} - {subtask.checked ? 'Done' : 'Not Done'} </Text>
                                 ))}
                                 <TouchableOpacity onPress={handleCloseModal}>
-                                    <Text style={styles.closeModal}> Close </Text>
+                                    <Text style={[styles.closeModal, {color: theme.colors.primaryAlt}]}> Close </Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -479,7 +472,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
 
         width: Dimensions.get('window').width - 40,
-        backgroundColor: '#183D3D',
+        // backgroundColor: '#183D3D',
         padding: 20,
         borderRadius: 50,
     },

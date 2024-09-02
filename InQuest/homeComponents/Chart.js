@@ -1,25 +1,69 @@
 import React from "react";
 import { View, StyleSheet, Dimensions } from "react-native";
 import { LineChart, BarChart } from "react-native-chart-kit";
+import { useTheme } from "react-native-paper";
 
 
 export default function Chart({ taskCompletionData, timeSpentData, labels }){
+    const theme = useTheme();
 
     const screenWidth = Dimensions.get('window').width;
+    // const chartConfig = {
+    //     backgroundColor: "#2c3e50",
+    //     backgroundGradientFrom: "#2980b9",
+    //     backgroundGradientTo: "#2c3e50",
+    //     color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+    //     labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+    //     style:{ borderRadius: 16 },
+    //     propsForDots: {
+    //         r: "5",
+    //         strokeWidth: "2",
+    //         stroke: "#3498db"
+    //     },
+    //     propsForBackgroundLines:{
+    //         strokeDasharray: ""
+    //     }
+    // }
+
+    // const chartConfig = {
+    //     backgroundColor: theme.colors.surface,
+    //     backgroundGradientFrom: theme.colors.primary,
+    //     backgroundGradientTo: theme.colors.primaryAlt,
+    //     color: (opacity = 1) => theme.colors.textAlt.replace('1)', `${opacity})`),
+    //     labelColor: (opacity = 1) => theme.colors.text.replace('1)', `${opacity})`),
+    //     style: { borderRadius: 10 },
+    //     propsForDots: {
+    //         r: "5",
+    //         strokeWidth: "2",
+    //         stroke: theme.colors.accent,
+    //     },
+    //     propsForBackgroundLines: {
+    //         strokeDasharray: "",  // Adds dashed lines for better visibility
+    //     },
+    // };
+
     const chartConfig = {
-        backgroundColor: "#e26a00",
-        backgroundGradientFrom: "#fb8c00",
-        backgroundGradientTo: "#ffa726",
-        color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-        labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-        style:{ borderRadius: 16 },
+        backgroundColor: theme.colors.surface,
+        backgroundGradientFrom: theme.colors.primary,
+        backgroundGradientTo: theme.colors.primaryAlt,
+        color: (opacity = 1) => {
+          const textAltColor = theme.colors.textAlt || 'rgba(0, 0, 0, 1)'; // Default fallback
+          return textAltColor.replace('1)', `${opacity})`);
+        },
+        labelColor: (opacity = 1) => {
+          const textColor = theme.colors.text || 'rgba(0, 0, 0, 1)'; // Default fallback
+          return textColor.replace('1)', `${opacity})`);
+        },
+        style: { borderRadius: 10 },
         propsForDots: {
-            r: "6",
-            strokeWidth: "2",
-            stroke: "#ffa726"
-        }
-        // color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-    }
+          r: "5",
+          strokeWidth: "2",
+          stroke: theme.colors.accent,
+        },
+        propsForBackgroundLines: {
+          strokeDasharray: "",  // Adds dashed lines for better visibility
+        },
+    };
 
     return(
         <View style={styles.chartContainer}>
@@ -28,25 +72,29 @@ export default function Chart({ taskCompletionData, timeSpentData, labels }){
                     labels: labels,
                     datasets: [{ data: taskCompletionData }],
                 }}
-                width={screenWidth}
-                height={220}
+                width={screenWidth - 40}
+                height={240}
                 yAxisLabel=""
                 yAxisSuffix=" tasks"
+                yLabelsOffset={5}
                 chartConfig={chartConfig}
                 bezier
-                style={{ marginVertical: 8, borderRadius: 16}}
+                style={styles.chartStyle}
+                // style={{ marginVertical: 8, borderRadius: 16}}
             />
             <BarChart
                 data={{
                     labels: labels,
                     datasets: [{ data: timeSpentData  }],
                 }}
-                width={screenWidth}
-                height={220}
+                width={screenWidth-40}
+                height={240}
                 yAxisLabel=""
                 yAxisSuffix=" mins"
+                yLabelsOffset={5}
                 chartConfig={chartConfig}
-                style={{ marginVertical: 8, borderRadius: 16}}
+                style={styles.chartStyle}
+                // style={{ marginVertical: 8, borderRadius: 16}}
             />
         </View>
     );
@@ -55,43 +103,32 @@ export default function Chart({ taskCompletionData, timeSpentData, labels }){
 
 
 
-// export default function Chart({ data, labels }){
-
-//     const screenWidth = Dimensions.get('window').width;
-//     const chartConfig = {
-//         backgroundGradientFrom: '#ffffff',
-//         backgroundGradientTo: '#ffffff',
-//         color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-//     }
-
-//     return(
-//         <View style={styles.chartContainer}>
-//             <LineChart
-//                 data={{
-//                     labels: labels,
-//                     datasets: [{ data: data }],
-//                 }}
-//                 width={screenWidth}
-//                 height={220}
-//                 chartConfig={chartConfig}
-//             />
-//             <BarChart
-//                 data={{
-//                     labels: labels,
-//                     datasets: [{ data: data }],
-//                 }}
-//                 width={screenWidth}
-//                 height={220}
-//                 chartConfig={chartConfig}
-//             />
-//         </View>
-//     );
-// }
 
 const styles = StyleSheet.create({
+    // chartContainer: {
+    //     marginTop: 20,
+    //     paddingHorizontal: 20,
+    // },
+    // chartStyle: {
+    //     marginVertical: 8,
+    //     borderRadius: 10,
+    //     elevation: 3,
+    //     // paddingLeft: 10,
+    //     // paddingHorizontal: 13
+    // },
+
+
     chartContainer: {
-        // marginVertical: 8,
-        // borderRadius: 16,
-        marginTop: 20, 
+        marginTop: 20,
+        paddingHorizontal: 20,
+    },
+    chartStyle: {
+        marginVertical: 8,
+        borderRadius: 10,
+        elevation: 4,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
     },
 });

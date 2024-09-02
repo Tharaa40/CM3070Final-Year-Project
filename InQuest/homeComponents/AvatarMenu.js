@@ -1,11 +1,12 @@
 import { useNavigation } from "@react-navigation/native";
 import React, { useContext, useRef } from "react";
-import { Menu, Appbar, useTheme as usePaperTheme } from "react-native-paper";
+import { Menu, Appbar, useTheme } from "react-native-paper";
 import { Animated } from "react-native";
 
 export default function AvatarMenu ({ menuVisible, handleToggleMenu, toggleTheme }){
     const navigation = useNavigation();
     const rotation = useRef(new Animated.Value(0)).current;
+    const theme = useTheme();
 
 
     // Trigger the animation
@@ -32,9 +33,6 @@ export default function AvatarMenu ({ menuVisible, handleToggleMenu, toggleTheme
         outputRange: ['0deg', '360deg'],
     });
 
-    // const theme = useTheme();
-
-
     return(
         <Menu
         visible={menuVisible}
@@ -44,20 +42,13 @@ export default function AvatarMenu ({ menuVisible, handleToggleMenu, toggleTheme
                 <Appbar.Action
                     icon='dots-vertical'
                     // color={colors.text}
-                    color="black"
+                    color={theme.colors.primaryAlt}
                     // onPress={handleToggleMenu}
                     onPress={handlePress}
                 />
             </Animated.View>
         }
         style={{ marginTop: 60 }}
-        // anchor={
-        //         <Appbar.Action
-        //             icon='dots-vertical'
-        //             color="black"
-        //             onPress={handleToggleMenu}
-        //         />
-        //     }
         >
             <Menu.Item
                 onPress={() => {
@@ -69,7 +60,6 @@ export default function AvatarMenu ({ menuVisible, handleToggleMenu, toggleTheme
                 leadingIcon='theme-light-dark'
             />
             <Menu.Item
-                // onPress={() => navigation.navigate('Settings')}
                 onPress={() => {
                     handleToggleMenu();
                     navigation.navigate('Settings');

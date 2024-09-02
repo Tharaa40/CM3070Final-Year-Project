@@ -3,8 +3,8 @@ import { View, StyleSheet, Text, TouchableOpacity, ActivityIndicator, Alert } fr
 import CalendarStrip from 'react-native-calendar-strip';
 import Timeline from 'react-native-timeline-flatlist';
 import moment from 'moment';
-import { Avatar, Card } from 'react-native-paper';
-import { Picker } from '@react-native-picker/picker';
+import { Avatar, Card, useTheme } from 'react-native-paper';
+// import { Picker } from '@react-native-picker/picker';
 import { useIsFocused } from '@react-navigation/native';
 import { FIREBASE_AUTH, FIRESTORE_DB } from '../firebaseConfig';
 import { collection, query, where, getDocs } from 'firebase/firestore';
@@ -152,6 +152,8 @@ export default function CalendarView2() {
     const [selectedDate, setSelectedDate] = useState(moment().startOf('day'));
     const [filteredItems, setFilteredItems] = useState([]);
     const [loading, setLoading] = useState(true);
+    const theme = useTheme();
+    const isFocused = useIsFocused();
   
     // Function to load items from Firestore
     const loadItems = async () => {
@@ -198,9 +200,14 @@ export default function CalendarView2() {
     };
   
     // Load items on mount
+    // useEffect(() => {
+    //   loadItems();
+    // }, []);
     useEffect(() => {
-      loadItems();
-    }, []);
+      if(isFocused){
+        loadItems();
+      }
+    }, [isFocused]);
   
     // Filter items whenever the selected date changes
     useEffect(() => {
@@ -213,58 +220,123 @@ export default function CalendarView2() {
       setSelectedDate(date);
     };
   
-    return (
-      <View style={styles.container}>
-        <CalendarStrip
-          style={styles.calendar}
-          selectedDate={selectedDate}
-          onDateSelected={onDateSelected}
-          calendarColor={'white'}
-          calendarHeaderStyle={{ color: 'black' }}
-          dateNumberStyle={{ color: 'black' }}
-          dateNameStyle={{ color: 'black' }}
-          highlightDateNameStyle={{ color: 'blue' }}
-          highlightDateNumberStyle={{ color: 'blue' }}
-          // Remove startingDate and endingDate to keep the calendar from resetting
+  return (
+    <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
+      {/* <CalendarStrip
+        style={styles.calendar}
+        selectedDate={selectedDate}
+        onDateSelected={onDateSelected}
+        calendarColor={'white'}
+        calendarHeaderStyle={{ color: 'black' }}
+        dateNumberStyle={{ color: 'black' }}
+        dateNameStyle={{ color: 'black' }}
+        highlightDateNameStyle={{ color: 'blue' }}
+        highlightDateNumberStyle={{ color: 'blue' }}
+        // Remove startingDate and endingDate to keep the calendar from resetting
+      />
+      {loading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
+        <Timeline
+          data={filteredItems}
+          circleSize={20}
+          circleColor='blue'
+          lineColor='blue'
+          timeStyle={styles.timeStyle}
+          descriptionStyle={styles.descriptionStyle}
+          options={{
+            style: { paddingTop: 5 }
+          }}
         />
-        {loading ? (
-          <ActivityIndicator size="large" color="#0000ff" />
-        ) : (
-          <Timeline
-            data={filteredItems}
-            circleSize={20}
-            circleColor='blue'
-            lineColor='blue'
-            timeStyle={styles.timeStyle}
-            descriptionStyle={styles.descriptionStyle}
-            options={{
-              style: { paddingTop: 5 }
-            }}
-          />
-        )}
-      </View>
-    );
+      )} */}
+      <CalendarStrip
+        style={styles.calendar}
+        selectedDate={selectedDate}
+        onDateSelected={onDateSelected}
+        calendarColor={theme.colors.surface}
+        calendarHeaderStyle={{ color: theme.colors.textAlt }}
+        dateNumberStyle={{ color: theme.colors.text }}
+        dateNameStyle={{ color: theme.colors.text }}
+        highlightDateNameStyle={{ color: theme.colors.accent }}
+        highlightDateNumberStyle={{ color: theme.colors.accent }}
+      />
+      {loading ? (
+        <ActivityIndicator size="large" color={theme.colors.accent} />
+      ) : (
+        <Timeline
+          data={filteredItems}
+          circleSize={20}
+          circleColor={theme.colors.accent}
+          lineColor={theme.colors.accent}
+          innerCircle={'dot'}
+          timeStyle={
+            [styles.timeStyle, 
+            {backgroundColor: theme.colors.surfaceAlt,
+              color: theme.colors.textAlt
+            }
+          ]}
+          descriptionStyle={
+            [styles.descriptionStyle, 
+              {color: theme.colors.textAlt,
+                backgroundColor: theme.colors.surfaceAlt
+              }
+          ]}
+          options={{
+            style: { paddingTop: 5, marginHorizontal: 10, position: 'relative', top: 5 },
+          }}
+          titleStyle={{marginTop: -15}}
+        />
+      )}
+    </View>
+  );
 }
   
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      paddingTop: 30,
-    },
-    calendar: {
-      height: 100,
-      paddingTop: 20,
-      paddingBottom: 10,
-    },
-    timeStyle: {
-      textAlign: 'center',
-      backgroundColor: '#ddd',
-      padding: 5,
-      borderRadius: 13,
-      color: 'black',
-      fontSize: 16
-    },
-    descriptionStyle: {
-      color: 'gray'
-    }
+    // container: {
+    //   flex: 1,
+    //   paddingVertical: 30,
+    //   // paddingTop: 30,
+    // },
+    // calendar: {
+    //   height: 100,
+    //   paddingTop: 20,
+    //   paddingBottom: 10,
+    // },
+    // timeStyle: {
+    //   textAlign: 'center',
+    //   backgroundColor: '#ddd',
+    //   padding: 5,
+    //   borderRadius: 13,
+    //   color: 'black',
+    //   fontSize: 16
+    // },
+    // descriptionStyle: {
+    //   color: 'gray'
+    // }
+
+
+
+  container: {
+    flex: 1,
+  },
+  calendar: {
+    height: 100,
+    paddingVertical: 10
+    // paddingBottom: 10,
+  },
+  timeStyle: {
+    textAlign: 'center',
+    padding: 5,
+    borderRadius: 5,
+    overflow: 'hidden',
+  },
+  descriptionStyle: {
+    padding: 10,
+    borderRadius: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+  },
 });

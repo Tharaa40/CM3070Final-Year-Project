@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, StyleSheet, Modal, TouchableOpacity } from 'react-native';
-import { Card, IconButton, Text, Checkbox, TouchableRipple } from "react-native-paper";
+import { Card, IconButton, Text, Checkbox, TouchableRipple, useTheme } from "react-native-paper";
 import { AnimatedCircularProgress } from "react-native-circular-progress";
 import { getPointsAndXP, checkForBadgeUnlock, updateUserRewards } from "../rewardSystem/Points";
 
@@ -9,36 +9,43 @@ export default function TaskCard({ task, onPress, onEdit, onComplete }){
     const completedSubtasks = task.subtasks ? task.subtasks.filter(subtask => subtask.checked).length : 0;
     const totalSubtasks = task.subtasks ? task.subtasks.length : 0;
     const progress = totalSubtasks > 0 ? (completedSubtasks / totalSubtasks) * 100 : 0;
+    const theme = useTheme();
 
     return(
         <TouchableRipple onPress={onPress} rippleColor="rgba(0, 0, 0, .32)"> 
             <View style={styles.innerShadowContainer}>
-                <Card onPress={onPress} style={styles.card}>
+                <Card onPress={onPress} style={[styles.card, backgroundColor=theme.colors.surface]}>
                     <View style={styles.cardHeader}>
-                        <Card.Title title={task.title} titleVariant="titleLarge" titleStyle={styles.cardTitle} /> 
+                        <Card.Title title={task.title} titleVariant="titleLarge" titleStyle={{color:theme.colors.primaryAlt}} /> 
                         <IconButton
                             icon="pencil-outline"
                             size={20}
-                            color="#93B1A6"
+                            iconColor={theme.colors.primary}
+                            // color="#93B1A6"
                             onPress={onEdit}
                         />
                     </View>
                     <Card.Content>
-                        <Text variant="bodyMedium" style={styles.cardText}> Priority: {task.selectedPriority} </Text>
-                        <Text variant="bodyMedium" style={styles.cardText}> Category: {task.category}</Text>
-                        <Text variant="bodyMedium" style={styles.cardText}> Deadline: {task.deadline}</Text>
+                        <Text variant="bodyMedium" style={[styles.cardText, {color: theme.colors.text}]}> Priority: {task.selectedPriority} </Text>
+                        <Text variant="bodyMedium" style={[styles.cardText, {color: theme.colors.text}]}> Category: {task.category}</Text>
+                        <Text variant="bodyMedium" style={[styles.cardText, {color: theme.colors.text}]}> Deadline: {task.deadline}</Text>
                         <View style={styles.bottomRow}>
                             {totalSubtasks > 0 && (
                                 <AnimatedCircularProgress
                                     size={40}
                                     width={4}
-                                    backgroundColor="#5C8374"
+                                    backgroundColor={theme.colors.primary}
+                                    // backgroundColor="#5C8374"
                                     fill={Math.round(progress)}
-                                    tintColor="black" //color of the progress line 
+                                    tintColor={theme.colors.primaryAlt}
+                                    // tintColor="black" //color of the progress line 
                                     text = {Math.round(progress)}
                                 >
                                     {
-                                        (fill) => <Text style={styles.progressText}> {Math.round(progress)} %</Text>
+                                        (fill) => 
+                                            <Text style={[styles.progressText, {color: theme.colors.primary}]}> 
+                                                {Math.round(progress)} %
+                                            </Text>
                                         
                                     }
                                 </AnimatedCircularProgress>
@@ -46,7 +53,9 @@ export default function TaskCard({ task, onPress, onEdit, onComplete }){
                             <Checkbox
                                 status={task.completed ? 'checked' : 'unchecked'}
                                 onPress={onComplete}
-                                color="#5C8374"
+                                color={theme.colors.primary}
+                                uncheckedColor={theme.colors.primary}
+                                // color="#5C8374"
                             />
                         </View>
                     </Card.Content>
@@ -132,17 +141,18 @@ export default function TaskCard({ task, onPress, onEdit, onComplete }){
 
 const styles = StyleSheet.create({
     innerShadowContainer:{ //for task cards ; using this
-        shadowColor: '#000',
+        // shadowColor: '#000',
+        shadowColor:'#183D3D',
         shadowOffset: { width: -2, height: -2 },
         shadowOpacity: 0.2,
         shadowRadius: 4,
-        elevation: 5,
-        backgroundColor: '#183D3D',
+        elevation: 2,
+        // backgroundColor: '#183D3D',
         borderRadius: 8,
         marginRight: 10
     },
     card: { //using this
-        backgroundColor: '#183D3D',
+        // backgroundColor: '#183D3D',
     }, 
     cardHeader:{ //using this
         flexDirection: 'row',
@@ -150,10 +160,11 @@ const styles = StyleSheet.create({
         paddingRight: 8,
     },
     cardTitle:{ //using this
-        color: '#93B1A6'
+        // color: '#93B1A6'
     },
     cardText: { //using this
-        color: '#93B1A6',
+        // color: '#93B1A6',
+        
     },
     bottomRow:{ //using this
         flexDirection: 'row',
@@ -164,6 +175,6 @@ const styles = StyleSheet.create({
     progressText:{ //using this
         fontSize: 10,
         fontWeight: 'bold',
-        color: 'white'
+        // color: 'white'
     },
 });

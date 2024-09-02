@@ -18,6 +18,7 @@ const { width } = Dimensions.get('window');
 export default function Details({navigation}){
     const [tasks, setTasks] = useState([]);
     const [username, setUsername] = useState('');
+    const theme = useTheme();
 
     const scrollX = useRef(new Animated.Value(0)).current;
     const isFocused = useIsFocused();
@@ -107,26 +108,26 @@ export default function Details({navigation}){
     const flatListData = Object.keys(groupedTasks).map(month => ({ month, tasks: groupedTasks[month] }));
     const renderItem = ({ item }) => (
         <View style={styles.monthContainer}>
-            <Text variant='headlineLarge' style={styles.monthTitle}>{item.month}</Text>
+            <Text variant='headlineLarge' style={[styles.monthTitle, {color: theme.colors.primaryAlt}]}>{item.month}</Text>
             <Carousel
                 width={width}
                 height={240}
                 data={item.tasks}
                 renderItem={({ item: task }) => (
-                    <Card style={styles.card}>
+                    <Card style={[styles.card, {backgroundColor: theme.colors.surface, borderColor: theme.colors.border}]}>
                         <Card.Content>
-                            <Text variant='bodyLarge' style={styles.cardText}>{task.title}</Text>
-                            <Text variant='bodyLarge' style={styles.cardText}>{task.description}</Text>
-                            <Text variant='bodyLarge' style={styles.cardText}>{task.deadline}</Text>
-                            <Text variant='bodyLarge' style={styles.cardText}>{task.selectedPriority}</Text>
-                            <Text variant='bodyLarge' style={styles.cardText}>{task.category}</Text>
+                            <Text variant='bodyLarge' style={{color: theme.colors.text, fontWeight: 'bold', marginBottom: 8}}>{task.title}</Text>
+                            <Text variant='bodyLarge' style={{color: theme.colors.textAlt}}>{task.description}</Text>
+                            <Text variant='bodyLarge' style={{color: theme.colors.textAlt}}>{task.deadline}</Text>
+                            <Text variant='bodyLarge' style={{color: theme.colors.textAlt}}>{task.selectedPriority}</Text>
+                            <Text variant='bodyLarge' style={{color: theme.colors.textAlt}}>{task.category}</Text>
                         </Card.Content>
                         <Card.Actions>
                             <TouchableOpacity onPress={() => handleEdit(task)}>
-                                <Icon name='edit' size={24} color='#5C8374'/>
+                                <Icon name='edit' size={24} color={theme.colors.primary}/>
                             </TouchableOpacity>
                             <TouchableOpacity onPress={() => confirmDelete(task.id)}>
-                                <Icon name='trash' size={24} color='#93B1A6' />
+                                <Icon name='trash' size={24} color={theme.colors.accent} />
                             </TouchableOpacity>
                         </Card.Actions>
                     </Card>
@@ -142,13 +143,12 @@ export default function Details({navigation}){
         </View>
     );
 
-    const theme = useTheme();
    
     return(
 
 
         <SafeAreaView style={[styles.container, {backgroundColor: theme.colors.background}]}>
-            <Text variant='displaySmall' style={styles.title}> Tasks of the Year </Text>
+            <Text variant='displaySmall' style={[styles.title, {color: theme.colors.primary}]}> Tasks of the Year </Text>
             <FlatList
                 data={flatListData}
                 renderItem={renderItem}
@@ -173,7 +173,8 @@ const styles=StyleSheet.create({
         textAlign: 'center',
         fontWeight: 'bold',
         fontSize: 30,
-        marginBottom: 10,
+        marginVertical: 20,
+        // marginBottom: 20,
     },
     monthContainer: {
         paddingLeft: 5,
@@ -184,18 +185,25 @@ const styles=StyleSheet.create({
         marginHorizontal: 20
     }, 
     card: {
-        marginRight: '10%',
-        marginBottom: 5, 
-        elevation: 3,
-        backgroundColor: '#183D3D',
-        borderWidth: 3, 
-        borderColor: '#5C8374',
-        borderRadius: 30,
-    },
-    cardText:{
-        color: '#93B1A6'
+        // marginRight: '10%',
+        // marginBottom: 5, 
+        // elevation: 3,
+        // // backgroundColor: '#183D3D',
+        // borderWidth: 3, 
+        // // borderColor: '#5C8374',
+        // borderRadius: 30,
 
-    }
+        borderRadius: 30,
+        borderWidth: 2,
+        padding: 5,
+        marginRight: '10%',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+        elevation: 4,
+    },
+   
     // page:{
     //     marginHorizontal: 10,
     //     marginVertical: 10

@@ -5,6 +5,7 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useNavigation } from "@react-navigation/native";
 import { ProgressBar, Text } from "react-native-paper";
 import Icon from 'react-native-vector-icons/Ionicons';
+import { FontAwesome5 } from 'react-native-vector-icons';
 import VirtualPet from '../rewardSystem/VirtualPet';
 
 
@@ -57,10 +58,10 @@ export default function Progress() {
 
                     if(userData.xp < 200) {
                         setEmotion('sad');
-                    }else if(userData.xp >= 200){
+                    }else if(userData.xp >= 200 && userData.xp <= 300){
                         setEmotion('happy');
-                    }else if(userData.xp >= 500){
-                        if(happiness > 80 && energy > 70){
+                    }else if(userData.xp >= 300 && userData.xp < 600){
+                        if(happiness > 80 || energy > 70){
                             setEmotion('high-energy');
                         }else if(hunger < 30){
                             setEmotion('hungry');
@@ -80,7 +81,7 @@ export default function Progress() {
         };
         fetchUserData();
     }, [points, xp]);   
-    if(emotion == null) return null;
+    // if(emotion == null) return null;
     
     return(
         <ScrollView contentContainerStyle={styles.container}>
@@ -89,13 +90,14 @@ export default function Progress() {
                     console.log('back arrow clicked');
                     navigation.navigate('HomePage');
                 }}> */}
-                    <Icon 
+                    {/* <Icon 
                         name="chevron-back-outline" 
                         size={30} 
                         color='black' 
                         style={styles.backArrow} 
                         onPress={() => navigation.navigate('HomePage')}
-                    />
+                    /> */}
+                <FontAwesome5  name="angle-left" size={30} color='black' onPress={() => navigation.goBack()} />
                 {/* </TouchableOpacity> */}
                 <Text variant="headlineMedium" style={styles.title}>User Progress</Text>
             </View>

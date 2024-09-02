@@ -1,22 +1,67 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Switch } from "react-native";
 import { FontAwesome5 } from 'react-native-vector-icons';
 import { FIREBASE_AUTH, FIRESTORE_DB } from "../firebaseConfig";
 import { signOut } from "firebase/auth";
 import { getDoc, doc } from "firebase/firestore";
 import { useNavigation } from "@react-navigation/native";
+import { Audio } from "expo-av";
 // import fetchUserData from '../components/userdata
 
 export default function Settings() {
 
     const [username, setUsername] = useState('');
-
     const navigation = useNavigation();
 
+    const [sound, setSound] = useState(null);
+    const [musicEnabled, setMusicEnabled] = useState(false);
 
     useEffect(() => {
         fetchUserData();
     }, []);
+
+    useEffect(() => {
+        const loadAndPlayMusic = async() => {
+            try{
+                const{ sound } = await Audio.Sound.createAsync(
+                    require('../assets/badges/lofi.mp3'), 
+                    {isLooping: true, volume: 1.0}
+                );
+                setSound(sound);
+
+                if(musicEnabled){
+                    await sound.playAsync();
+                }
+            }catch(error){
+                console.error('Error loading or playing sound: ', error);
+            }
+        };
+
+        if(musicEnabled){
+            loadAndPlayMusic();
+        }else{
+            if(sound){
+                sound.unloadAsync();
+                setSound(null);
+            }
+        }
+
+        return() => {
+            if(sound) {
+                sound.unloadAsync();
+            }
+        };
+    }, [musicEnabled]);
+
+    useEffect(() => {
+        if(sound) {
+            if(musicEnabled) {
+                sound.playAsync();
+            }else{
+                sound.pauseAsync();
+            }
+        }
+    }, [musicEnabled, sound]);
 
 
     const handleLogout = () => {
@@ -51,7 +96,7 @@ export default function Settings() {
                 <FontAwesome5  name="angle-left" size={30} color='white' onPress={() => navigation.goBack()} />
             </View>
             <View style={styles.main}>
-                <TouchableOpacity style={styles.textIconContainer} onPress={() => handleAvatar}>
+                <TouchableOpacity style={styles.textIconContainer} onPress={handleAvatar}>
                     <Text style={styles.mainText}> Avatar </Text>
                     <FontAwesome5  name='user' size={30} color='#183D3D' solid={false}/>
                 </TouchableOpacity>
@@ -62,8 +107,12 @@ export default function Settings() {
                 </View>
                 
                 <View style={styles.textIconContainer}>
-                    <Text style={styles.mainText}> Sound </Text>
+                    <Text style={styles.mainText}> Lofi Beats </Text>
                     <FontAwesome5  name='music' size={30} color='#183D3D' solid={false}  />
+                    <Switch
+                        value={musicEnabled}
+                        onValueChange={(value) => setMusicEnabled(value)}
+                    />
                 </View>
 
                 <View style={styles.textIconContainer}>

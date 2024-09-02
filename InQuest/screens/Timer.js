@@ -1,5 +1,6 @@
 import React, {useState, useRef} from "react";
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from "react-native";
+import { useTheme } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -9,6 +10,7 @@ export default function Timer() {
     const [timeRemaining, setTimeRemaining] = useState(0);
     const [isActive, setIsActive] = useState(false);
     const intervalRef = useRef(null);
+    const theme = useTheme();
   
     const startTimer = (duration) => {
       setTimeRemaining(duration);
@@ -44,26 +46,52 @@ export default function Timer() {
     };
 
     return(
-        <View style={styles.container}>
-            <Text style={styles.title}>Timer</Text>
+        <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
+            <Text style={[styles.title, {color: theme.colors.text}]}>Timer</Text>
             <View style={styles.minuteContainer}>
                 {['15', '30', '45', '60'].map((minute) => (
-                    <TouchableOpacity key={minute} style={styles.minuteBox} onPress={() => handleMinutePress(parseInt(minute, 10))}>
-                        <Text style={styles.minuteText}>{minute}</Text>
+                    <TouchableOpacity 
+                        key={minute} 
+                        style={[styles.minuteBox, {backgroundColor: theme.colors.primary}]} 
+                        onPress={() => handleMinutePress(parseInt(minute, 10))}
+                    >
+                        <Text style={[styles.minuteText, {color: theme.colors.textAlt}]}>{minute}</Text>
                     </TouchableOpacity>
                 ))}
             </View>
 
             <View style={styles.timerContainer}>
-                <View style={styles.circle}>
-                    <Text style={styles.timerText}>
+                <View style={[styles.circle, {borderColor: theme.colors.primary}]}>
+                    <Text style={[styles.timerText, {color: theme.colors.primary}]}>
                         {`${Math.floor(timeRemaining / 60).toString().padStart(2, '0')}:${(timeRemaining % 60).toString().padStart(2, '0')}`}
                     </Text>
                 </View>
             </View>
 
             <View style={styles.buttonsContainer}>
-                <TouchableOpacity style= {styles.button}  onPress={pauseTimer} disabled={!isActive}>
+                <TouchableOpacity
+                    style = {[styles.button, isActive ? styles.buttonDisabled: {}]}
+                    onPress = {pauseTimer}
+                    disabled = {!isActive}
+                >
+                    <Icon name="pause" size={30} color={isActive ? theme.colors.accent : '#CCC'} />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={resetTimer}
+                >
+                    <Icon name="repeat" size={30} color={theme.colors.accent} />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    style = {[styles.button, isActive ? styles.buttonDisabled : {}]}
+                    onPress = {() => startTimer(timeRemaining)}
+                    disabled = {isActive}
+                >
+                    <Icon name="play" size={30} color={isActive ? '#CCC' : theme.colors.accent } />
+                </TouchableOpacity>
+                {/* <TouchableOpacity style= {styles.button}  onPress={pauseTimer} disabled={!isActive}>
                     <Icon name="pause" size={30} color='#93B1A6' />
                 </TouchableOpacity>
 
@@ -73,7 +101,7 @@ export default function Timer() {
 
                 <TouchableOpacity style= {styles.button} onPress={() => startTimer(timeRemaining)} disabled={isActive}>
                     <Icon name="play" size={30} color='#93B1A6' />
-                </TouchableOpacity>
+                </TouchableOpacity> */}
             </View>
         </View>
     );
@@ -84,32 +112,30 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#040D12'
     },
     title:{
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 20,
-        color: '#93B1A6'
     },
     minuteContainer:{
         flexDirection: 'row',
         justifyContent: 'space-between',
         width: '80%',
+        marginVertical: 10
     },
     minuteBox:{
-        backgroundColor: '#183D3D',
         padding: 20,
         borderRadius: 10,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.8,
+        shadowOpacity: 0.1,
         shadowRadius: 2,
-        elevation: 1,
+        elevation: 3,
     },
     minuteText:{
         fontSize: 18,
-        color: '#93B1A6'
+        fontWeight: '600'
     },
     timerContainer:{
         alignItems: 'center'
@@ -119,24 +145,33 @@ const styles = StyleSheet.create({
         height: 200,
         borderRadius: 100,
         borderWidth: 5,
-        borderColor: 'white',
+        // borderColor: 'white',
         justifyContent: 'center',
         alignItems: 'center',
         marginVertical: 50
     },
     timerText:{
-        fontSize: 36,
+        fontSize: 40,
         fontWeight: 'bold',
-        color: '#183D3D'
     },
     buttonsContainer:{
         flexDirection: 'row',
         justifyContent: 'space-around',
-        width: '60%'
+        width: '60%',
     },
     button:{
         padding: 20,
         borderRadius: 10,
+        // backgroundColor: '#FFF',
+        // borderRadius: 50, 
+        // padding: 10, 
+        // elevation: 3,
+    },
+    buttonDisabled:{
+        opacity: 0.5
     }
+
+
+    
 
 });

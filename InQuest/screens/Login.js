@@ -1,17 +1,19 @@
 import React ,{ useEffect, useState } from "react";
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, Switch } from "react-native";
-import { Button } from 'react-native-paper';
+import { Button, useTheme } from 'react-native-paper';
 import { FIREBASE_AUTH, FIRESTORE_DB } from "../firebaseConfig";
 import { onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigation } from "@react-navigation/native";
 import { collection, getDocs, where, query } from "firebase/firestore";
 
 
- export default function Login (){
+export default function Login (){
     const [identifier, setIdentifier] = useState('');
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState(false);
     const navigation = useNavigation();
+    const theme = useTheme();
+
 
     const handleLogin = async () => {
         try{
@@ -41,22 +43,23 @@ import { collection, getDocs, where, query } from "firebase/firestore";
     
     
     return(
-        <View style={styles.container}>
-            <Text style = {styles.title} > Sign In </Text>  
+        <View style={[styles.container, {backgroundColor:theme.colors.background}]}>
+            <Text style = {[styles.title, {color: theme.colors.primary}]} > Sign In </Text>  
             <View style={styles.inputContainer}>
                 <TextInput
-                    style = {styles.input}
+                    style = {[styles.input, {backgroundColor:theme.colors.surface}]}
                     placeholder={username ? "Username" : "Email"}
-                    placeholderTextColor= "#93B1A6"
+                    placeholderTextColor = {theme.colors.primaryLight}
+                    // placeholderTextColor= "#93B1A6"
                     value={identifier}
                     onChangeText={text => setIdentifier(text)}
                 />
                 <TextInput
-                    style = {styles.input}
+                    style = {[styles.input, {backgroundColor:theme.colors.surface}]}
                     placeholder="Password"
-                    placeholderTextColor= "#93B1A6"
+                    placeholderTextColor = {theme.colors.primaryLight}
+                    // placeholderTextColor= "#93B1A6"
                     value={password}
-                    // onChangeText={setPassword}
                     onChangeText={text => setPassword(text)}
                     secureTextEntry    
                 />
@@ -74,6 +77,7 @@ import { collection, getDocs, where, query } from "firebase/firestore";
                     mode="outlined"
                     onPress={handleLogin}
                     style={styles.button}
+                    textColor={theme.colors.primaryLight}
                 >
                     Sign In 
                 </Button>
@@ -81,31 +85,17 @@ import { collection, getDocs, where, query } from "firebase/firestore";
                 <Button 
                     mode="outlined"
                     onPress={() => navigation.navigate('SignUp')}
+                    textColor={theme.colors.primaryLight}
                 >
                     Sign Up 
                 </Button>
             </View>
             
-            {/* <TouchableOpacity 
-                style={styles.signInButton} 
-                onPress={handleLogin}
-            >
-                <Text style={styles.signInButtonText}>Sign In</Text>
 
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-                style={styles.signUpButton} 
-                onPress={() => navigation.navigate('SignUp')}
-            >
-                Sign Up logic
-                <Text style={styles.signUpButtonText}>Sign Up</Text>
-
-            </TouchableOpacity> */}
         </View>
   
     );
- }
+}
 
  const styles = StyleSheet.create({
     container: {
@@ -123,7 +113,7 @@ import { collection, getDocs, where, query } from "firebase/firestore";
         // marginTop: 150,
         marginTop: '50%',
         marginBottom: '20%',
-        color: '#93B1A6',
+        // color: '#93B1A6',
     },
     inputContainer:{
         width: '100%',
@@ -137,7 +127,7 @@ import { collection, getDocs, where, query } from "firebase/firestore";
         borderRadius: 20,
         paddingHorizontal: 16,
         marginBottom: 10,
-        backgroundColor: '#FFF',
+        // backgroundColor: '#FFF',
         fontSize: 16,
         color: '#333',
 
@@ -155,58 +145,21 @@ import { collection, getDocs, where, query } from "firebase/firestore";
     switchContainer:{
         flexDirection: 'row',
         alignItems: 'center',
-        // justifyContent: 'flex-end',
         marginBottom: 20,
         marginLeft: '35%'
-        // marginVertical: 10,
     },
     switchLabel:{
         fontSize: 16,
         color: '#333',
         marginRight: 10,
     },
-    signInButton: {
-        width: '30%',
-        height: 50,
-        backgroundColor: '#007BFF',
-        borderRadius: 8,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 20,
-
-
-        // backgroundColor: '#5C8374', // Change this to your desired button color
-        // paddingVertical: 10,
-        // paddingHorizontal: 20,
-        // borderRadius: 20, // Rounded corners
-        // alignSelf: 'flex-end', // Align to the right
-        // marginRight: 37,
-        // marginVertical: 5
-    },
     buttonContainer:{
         marginLeft: '67%'
     },
     button:{
-        marginBottom: '7%'
+        marginBottom: '7%',
     },
-    signInButtonText: {
-        color: 'white',
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
-    signUpButton:{
-        width: '100%',
-        height: 50,
-        backgroundColor: '#6C757D',
-        borderRadius: 8,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    signUpButtonText:{
-        color: '#FFF',
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
+
 
  });
 

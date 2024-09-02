@@ -4,7 +4,7 @@
 import React, { useCallback, useMemo, useRef, useState, useEffect } from 'react';
 import { View, StyleSheet, TextInput, TouchableOpacity, Pressable, Platform } from 'react-native';
 import BottomSheet, { BottomSheetScrollView } from '@gorhom/bottom-sheet';
-import { Text, Menu, Button as ButtonA, PaperProvider, } from 'react-native-paper';
+import { Text, Menu, Button as ButtonA, PaperProvider, useTheme } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import DateTimePicker from '@react-native-community/datetimepicker'; //Calendar and time selection
 
@@ -259,6 +259,7 @@ export default function TaskBottomSheet({ navigation, route, props}) {
     // }, []);
 
     const snapPoints = useMemo(() => ['85%', '100%'], []);
+    const theme = useTheme();
 
     // renders
     return (
@@ -269,51 +270,52 @@ export default function TaskBottomSheet({ navigation, route, props}) {
                     snapPoints={snapPoints}
                     style={{borderTopLeftRadius: 10}}
                     // onChange={handleSheetChanges}
-                    backgroundStyle={{backgroundColor: '#040D12'}}
-                    handleIndicatorStyle = {{backgroundColor: 'white', width: '50%', height: 3}}
+                    backgroundStyle={{backgroundColor: theme.colors.background}}
+                    handleIndicatorStyle = {{backgroundColor: 'black', width: '50%', height: 3}}
                 >
-                    <BottomSheetScrollView contentContainerStyle={styles.contentContainer}>
+                    <BottomSheetScrollView contentContainerStyle={[styles.contentContainer, {backgroundColor: theme.colors.background}]}>
                         <View>
-                            <Text variant="headlineLarge" style={styles.header}> Add Task </Text>
+                            <Text variant="headlineLarge" style={[styles.header, {color: theme.colors.primary}]}> Add Task </Text>
                             {/**Title */}
                             <View style={styles.section}>
-                                <Text variant="headlineSmall" style={styles.sectionHeader}> Title </Text>
+                                <Text variant="headlineSmall" style={[styles.sectionHeader, {color: theme.colors.primaryAlt}]}> Title </Text>
                                 <TextInput
-                                    style = {styles.input}
+                                    style = {[styles.input, {backgroundColor: theme.colors.surface}]}
                                     value={title}
                                     onChangeText={setTitle}
                                     placeholder='Enter task title'
-                                    placeholderTextColor= '#93B1A6'
+                                    placeholderTextColor= {theme.colors.textAlt}
                                 />
                             </View>
 
                             {/**description */}
                             <View style={styles.section}>
-                                <Text variant="headlineSmall" style={styles.sectionHeader}> Description </Text>
+                                <Text variant="headlineSmall" style={[styles.sectionHeader, {color: theme.colors.primaryAlt}]}> Description </Text>
                                 <TextInput
-                                    style = {styles.input}
+                                    style = {[styles.input, {backgroundColor: theme.colors.surface}]}
                                     value={description}
                                     onChangeText={setDescription}
                                     placeholder='Enter task description'
-                                    placeholderTextColor= '#93B1A6'
+                                    placeholderTextColor= {theme.colors.textAlt}
                                 />
                             </View>
 
                             {/**subtasks */} 
                             <View style={styles.section}>
-                                <Text variant="headlineSmall" style={styles.sectionHeader}> Subtasks </Text>
+                                <Text variant="headlineSmall" style={[styles.sectionHeader, {color: theme.colors.primaryAlt}]}> Subtasks </Text>
                                 {subtasks.map((subtask, index) => (
                                     <View key={index} style={styles.subtaskContainer}>
                                         <TouchableOpacity onPress={() => toggleSubtask(index)}>
                                             <Icon
                                                 name={subtask.checked ? 'check-square' : 'square-o'}
                                                 size={20}
-                                                color={subtask.checked ? 'green' : '#ccc'}
+                                                color={subtask.checked ? theme.colors.primary : theme.colors.border}
+                                                // color={subtask.checked ? 'green' : 'red'}
                                                 style={styles.checkboxIcon}
                                             />
                                         </TouchableOpacity>
                                         <TextInput
-                                            style={[styles.input, {flex:1}]}
+                                            style={[styles.input, {flex:1, backgroundColor: theme.colors.surface}]}
                                             value={subtask.text}
                                             onChangeText={(text) => {
                                                 const updatedSubtasks = [...subtasks];
@@ -321,21 +323,21 @@ export default function TaskBottomSheet({ navigation, route, props}) {
                                                 setSubtasks(updatedSubtasks);
                                             }}
                                             placeholder="Enter subtask"
-                                            placeholderTextColor='#93B1A6'
+                                            placeholderTextColor={theme.colors.textAlt}
                                         />
                                         <TouchableOpacity onPress={() => removeSubtask(index)}>
-                                            <Icon name='trash' size={20} color='white' style={{margin: 10}}/>
+                                            <Icon name='trash' size={20} style={{margin: 10, color: theme.colors.border}}/>
                                         </TouchableOpacity>
                                     </View>
                                 ))}
                                 <TouchableOpacity onPress={addSubtask} style={styles.iconButton}>
-                                    <Icon name='plus' size={20} color='beige' />
+                                    <Icon name='plus' size={20} style={{color: theme.colors.accent}} />
                                 </TouchableOpacity>
                             </View>
 
                             {/**deadline */}
                             <View style={styles.section}>
-                                <Text variant="headlineSmall" style={styles.sectionHeader}> Deadline </Text>
+                                <Text variant="headlineSmall" style={[styles.sectionHeader, {color: theme.colors.primaryAlt}]}> Deadline </Text>
                                 <View style={styles.textInputWithIcon}>
                                     {showDatePicker && (
                                         <DateTimePicker 
@@ -356,42 +358,71 @@ export default function TaskBottomSheet({ navigation, route, props}) {
                                         />
                                     )}
                                     {showDatePicker && Platform.OS==='ios' && (
-                                        <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+                                        <View style={styles.pickerButtonContainer}>
                                             <TouchableOpacity
-                                                style={[styles.cancelDatebutton, styles.pickerButton, { backgroundColor: '#11182711' }]}
-                                                onPress={toggleDatepicker}
+                                            style={[styles.pickerButton, styles.cancelButton]}
+                                            onPress={toggleDatepicker}
                                             >
-                                                <Text style={[styles.buttonText, { color: '#075985' }]}>Cancel</Text>
+                                                <Text style={styles.cancelButtonText}>Cancel</Text>
                                             </TouchableOpacity>
                                             <TouchableOpacity
-                                                style={[styles.cancelDatebutton, styles.pickerButton]}
-                                                onPress={confirmIOSDate}
+                                            style={[styles.pickerButton, styles.confirmButton]}
+                                            onPress={confirmIOSDate}
                                             >
-                                                <Text style={styles.buttonText}>Confirm</Text>
+                                                <Text style={styles.confirmButtonText}>Confirm</Text>
                                             </TouchableOpacity>
                                         </View>
+                                        // <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+                                        //     <TouchableOpacity
+                                        //         style={[styles.cancelDatebutton, styles.pickerButton, { backgroundColor: '#11182711' }]}
+                                        //         onPress={toggleDatepicker}
+                                        //     >
+                                        //         <Text style={[styles.buttonText, { color: '#075985' }]}>Cancel</Text>
+                                        //     </TouchableOpacity>
+                                        //     <TouchableOpacity
+                                        //         style={[styles.cancelDatebutton, styles.pickerButton]}
+                                        //         onPress={confirmIOSDate}
+                                        //     >
+                                        //         <Text style={styles.buttonText}>Confirm</Text>
+                                        //     </TouchableOpacity>
+                                        // </View>
                                     )}
                                     {showTimePicker && Platform.OS==='ios' && (
-                                        <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+                                        <View style={styles.pickerButtonContainer}>
                                             <TouchableOpacity
-                                                style={[styles.cancelDatebutton, styles.pickerButton, { backgroundColor: '#11182711' }]}
-                                                onPress={toggleTimepicker}
+                                            style={[styles.pickerButton, styles.cancelButton]}
+                                            onPress={toggleTimepicker}
                                             >
-                                                <Text style={[styles.buttonText, { color: '#075985' }]}> Cancel </Text>
+                                                <Text style={styles.cancelButtonText}>Cancel</Text>
                                             </TouchableOpacity>
                                             <TouchableOpacity
-                                                style={[styles.cancelDatebutton, styles.pickerButton]}
-                                                onPress={confirmIOSTime}
+                                            style={[styles.pickerButton, styles.confirmButton]}
+                                            onPress={confirmIOSTime}
                                             >
-                                                <Text style={styles.buttonText}>Confirm</Text>
+                                                <Text style={styles.confirmButtonText}>Confirm</Text>
                                             </TouchableOpacity>
                                         </View>
+                                        // <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+                                        //     <TouchableOpacity
+                                        //         style={[styles.cancelDatebutton, styles.pickerButton, { backgroundColor: '#11182711' }]}
+                                        //         onPress={toggleTimepicker}
+                                        //     >
+                                        //         <Text style={[styles.buttonText, { color: '#075985' }]}> Cancel </Text>
+                                        //     </TouchableOpacity>
+                                        //     <TouchableOpacity
+                                        //         style={[styles.cancelDatebutton, styles.pickerButton]}
+                                        //         onPress={confirmIOSTime}
+                                        //     >
+                                        //         <Text style={styles.buttonText}>Confirm</Text>
+                                        //     </TouchableOpacity>
+                                        // </View>
                                     )}
                                     <TextInput
-                                        style={styles.input}
+                                        style={[styles.input, {backgroundColor: theme.colors.surface}]}
                                         value={deadline}
                                         onChangeText={setDeadline}
                                         placeholder='Select deadline'
+                                        placeholderTextColor={theme.colors.textAlt}
                                         editable={false}
                                         onPressIn={toggleDatepicker}
                                     />
@@ -400,7 +431,7 @@ export default function TaskBottomSheet({ navigation, route, props}) {
                                             style={styles.calendarIcon}
                                             onPress={toggleDatepicker}
                                         >
-                                            <Icon name='calendar' size={30} color='gray' />
+                                            <Icon name='calendar' size={30} color={theme.colors.border} />
                                         </Pressable>
                                     )}
                                     {!showDatePicker && !showTimePicker && (
@@ -408,7 +439,7 @@ export default function TaskBottomSheet({ navigation, route, props}) {
                                             style={styles.clockIcon}
                                             onPress={toggleTimepicker}
                                         >
-                                            <Icon name='clock-o' size={35} color='gray' />
+                                            <Icon name='clock-o' size={35} color={theme.colors.border} />
 
                                         </Pressable>
                                     )}
@@ -417,25 +448,33 @@ export default function TaskBottomSheet({ navigation, route, props}) {
 
                             {/**Priority */}
                             <View style={styles.section}>
-                                <Text variant="headlineSmall" style={styles.sectionHeader}> Priority </Text>
-                                <View style={styles.pickerContainer}>
-                                <Menu
-                                    visible={visiblePriority}
-                                    onDismiss={() => setVisiblePriority(false)}
-                                    anchor={
-                                        <ButtonA mode="outlined" onPress={() => setVisiblePriority(true)} style={styles.priorityButton} labelStyle={{color: 'white'}}>
-                                            {selectedPriority ? priority.find(p => p.value === selectedPriority)?.label : "Select a priority"}
-                                        </ButtonA>
-                                    }
-                                >
-                                    {priority.map((item, index) => (
-                                        <Menu.Item
-                                            key={index}
-                                            title={item.label}
-                                            onPress={() => handlePriorityPress(item.value)}
-                                        />
-                                    ))}
-                                </Menu>
+                                <Text variant="headlineSmall" style={[styles.sectionHeader, {color: theme.colors.primaryAlt}]}> Priority </Text>
+                                <View>
+                                    <Menu
+                                        visible={visiblePriority}
+                                        onDismiss={() => setVisiblePriority(false)}
+                                        anchor={
+                                            <ButtonA 
+                                                mode="outlined" 
+                                                onPress={() => setVisiblePriority(true)} 
+                                                style={[styles.priorityButton, {backgroundColor: theme.colors.surface}]} 
+                                                labelStyle={{color: theme.colors.textAlt}}
+                                            >
+                                                {selectedPriority ? priority.find(p => p.value === selectedPriority)?.label : "Select a priority"}
+                                            </ButtonA>
+                                        }
+                                        contentStyle = {{backgroundColor: theme.colors.surface, borderRadius: 10}}
+                                        anchorPosition='bottom'
+                                    >
+                                        {priority.map((item, index) => (
+                                            <Menu.Item
+                                                key={index}
+                                                title={item.label}
+                                                onPress={() => handlePriorityPress(item.value)}
+                                                style={{paddingVertical: 8, paddingHorizontal: 16}}
+                                            />
+                                        ))}
+                                    </Menu>
                                     {/* <Picker
                                         selectedValue={selectedPriority}
                                         style={styles.picker}
@@ -452,15 +491,15 @@ export default function TaskBottomSheet({ navigation, route, props}) {
 
                             {/**Category */}
                             <View style={styles.section}>
-                                <Text variant="headlineSmall" style={styles.sectionHeader}> Category </Text>
+                                <Text variant="headlineSmall" style={[styles.sectionHeader, {color: theme.colors.primaryAlt}]}> Category </Text>
                                 <View style={styles.pickerContainer}>
                                     <TextInput      
-                                        style = {styles.input}
+                                        style = {[styles.input, {backgroundColor: theme.colors.surface}]}
                                         value={inputCat}
                                         onChangeText={setInputCat}
                                         onSubmitEditing={handleAddTag}
-                                        placeholder="Enter a tag and press enter 2"
-                                        placeholderTextColor= '#93B1A6'
+                                        placeholder="Enter a tag and press enter"
+                                        placeholderTextColor= {theme.colors.textAlt}
                                     />
                                     <View style={styles.tagsContainer}>
                                         {tags.map((tag, index) => (
@@ -481,6 +520,7 @@ export default function TaskBottomSheet({ navigation, route, props}) {
                                     mode="contained"
                                     style={styles.cancelButton}
                                     onPress={cancelTask}
+                                    buttonColor={theme.colors.primary}
                                 >  
                                     Cancel
                                 </ButtonA>
@@ -488,6 +528,7 @@ export default function TaskBottomSheet({ navigation, route, props}) {
                                     mode="contained"
                                     style={styles.saveButton}
                                     onPress={saveTask}
+                                    buttonColor={theme.colors.primaryAlt}
                                 >  
                                     Save
                                 </ButtonA>
@@ -512,7 +553,7 @@ const styles = StyleSheet.create({
     },
     contentContainer: {
         paddingHorizontal: 16,
-        backgroundColor: 'black'
+        // backgroundColor: 'black'
     }, 
     bottomSheet:{
         backgroundColor: 'yellow',
@@ -522,7 +563,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontWeight: 'bold',
         marginBottom: 20,
-        color: '#93B1A6'
+        // color: '#93B1A6'
     },
 
     //title, description
@@ -530,18 +571,33 @@ const styles = StyleSheet.create({
         marginBottom: 20, 
     },
     sectionHeader:{
-        color: '#93B1A6',
+        // color: '#93B1A6',
         fontWeight: '500',
         marginBottom: 3
     },
     input:{
+        // borderWidth: 1,
+        // borderColor: '#ccc',
+        // marginVertical: '1%',
+        // padding: 10,
+        // borderRadius: 5,
+        // backgroundColor: '#183D3D',
+        // color: 'white'
+
+        // flex: 1,
+        height: 50,
+        borderRadius: 10,
+        paddingHorizontal: 10,
+        paddingRight: 50, // Space for icons
+        fontSize: 16,
+        color: '#333',
         borderWidth: 1,
-        borderColor: '#ccc',
-        marginVertical: '1%',
-        padding: 10,
-        borderRadius: 5,
-        backgroundColor: '#183D3D',
-        color: 'white'
+        borderColor: '#ddd',
+        shadowColor: '#000',
+        shadowOpacity: 0.05,
+        shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 2,
+        elevation: 2,
     },
 
     //subtask
@@ -566,19 +622,45 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
     },
-    deadlinePickerCont:{
-        borderRadius: 10, // Adjust radius as needed
-        borderWidth: 1,
-        borderColor: '#ccc', // Adjust color as needed
-        overflow: 'hidden',
-        padding: 8, // Optional: Add padding to ensure content doesn't touch edges
-        backgroundColor: 'yellow'
-    },  
     datePicker:{
-        width: '100%'
-        // height: 120, 
-        // marginTop: -10,
-        // borderRadius: 35,
+        width: '100%', 
+    },
+    // deadlinePickerCont:{ //not using
+    //     borderRadius: 10, // Adjust radius as needed
+    //     borderWidth: 1,
+    //     borderColor: '#ccc', // Adjust color as needed
+    //     overflow: 'hidden',
+    //     padding: 8, // Optional: Add padding to ensure content doesn't touch edges
+    //     backgroundColor: 'yellow'
+    // },  
+
+    pickerButtonContainer:{
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        padding: 10,
+    },
+    pickerButton:{
+        // paddingHorizontal: 20
+
+        flex: 1,
+        padding: 10,
+        marginHorizontal: 5,
+        borderRadius: 8,
+        alignItems: 'center',
+    },
+    cancelButton: {
+        backgroundColor: '#f0f0f0',
+    },
+    cancelButtonText: {
+        color: '#555',
+        fontSize: 16,
+    },
+    confirmButton: {
+        backgroundColor: '#075985',
+    },
+    confirmButtonText: {
+        color: '#fff',
+        fontSize: 16,
     },
     cancelDatebutton:{
         height: 50, 
@@ -589,25 +671,24 @@ const styles = StyleSheet.create({
         marginBottom: 15, 
         backgroundColor: '#075985'
     },
-    pickerButton:{
-        paddingHorizontal: 20
-    },
-    buttonText:{
-        fontSize: 14, 
-        fontWeight: 500, 
-        color: '#fff'
-    },
     calendarIcon:{
         paddingHorizontal: 20,
         // paddingRight: 20
     },
+    buttonText:{ //not using
+        fontSize: 14, 
+        fontWeight: 500, 
+        color: '#fff'
+    },
+    
 
     //priority
     priorityButton: {
-        backgroundColor: '#183D3D', 
+        // backgroundColor: '#183D3D', 
         borderWidth: 1, 
         rippleColor: 'rgba(50, 92, 62, 0.8)',
     },
+
     picker:{
         height: 50, 
         width: '100%'
@@ -648,7 +729,7 @@ const styles = StyleSheet.create({
         marginBottom: '50%',
         // padding: 16,
         // borderRadius: 8,
-        backgroundColor: '#183D3D',
+        // backgroundColor: '#183D3D',
         // alignItems: 'center',
     },
     saveButton:{
@@ -658,7 +739,7 @@ const styles = StyleSheet.create({
         marginBottom: '50%',
         // padding: 16,
         // borderRadius: 8,
-        backgroundColor: '#5C8374',
+        // backgroundColor: '#5C8374',
         // alignItems: 'center',
     },
     buttonText:{
