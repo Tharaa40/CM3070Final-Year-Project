@@ -6,7 +6,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import merge from 'deepmerge';
-import { PaperProvider, MD3LightTheme, MD3DarkTheme } from 'react-native-paper';
+import { PaperProvider } from 'react-native-paper';
 
 import Details from './screens/Details'; //using
 import Settings from './screens/Settings'; //using
@@ -54,7 +54,6 @@ const screenOptions = ({ route }) => ({
             <Icon name={iconName} color={color} size={size} style={styles.addIcon} />
           </View>
         )
-        // iconComponent = <Icon name={iconName} color={color} size={size} style={styles.addIcon} />;
         break;
       case 'Calendar':
         iconName = 'calendar-outline';
@@ -70,14 +69,12 @@ const screenOptions = ({ route }) => ({
         break;
     }
     return iconComponent;
-    // return <Icon name={iconName} color={color} size={size} />
   }, 
   tabBarActiveTintColor: 'tomato',
   tabBarInactiveTintColor: 'gray',
   tabBarStyle: {
     height: 50,
     backgroundColor: 'beige',
-    // borderRadius: 150,
     position: 'relative',
   },
 });
@@ -99,14 +96,11 @@ function CreateTaskStack() {
 const BottomTab = ({toggleTheme}) => {
   return(
         <Tab.Navigator screenOptions={screenOptions}> 
-          {/* <Tab.Screen name='HomeTab' component={HomePage} /> */}
           <Tab.Screen name='HomeTab'>
             {props => <HomePage {...props} toggleTheme={toggleTheme} />}
           </Tab.Screen>
           <Tab.Screen name='Details' component={Details}/>
-          {/* <Tab.Screen name='Create Task' component={CreateTask}/> */}
           <Tab.Screen
-            // name='CreateTask'
             name='Addtask'
             options={{
               tabBarStyle:{display: 'none'}
@@ -197,7 +191,6 @@ export default function App () {
                 <Stack.Screen name='Login' component={Login} /> 
                 <Stack.Screen name='SignUp' component={SignUps} />
                 <Stack.Screen name='EmailSignUp' component={EmailSignUp}/> 
-                {/* <Stack.Screen name='HomeTab' component={BottomTab}  /> really not using*/} 
                 <Stack.Screen name='HomeTab'>
                   {props => <BottomTab {...props} toggleTheme={toggleTheme} />}
                 </Stack.Screen>
@@ -205,7 +198,6 @@ export default function App () {
                 <Stack.Screen name='Settings' component={Settings}/>
                 <Stack.Screen name='Progress' component={Progress} />
                 <Stack.Screen name='Avatar' component={Avatar}/>
-                {/* <Stack.Screen name='Addtask' component={TaskBottomSheet} options={{headerShown: false}}/> really not using */}
               </Stack.Navigator>
           </NavigationContainer>
         </PaperProvider>
