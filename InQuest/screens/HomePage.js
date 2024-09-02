@@ -5,16 +5,9 @@ import { ScrollView, View, StatusBar, Modal, StyleSheet, Dimensions, TouchableOp
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import moment from "moment";
 // import Svg, {Circle} from "react-native-svg";
-import { AnimatedCircularProgress } from 'react-native-circular-progress';
-import { 
-    Menu, PaperProvider, 
-    Appbar, Avatar, Card, 
-    Text, Checkbox, IconButton,
-    TouchableRipple, 
-    Divider, FAB,
-    useTheme,
-} from 'react-native-paper';
-import { collection, getDocs, updateDoc, doc, getDoc, query, where, increment, onSnapshot } from "firebase/firestore";
+// import { AnimatedCircularProgress } from 'react-native-circular-progress';
+import {  Text, Divider, useTheme} from 'react-native-paper';
+import { collection, getDocs, updateDoc, doc, getDoc, query, where } from "firebase/firestore";
 import { FIREBASE_AUTH, FIRESTORE_DB } from "../firebaseConfig";
 import TaskList from "../homeComponents/TaskList";
 import Stats from "../homeComponents/Stats";
@@ -25,7 +18,7 @@ import Chart from "../homeComponents/Chart";
 import { updateUserRewards } from "../rewardSystem/Points";
 
 
-export default function HomePage(){
+export default function HomePage({toggleTheme}){
     const [tasks, setTasks] = useState([]);
     const [todayTasks, setTodayTasks] = useState([]);
     const [otherTasks, setOtherTasks] = useState([]);
@@ -373,21 +366,25 @@ export default function HomePage(){
 
     const chartLabels= ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
+    const theme = useTheme();
+
 
     return(
-        <PaperProvider>
+        // <PaperProvider>
+        <>
             <StatusBar barStyle='light-content'/>
-            <ScrollView style={styles.container}>
+            <ScrollView style={[styles.container, {backgroundColor: theme.colors.background}]}>
                 <Header
                     username={username}
                     menuVisible={menuVisible}
                     handleToggleMenu={() => setMenuVisible(!menuVisible)}
                     handleMenuItemClick={(item) => console.log(item)}
+                    toggleTheme={toggleTheme}
                 />
-                <Text style={styles.statLabel}>Points: {points}</Text>
-                <Text style={styles.statLabel}>XP: {xp}</Text>
+                {/* <Text style={styles.statLabel}>Points: {points}</Text> */}
+                {/* <Text style={styles.statLabel}>XP: {xp}</Text> */}
                 <View style={styles.mainContainer}>
-                    <Text variant="displaySmall" style={{ color: theme.colors.text, fontSize: 34, marginBottom: 10 }}> Today </Text>
+                    <Text variant="displaySmall" style={{ color: theme.colors.primary, fontSize: 30, marginBottom: 10 }}> Today </Text>
                     <TaskList
                         tasks={todayTasks}
                         handleTaskPress={handleTaskPress}
@@ -397,7 +394,7 @@ export default function HomePage(){
 
                     <Divider style={{backgroundColor:theme.colors.border, height: 2 }} />
 
-                    <Text variant="displaySmall" style={{ color: theme.colors.text, fontSize: 34, marginBottom: 10 }}> Upcoming </Text>
+                    <Text variant="displaySmall" style={{ color: theme.colors.primary, fontSize: 30, marginBottom: 10 }}> Upcoming </Text>
                     <TaskList
                         tasks={otherTasks}
                         handleTaskPress={handleTaskPress}
@@ -407,7 +404,7 @@ export default function HomePage(){
 
                     <Divider style={{backgroundColor: theme.colors.border, height: 2 }} />
 
-                    <Text variant="displaySmall" style={{ color: theme.colors.text, fontSize: 34, marginVertical: 10 }}>Personal Stats</Text>
+                    <Text variant="displaySmall" style={{ color: theme.colors.primary, fontSize: 30, marginVertical: 10 }}>Personal Stats</Text>
                     <Stats stats={stats} />
                 </View>
                 <Chart 
@@ -445,7 +442,8 @@ export default function HomePage(){
                 )}
 
             </ScrollView>
-        </PaperProvider>
+        </>
+        // </PaperProvider>
       
     );
 
@@ -455,10 +453,7 @@ export default function HomePage(){
 
 const styles = StyleSheet.create({
     container:{
-        flex: 1, 
-        // padding: 5,
-        // backgroundColor: '#040D12',
-        // backgroundColor: theme.colors.secondary
+        flex: 1,
     },
     mainContainer:{
         padding: 5,
@@ -467,19 +462,19 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        // backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     modalContent: { //using this
         // width: '80%',
         // backgroundColor: '#fff',
         // borderRadius: 10,
         // padding: 20,
-        // alignItems: 'center',
+        alignItems: 'center',
 
         width: Dimensions.get('window').width - 40,
         // backgroundColor: '#183D3D',
         padding: 20,
-        borderRadius: 10,
+        borderRadius: 50,
     },
     modalTitle: { //using this
         // fontSize: 18,
