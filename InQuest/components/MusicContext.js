@@ -8,8 +8,8 @@ export const MusicProvider = ({ children }) => {
     const [musicEnabled, setMusicEnabled] = useState(false);
     const [volume, setVolume] = useState(1.0);
 
-    const [soundEffect, setSoundEffect] = useState(null);
-    const [soundEffectsEnabled, setSoundEffectsEnabled] = useState(false);
+    // const [soundEffect, setSoundEffect] = useState(null);
+    // const [soundEffectsEnabled, setSoundEffectsEnabled] = useState(false);
 
     useEffect(() => {
         const loadAndPlayMusic = async () => {
@@ -43,33 +43,33 @@ export const MusicProvider = ({ children }) => {
         };
     }, [musicEnabled, volume]);
 
-    useEffect(() => { //added this
-        const playSoundEffect = async () => {
-            if (soundEffectsEnabled) {
-                try {
-                    const { sound } = await Audio.Sound.createAsync(
-                        require('../assets/sounds/lofi-orchestra.mp3')
-                    );
-                    setSoundEffect(sound);
-                    await sound.playAsync();
-                    sound.setOnPlaybackStatusUpdate((status) => {
-                        if (status.didJustFinish) {
-                            sound.unloadAsync();
-                            setSoundEffect(null);
-                        }
-                    });
-                } catch (error) {
-                    console.error('Error playing sound effect: ', error);
-                }
-            } else if (soundEffect) {
-                soundEffect.unloadAsync();
-                setSoundEffect(null);
-            }
-        };
+    // useEffect(() => { //added this
+    //     const playSoundEffect = async () => {
+    //         if (soundEffectsEnabled) {
+    //             try {
+    //                 const { sound } = await Audio.Sound.createAsync(
+    //                     require('../assets/sounds/lofi-orchestra.mp3')
+    //                 );
+    //                 setSoundEffect(sound);
+    //                 await sound.playAsync();
+    //                 sound.setOnPlaybackStatusUpdate((status) => {
+    //                     if (status.didJustFinish) {
+    //                         sound.unloadAsync();
+    //                         setSoundEffect(null);
+    //                     }
+    //                 });
+    //             } catch (error) {
+    //                 console.error('Error playing sound effect: ', error);
+    //             }
+    //         } else if (soundEffect) {
+    //             soundEffect.unloadAsync();
+    //             setSoundEffect(null);
+    //         }
+    //     };
 
-        playSoundEffect();
+    //     playSoundEffect();
 
-    }, [soundEffectsEnabled]);
+    // }, [soundEffectsEnabled]);
 
     return (
         // <MusicContext.Provider value={{ musicEnabled, setMusicEnabled, volume, setVolume }}>
@@ -78,8 +78,7 @@ export const MusicProvider = ({ children }) => {
 
         <MusicContext.Provider value={{ 
             musicEnabled, setMusicEnabled, 
-            volume, setVolume,
-            soundEffectsEnabled, setSoundEffectsEnabled 
+            volume, setVolume
         }}>
             {children}
         </MusicContext.Provider>

@@ -39,7 +39,7 @@ export const updateUserRewards = async (task) => {
 //     xp = 0; //reset xp
 //   }
 
-    if (xp >= 900) {
+    if (xp >= 600) {
         xp = 0; // reset xp
     }
 

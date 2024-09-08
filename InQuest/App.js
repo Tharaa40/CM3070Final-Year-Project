@@ -28,6 +28,7 @@ import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { FIRESTORE_DB } from './firebaseConfig';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
+
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
@@ -189,29 +190,29 @@ export default function App () {
   return(
     <GestureHandlerRootView style={{flex: 1}}>
       <GestureDetectorProvider>
-        <PaperProvider theme={currentTheme}>
-          <MusicProvider>
-            <NavigationContainer>
-                <Stack.Navigator
-                  screenOptions={{headerShown: false}}
-                  initialRouteName='Login'
-                >
-                  <Stack.Screen name='Login' component={Login} /> 
-                  <Stack.Screen name='SignUp' component={SignUps} />
-                  <Stack.Screen name='EmailSignUp' component={EmailSignUp}/> 
-                  {/* <Stack.Screen name='HomeTab' component={BottomTab}  /> really not using*/} 
-                  <Stack.Screen name='HomeTab'>
-                    {props => <BottomTab {...props} toggleTheme={toggleTheme} />}
-                  </Stack.Screen>
-                  <Stack.Screen name='CreateTaskStack' component={CreateTaskStack} />
-                  <Stack.Screen name='Settings' component={Settings}/>
-                  <Stack.Screen name='Progress' component={Progress} />
-                  <Stack.Screen name='Avatar' component={Avatar}/>
-                  {/* <Stack.Screen name='Addtask' component={TaskBottomSheet} options={{headerShown: false}}/> really not using */}
-                </Stack.Navigator>
-            </NavigationContainer>
-          </MusicProvider>
-        </PaperProvider>
+          <PaperProvider theme={currentTheme}>
+            <MusicProvider>
+              <NavigationContainer>
+                  <Stack.Navigator
+                    screenOptions={{headerShown: false}}
+                    initialRouteName='Login'
+                  >
+                    <Stack.Screen name='Login' component={Login} /> 
+                    <Stack.Screen name='SignUp' component={SignUps} />
+                    <Stack.Screen name='EmailSignUp' component={EmailSignUp}/> 
+                    {/* <Stack.Screen name='HomeTab' component={BottomTab}  /> really not using*/} 
+                    <Stack.Screen name='HomeTab'>
+                      {props => <BottomTab {...props} toggleTheme={toggleTheme} />}
+                    </Stack.Screen>
+                    <Stack.Screen name='CreateTaskStack' component={CreateTaskStack} />
+                    <Stack.Screen name='Settings' component={Settings}/>
+                    <Stack.Screen name='Progress' component={Progress} />
+                    <Stack.Screen name='Avatar' component={Avatar}/>
+                    {/* <Stack.Screen name='Addtask' component={TaskBottomSheet} options={{headerShown: false}}/> really not using */}
+                  </Stack.Navigator>
+              </NavigationContainer>
+            </MusicProvider>
+          </PaperProvider>
       </GestureDetectorProvider>
     </GestureHandlerRootView>
   );

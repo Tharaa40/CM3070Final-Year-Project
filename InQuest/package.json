@@ -27,6 +27,7 @@
     "expo-asset": "~10.0.10",
     "expo-av": "~14.0.7",
     "expo-image-picker": "~15.0.7",
+    "expo-notifications": "~0.28.16",
     "expo-status-bar": "~1.12.1",
     "firebase": "^10.12.4",
     "jest-fetch-mock": "^3.0.3",

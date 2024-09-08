@@ -1,36 +1,73 @@
 import React, { useState, useEffect, useCallback, useContext } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Switch, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Switch } from 'react-native';
 import { FontAwesome5 } from 'react-native-vector-icons';
-import { Appbar, Avatar, useTheme } from 'react-native-paper';
+import { Appbar, useTheme, Button, Menu, TextInput } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { FIREBASE_AUTH, FIRESTORE_DB } from "../firebaseConfig"; 
 import { signOut } from 'firebase/auth';
-import { Audio } from "expo-av";
+// import { Audio } from "expo-av";
 import * as ImagePicker from 'expo-image-picker';
 import Slider from '@react-native-community/slider'; 
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { MusicContext } from '../components/MusicContext';
-
+import moment from "moment";
+import * as Notifications from 'expo-notifications';
+import { sendPasswordResetEmail } from 'firebase/auth';
+import { updatePassword, reauthenticateWithCredential, EmailAuthProvider } from 'firebase/auth';
 
 
 export default function Settings(){
     const navigation = useNavigation();
     const theme = useTheme();
     const [username, setUsername] = useState('User'); 
-    // const [selectedAvatar, setSelectedAvatar] = useState(null);
-    const {musicEnabled, setMusicEnabled, volume, setVolume, soundEffectsEnabled, setSoundEffectsEnabled} = useContext(MusicContext);
-    // const [backgroundSound, setBackgroundSound] = useState(null);
-    // const [soundEffectsEnabled, setSoundEffectsEnabled] = useState(false);
-    // const [musicEnabled, setMusicEnabled] = useState(false);
-    // const [volume, setVolume] = useState(1.0);
-    const [soundEffect, setSoundEffect] = useState(null);     
+
+    const [currentPassword, setCurrentPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmNewPassword, setConfirmNewPassword] = useState('');
+    const [passwordUpdateSuccess, setPasswordUpdateSuccess] = useState(false);
+
+    const {musicEnabled, setMusicEnabled, volume, setVolume} = useContext(MusicContext);
+    const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+
     const user = FIREBASE_AUTH.currentUser;
 
 
     useEffect(() => {
         fetchUserData();
         loadSettingsFromFirestore();
+        requestNotificationPermission(); //added this 
     }, []);
+
+
+    const handlePasswordUpdate = async() => {
+        if(!user){
+            alert('No user is currently signed in');
+            return;
+        }
+        if(newPassword !== confirmNewPassword){
+            alert("New passwords do not match");
+            return;
+        }
+        try{
+            //Re-authenticate the user
+            const credential = EmailAuthProvider.credential(user.email, currentPassword);
+            await reauthenticateWithCredential(user, credential);
+
+            //Update the password 
+            await updatePassword(user, newPassword);
+            setPasswordUpdateSuccess(true);
+            alert('Password updated successfully');
+        }catch(error){
+            alert('Error updating password: ' + error.message);
+        }
+    }
+
+    const requestNotificationPermission = async() => { //added this 
+        const { status } = await notificationsEnabled.requestNotificationPermissionAsync();
+        if(status !== 'granted'){
+            alert('Permission for notification was denied. Please enable it in settings.');
+        }
+    }
  
     const loadSettingsFromFirestore = useCallback(async() => {
         if(user){
@@ -40,12 +77,15 @@ export default function Settings(){
                 if(docSnap.exists()){
                     const settings = docSnap.data();
                     setMusicEnabled(settings.musicEnabled || false);
-                    setSoundEffectsEnabled(settings.soundEffectsEnabled || false);
+                    setNotificationsEnabled(settings.notificationsEnabled || true); //added this 
+                    if(settings.notificationsEnabled){
+                        scheduleDueTodayNotifications();
+                    }
                 }else{
                     console.log('No settings found');
                     await setDoc(docRef, {
                         musicEnabled: false, 
-                        soundEffectsEnabled: false
+                        notificationsEnabled: true //added this 
                     });
                 }
             }catch(error){
@@ -54,13 +94,63 @@ export default function Settings(){
         }
     }, [user]);
 
+    const scheduleDueTodayNotifications = async() =>{
+        if (!user) return;
+
+        try {
+            // Fetch user's tasks from Firestore
+            const userTasksRef = doc(FIRESTORE_DB, 'tasks', user.uid);
+            const userTasksSnap = await getDoc(userTasksRef);
+            if (userTasksSnap.exists()) {
+                const tasks = userTasksSnap.data().tasks;
+    
+                // Define today's start and end using moment
+                const today = moment().startOf('day');
+    
+                // Filter tasks that are due today and are not completed
+                const dueTodayTasks = tasks.filter(task => {
+                    if (task.completed) {
+                        return false; // Exclude completed tasks
+                    }
+    
+                    // Parse task deadline using moment, adjust the format as per your task's deadline format
+                    const taskDeadline = moment(task.deadline, 'MM/DD/YYYY h:mm A');
+                    
+                    // Check if the deadline is valid
+                    if (!taskDeadline.isValid()) {
+                        console.warn(`Invalid task deadline format: ${task.deadline}`);
+                        return false;
+                    }
+    
+                    // Return true if the task is due today
+                    return taskDeadline.isSame(today, 'day');
+                });
+    
+                // Schedule notifications for tasks due today
+                dueTodayTasks.forEach(task => {
+                    Notifications.scheduleNotificationAsync({
+                        content: {
+                            title: 'Task Reminder',
+                            body: `You have a task due today: ${task.title}`,
+                            sound: true,
+                        },
+                        trigger: { seconds: 10 }, // Adjust the time before notification triggers
+                    });
+                });
+            }
+        } catch (error) {
+            console.error('Error scheduling notifications:', error);
+        }
+
+    }
+
     const saveSettingsToFirestore = async () => {
         if (user) {
             const docRef = doc(FIRESTORE_DB, 'userSettings', user.uid);
             try {
                 await updateDoc(docRef, {
                     musicEnabled,
-                    soundEffectsEnabled,
+                    notificationsEnabled //added this
                 });
             } catch (error) {
                 console.error('Error saving settings:', error);
@@ -68,114 +158,18 @@ export default function Settings(){
         }
     };
 
-    //Function to handle the sound effects toggle 
-    const handleSoundEffectsToggle = (value) => {
-        setSoundEffectsEnabled(value);
-        // if(value){
-        //     playSoundEffect();
-        //     // Logic to enable sound effects (you can add actual sound effect logic here)
-        //     // console.log('Sound Effects Enabled');
-        // }else{
-        //     if(soundEffect){
-        //         soundEffect.unloadAsync();
-        //         setSoundEffect(null);
-        //     }
-        //     console.log('Sound Effects Disabled');
-        // }
-        saveSettingsToFirestore();
-    }
-
     const handleMusicToggle = async(value) => {
         setMusicEnabled(value);
         saveSettingsToFirestore();
-    }
-
-   
-
-
-    //handle sound effects loading and playing 
-    const playSoundEffect = async() => {
-        if(soundEffectsEnabled) {
-            try{
-                const {sound} = await Audio.Sound.createAsync(
-                    require('../assets/sounds/lofi-orchestra.mp3')
-                );
-                setSoundEffect(sound);
-                await sound.playAsync();
-                sound.setOnPlaybackStatusUpdate((status) => {
-                    if(status.didJustFinish) {
-                        sound.unloadAsync();
-                        setSoundEffect(null);
-                    }
-                });
-            }catch(error){
-                console.error('Error playing sound effect: ', error);
-            }
-        }
     };
 
-   
-
-
-    
-    
-    
-
-    // useEffect(() => {
-    //     const loadAndPlayMusic = async() => {
-    //         if(!backgroundSound){
-    //             try{
-    //                 const{ sound } = await Audio.Sound.createAsync(
-    //                     require('../assets/sounds/lofi-study.mp3'),
-    //                     {isLooping: true, volume}
-    //                 );
-    //                 setBackgroundSound(sound);
-    
-    //                 if(musicEnabled){
-    //                     await sound.playAsync();
-    //                 }
-    //             }catch(error){
-    //                 console.error('Error loading or playing sound: ', error);
-    //             }
-    //         } else if(musicEnabled){
-    //             await backgroundSound.playAsync();
-    //         }
-    //     };
-
-    //     //Function to stop and unload music
-    //     const stopAndUnloadMusic = async() => {
-    //         if(backgroundSound) {
-    //             await backgroundSound.stopAsync();
-    //             await backgroundSound.unloadAsync();
-    //             setBackgroundSound(null);
-    //         }
-    //     };
-
-    //     //control music playback based on toggle state
-    //     if(musicEnabled){
-    //         loadAndPlayMusic();
-    //     }else{
-    //         stopAndUnloadMusic();
-    //         // if(backgroundSound){
-    //         //     backgroundSound.unloadAsync();
-    //         //     setBackgroundSound(null);
-    //         // }
-    //     }
-
-    //     return() => {
-    //         if(backgroundSound) {
-    //             backgroundSound.unloadAsync();
-    //         }
-    //     };
-    // }, [musicEnabled, volume, backgroundSound]);
-
-
-    // // Update volume when slider changes
-    // useEffect(() => {
-    //     if (backgroundSound) {
-    //         backgroundSound.setVolumeAsync(volume);
-    //     }
-    // }, [volume, backgroundSound]);
+    const handleNotificationsToggle = async(value) => { //added this 
+        setNotificationsEnabled(value);
+        if (value) {
+            scheduleDueTodayNotifications();
+        }
+        saveSettingsToFirestore();
+    };
 
     const handleLogout = () => {
         signOut(FIREBASE_AUTH)
@@ -211,9 +205,7 @@ export default function Settings(){
         }
     };
 
-    
-
-    
+ 
 
    
     return(
@@ -238,7 +230,6 @@ export default function Settings(){
                     <Switch
                         value={musicEnabled}
                         onValueChange={handleMusicToggle}
-                        // onValueChange={(value) => setMusicEnabled(value)}
                     />
                 </View>
 
@@ -259,14 +250,61 @@ export default function Settings(){
                     </View>
                 )}
 
+                {/**Notifications Toggle */}
                 <View style={styles.textIconContainer}>
-                    <Text style={styles.mainText}> Sound Effects </Text>
-                    <FontAwesome5 name='volume-up' size={30} color='#183D3D' solid={false} />
+                    <Text style={styles.mainText}> Notifications </Text>
+                    <FontAwesome5 name='bell' size={30} color="#183D3D" solid={false} />
                     <Switch
-                        value={soundEffectsEnabled}
-                        onValueChange={handleSoundEffectsToggle}
+                        value={notificationsEnabled}
+                        onValueChange={handleNotificationsToggle}
                     />
                 </View>
+
+                {/**Password reset section */}
+                <View style={styles.passwordUpdateContainer}>
+                    <Text style={styles.passwordUpdateText}>Update Password</Text>
+                    <TextInput
+                        placeholder="Current Password"
+                        placeholderTextColor={theme.colors.text}
+                        secureTextEntry
+                        value={currentPassword}
+                        onChangeText={setCurrentPassword}
+                        style={styles.input}
+                    />
+                    <TextInput
+                        placeholder="New Password"
+                        placeholderTextColor={theme.colors.text}
+                        secureTextEntry
+                        value={newPassword}
+                        onChangeText={setNewPassword}
+                        style={styles.input}
+                    />
+                    <TextInput
+                        placeholder="Confirm New Password"
+                        placeholderTextColor={theme.colors.text}
+                        secureTextEntry
+                        value={confirmNewPassword}
+                        onChangeText={setConfirmNewPassword}
+                        style={styles.input}
+                    />
+                    <Button
+                        mode="contained"
+                        onPress={handlePasswordUpdate}
+                        style={styles.updateButton}
+                    >
+                        Update Password
+                    </Button>
+                    {passwordUpdateSuccess && <Text style={styles.successMessage}>Password updated successfully.</Text>}
+                </View>
+
+
+
+
+
+
+
+
+
 
                 <View style={styles.textIconContainer}>
                     <Text style={styles.mainText}> Account Settings </Text>
@@ -277,6 +315,16 @@ export default function Settings(){
                     <Text style={styles.mainText}> About app </Text>
                     
                 </View>
+
+                {/**Logout Button */}
+                <Button
+                    mode='contained'
+                    icon='logout'
+                    onPress={handleLogout}
+                    style={styles.logoutButton}
+                >
+                    Logout
+                </Button>
             </View>
         </View>
     );
@@ -284,24 +332,66 @@ export default function Settings(){
 };
 
 const styles = StyleSheet.create({
+    // container: {
+    //     flex: 1,
+    //     backgroundColor: '#fff',
+    // },
+    // headerContainer: {
+    //     backgroundColor: '#183D3D',
+    // },
+    // mainContentCont: {
+    //     padding: 20,
+    // },
+    // profileUpload: {
+    //     alignItems: 'center',
+    //     marginBottom: 20,
+    // },
+    // textIconContainer: {
+    //     flexDirection: 'row',
+    //     justifyContent: 'space-between',
+    //     alignItems: 'center',
+    //     marginVertical: 10,
+    // },
+    // mainText: {
+    //     fontSize: 18,
+    //     color: '#183D3D',
+    // },
+    // sliderContainer: {
+    //     marginVertical: 10,
+    //     alignItems: 'center',
+    // },
+    // volumeLabel: {
+    //     marginBottom: 5,
+    //     fontSize: 16,
+    //     color: '#183D3D',
+    // },
+
+
+
+
     container: {
         flex: 1,
-        backgroundColor: '#fff',
     },
     headerContainer: {
-        backgroundColor: '#183D3D',
+        backgroundColor: '#ffffff',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 10,
     },
     mainContentCont: {
         padding: 20,
     },
     profileUpload: {
-        alignItems: 'center',
-        marginBottom: 20,
-    },
-    textIconContainer: {
+        marginVertical: 20,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+    },
+    textIconContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
         marginVertical: 10,
     },
     mainText: {
@@ -310,12 +400,32 @@ const styles = StyleSheet.create({
     },
     sliderContainer: {
         marginVertical: 10,
-        alignItems: 'center',
     },
     volumeLabel: {
-        marginBottom: 5,
         fontSize: 16,
         color: '#183D3D',
+        marginBottom: 5,
+    },
+    logoutButton: {
+        marginTop: 30,
+        backgroundColor: '#ff5252',
     },
 
-})
+
+
+    passwordUpdateContainer: {
+        marginTop: 20,
+    },
+    passwordUpdateText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    updateButton: {
+        marginTop: 10,
+    },
+    successMessage: {
+        marginTop: 10,
+        color: 'green',
+    },
+
+});

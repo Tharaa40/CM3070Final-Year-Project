@@ -5,12 +5,16 @@ import { FIREBASE_AUTH, FIRESTORE_DB } from "../firebaseConfig";
 import { onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigation } from "@react-navigation/native";
 import { collection, getDocs, where, query } from "firebase/firestore";
-
+import { sendPasswordResetEmail } from "firebase/auth";
 
 export default function Login (){
     const [identifier, setIdentifier] = useState('');
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState(false);
+
+    const [emailForReset, setEmailForReset] = useState('');
+    const [showResetModal, setShowResetModal] = useState(false);
+
     const navigation = useNavigation();
     const theme = useTheme();
 
@@ -32,13 +36,21 @@ export default function Login (){
             const userCredentials = await signInWithEmailAndPassword(FIREBASE_AUTH, email, password);
             const user = userCredentials.user;
             console.log('Logged in with: ', user.email);
-            // navigation.navigate('MainTabs');
-            // navigation.navigate('HomePage')
             navigation.navigate('HomeTab');
         }catch(error){
             Alert.alert("Login Error", error.message);
         }
     };
+
+    const handlePasswordReset = async() => {
+        try{
+            await sendPasswordResetEmail(FIREBASE_AUTH, emailForReset);
+            Alert.alert('Password Reset', 'A password reset link has been sent to your email.');
+            setShowResetModal(false);
+        }catch(error){
+            Alert.alert('Error', error.message);
+        }
+    }
     
     
     
@@ -65,6 +77,12 @@ export default function Login (){
                 />
             </View>
             <View style={styles.switchContainer}>
+                <Text
+                    style={styles.forgotPasswordText}
+                    onPress={() => setShowResetModal(true)}
+                >
+                    Forgot you password?
+                </Text>
                 <Text style={styles.switchLabel}>Login with username</Text>
                 <Switch
                     value={username}
@@ -90,6 +108,21 @@ export default function Login (){
                     Sign Up 
                 </Button>
             </View>
+
+            {/**Password Reset Modal*/}
+            {showResetModal && (
+                <View style={styles.modalContainer}>
+                    <Text  style={styles.modalTitle}> Reset Password </Text>
+                    <TextInput
+                        placeholder="Enter your email"
+                        value={emailForReset}
+                        onChangeText={setEmailForReset}
+                        style={styles.input}
+                    />
+                    <Button onPress={handlePasswordReset} buttonColor="blue" textColor="white"> Send reset Link </Button>
+                    <Button onPress={() => setShowResetModal(false)} buttonColor="blue" textColor="white" > Cancel </Button>
+                </View>
+            )}
             
 
         </View>
@@ -129,18 +162,7 @@ export default function Login (){
         marginBottom: 10,
         // backgroundColor: '#FFF',
         fontSize: 16,
-        color: '#333',
-
-        // width: '80%',
-        // height: 40,
-        // borderColor: '#93B1A6',
-        // borderWidth: 1,
-        // backgroundColor: '#183D3D',
-        // marginBottom: 20,
-        // paddingHorizontal: 10,
-        // borderRadius: 5,
-        // alignSelf: 'center',
-        // color: 'white'
+        color: '#333'
     },
     switchContainer:{
         flexDirection: 'row',
@@ -158,6 +180,29 @@ export default function Login (){
     },
     button:{
         marginBottom: '7%',
+    },
+
+
+
+    forgotPasswordText: {
+        marginTop: 10,
+        color: 'blue',
+        textAlign: 'center',
+    },
+    modalContainer: {
+        position: 'absolute',
+        top: '30%',
+        left: '10%',
+        right: '10%',
+        padding: 20,
+        backgroundColor: 'white',
+        borderRadius: 8,
+        elevation: 5,
+    },
+    modalTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 10,
     },
 
 
