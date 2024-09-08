@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useContext } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Switch } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, Switch } from 'react-native';
 import { FontAwesome5 } from 'react-native-vector-icons';
-import { Appbar, useTheme, Button, Menu, TextInput } from 'react-native-paper';
+import { Appbar, useTheme, Button, Text, TextInput } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { FIREBASE_AUTH, FIRESTORE_DB } from "../firebaseConfig"; 
 import { signOut } from 'firebase/auth';
@@ -211,7 +211,11 @@ export default function Settings(){
     return(
         <View style={styles.container}>
             <Appbar.Header style={styles.headerContainer} statusBarHeight={0}>
-                <Appbar.Content title = {`${username}'s Settings`} color={theme.colors.textAlt} />
+                <Appbar.Content 
+                    title = {`${username}'s Settings`} 
+                    color={theme.colors.textAlt} 
+                    titleStyle={{ fontFamily: 'PlayfairDisplay-Bold'}} 
+                />
                 <FontAwesome5  name="angle-left" size={30} color='black' onPress={() => navigation.goBack()} />
             </Appbar.Header>
             <View style={styles.mainContentCont}>
@@ -291,20 +295,12 @@ export default function Settings(){
                         mode="contained"
                         onPress={handlePasswordUpdate}
                         style={styles.updateButton}
+                        labelStyle={{fontFamily: 'Montserrat-Medium', fontSize: 16}}
                     >
                         Update Password
                     </Button>
                     {passwordUpdateSuccess && <Text style={styles.successMessage}>Password updated successfully.</Text>}
                 </View>
-
-
-
-
-
-
-
-
-
 
                 <View style={styles.textIconContainer}>
                     <Text style={styles.mainText}> Account Settings </Text>
@@ -322,6 +318,7 @@ export default function Settings(){
                     icon='logout'
                     onPress={handleLogout}
                     style={styles.logoutButton}
+                    labelStyle={{fontFamily: 'Montserrat-Medium', fontSize: 16}}
                 >
                     Logout
                 </Button>
@@ -396,6 +393,7 @@ const styles = StyleSheet.create({
     },
     mainText: {
         fontSize: 18,
+        fontFamily: 'Lora-Medium',
         color: '#183D3D',
     },
     sliderContainer: {
@@ -405,10 +403,21 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#183D3D',
         marginBottom: 5,
+        fontFamily: 'Lora-Medium',
     },
     logoutButton: {
         marginTop: 30,
         backgroundColor: '#ff5252',
+    },
+    input: {
+        fontFamily: 'Roboto-Regular',
+        backgroundColor: '#F5F5F5',
+        borderRadius: 5,
+        paddingHorizontal: 10,
+        marginVertical: 10,
+        height: 50,
+        color: '#183D3D',
+        fontSize: 16,
     },
 
 
@@ -419,6 +428,7 @@ const styles = StyleSheet.create({
     passwordUpdateText: {
         fontSize: 18,
         fontWeight: 'bold',
+        fontFamily: 'PlayfairDisplay-Bold',
     },
     updateButton: {
         marginTop: 10,
@@ -426,6 +436,7 @@ const styles = StyleSheet.create({
     successMessage: {
         marginTop: 10,
         color: 'green',
+        fontFamily: 'Roboto-Regular'
     },
 
 });

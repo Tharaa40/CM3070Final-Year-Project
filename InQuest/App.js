@@ -35,54 +35,109 @@ const Stack = createNativeStackNavigator();
 
 
 
+// const screenOptions = ({ route }) => ({
+//   tabBarShowLabel: false, 
+//   headerShown: false,
+//   tabBarIcon:({ color, size, focused }) => {
+//     let iconName; 
+//     let iconComponent;
+
+//     switch (route.name) {
+//       case 'HomeTab':
+//         iconName = 'home-outline';
+//         iconComponent = <Icon name={iconName} color={color} size={size} />;
+//         break;
+//       case 'Details':
+//         iconName = 'check-outline';
+//         iconComponent = <Icon name={iconName} color={color} size={size} />;
+//         break;
+//       case 'Addtask':
+//         iconName = 'plus-box-outline';
+//         iconComponent = (
+//           <View style={styles.addIconContainer}>
+//             <Icon name={iconName} color={color} size={size} style={styles.addIcon} />
+//           </View>
+//         )
+//         // iconComponent = <Icon name={iconName} color={color} size={size} style={styles.addIcon} />;
+//         break;
+//       case 'Calendar':
+//         iconName = 'calendar-outline';
+//         iconComponent = <Icon name={iconName} color={color} size={size} />;
+//         break;
+//       case 'Timer':
+//         iconName = 'timer-outline';
+//         iconComponent = <Icon name={iconName} color={color} size={size} />;
+//         break;
+//       default:
+//         iconName = 'help-circle-outline';
+//         iconComponent = <Icon name={iconName} color={color} size={size} />;
+//         break;
+//     }
+//     return iconComponent;
+//     // return <Icon name={iconName} color={color} size={size} />
+//   }, 
+//   tabBarActiveTintColor: 'tomato',
+//   tabBarInactiveTintColor: 'gray',
+//   tabBarStyle: {
+//     height: 50, //original 
+//     backgroundColor: 'beige', //original 
+//     position: 'relative', //original
+//   },
+// });
+
+
 const screenOptions = ({ route }) => ({
   tabBarShowLabel: false, 
   headerShown: false,
-  tabBarIcon:({ color, size, focused }) => {
+  tabBarIcon: ({ color, size, focused }) => {
     let iconName; 
     let iconComponent;
 
     switch (route.name) {
       case 'HomeTab':
         iconName = 'home-outline';
-        iconComponent = <Icon name={iconName} color={color} size={size} />;
         break;
       case 'Details':
         iconName = 'check-outline';
-        iconComponent = <Icon name={iconName} color={color} size={size} />;
         break;
       case 'Addtask':
         iconName = 'plus-box-outline';
-        iconComponent = (
-          <View style={styles.addIconContainer}>
-            <Icon name={iconName} color={color} size={size} style={styles.addIcon} />
-          </View>
-        )
-        // iconComponent = <Icon name={iconName} color={color} size={size} style={styles.addIcon} />;
         break;
       case 'Calendar':
         iconName = 'calendar-outline';
-        iconComponent = <Icon name={iconName} color={color} size={size} />;
         break;
       case 'Timer':
         iconName = 'timer-outline';
-        iconComponent = <Icon name={iconName} color={color} size={size} />;
         break;
       default:
         iconName = 'help-circle-outline';
-        iconComponent = <Icon name={iconName} color={color} size={size} />;
         break;
     }
+
+    iconComponent = (
+      <View style={route.name === 'Addtask' ? styles.addIconContainer : {}}>
+        <Icon name={iconName} color={color} size={size} style={route.name === 'Addtask' ? styles.addIcon : {}} />
+      </View>
+    );
+
     return iconComponent;
-    // return <Icon name={iconName} color={color} size={size} />
-  }, 
+  },
   tabBarActiveTintColor: 'tomato',
   tabBarInactiveTintColor: 'gray',
   tabBarStyle: {
-    height: 50,
-    backgroundColor: 'beige',
-    // borderRadius: 150,
-    position: 'relative',
+    height: 60,
+    backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderTopColor: '#ddd',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 4,
+    position: 'absolute', 
+    bottom: 0, 
+    width: '100%',
+    zIndex: 10, 
   },
 });
 
@@ -102,35 +157,32 @@ function CreateTaskStack() {
 
 const BottomTab = ({toggleTheme}) => {
   return(
-        <Tab.Navigator screenOptions={screenOptions}> 
-          {/* <Tab.Screen name='HomeTab' component={HomePage} /> */}
-          <Tab.Screen name='HomeTab'>
-            {props => <HomePage {...props} toggleTheme={toggleTheme} />}
-          </Tab.Screen>
-          <Tab.Screen name='Details' component={Details}/>
-          {/* <Tab.Screen name='Create Task' component={CreateTask}/> */}
-          <Tab.Screen
-            // name='CreateTask'
-            name='Addtask'
-            options={{
-              tabBarStyle:{display: 'none'}
-            }}
-            // component={CreateTask}
-            component={TaskBottomSheet}
-            listeners={({ navigation }) => ({
-              tabPress: e => {
-                e.preventDefault();
-                navigation.navigate('Addtask');
-              },
-            })}
-          />
-          <Tab.Screen name='Calendar' component={CalendarView2}/>
-          <Tab.Screen name='Timer' component={Timer} />
-        </Tab.Navigator>
-
-
+    <Tab.Navigator screenOptions={screenOptions}> 
+      <Tab.Screen name='HomeTab'>
+        {props => <HomePage {...props} toggleTheme={toggleTheme} />}
+      </Tab.Screen>
+      <Tab.Screen name='Details' component={Details}/>
+      <Tab.Screen
+        name='Addtask'
+        options={{
+          tabBarStyle:{display: 'none'}
+        }}
+        // component={CreateTask}
+        component={TaskBottomSheet}
+        listeners={({ navigation }) => ({
+          tabPress: e => {
+            e.preventDefault();
+            navigation.navigate('Addtask');
+          },
+        })}
+      />
+      <Tab.Screen name='Calendar' component={CalendarView2}/>
+      <Tab.Screen name='Timer' component={Timer} />
+    </Tab.Navigator>
   )
 }
+
+
 
 const saveThemePreference = async(userId, theme) => {
   try{
@@ -239,10 +291,34 @@ export default function App () {
 }
 
 
+// const styles = StyleSheet.create({
+//   addIconContainer: {
+//     position: 'absolute', 
+//     top: -30,  // Adjust this value to position the icon vertically
+//     width: 60, 
+//     height: 60, 
+//     backgroundColor: 'white', 
+//     borderRadius: 30, 
+//     borderWidth: 2, 
+//     borderColor: 'red',
+//     justifyContent: 'center', 
+//     alignItems: 'center',
+//     shadowColor: 'black',
+//     shadowOffset: { width: 0, height: 2 },
+//     shadowOpacity: 0.3,
+//     shadowRadius: 4,
+//     elevation: 5,
+//   },
+//   addIcon:{
+//     position: 'absolute'
+//   }
+// });
+
+
 const styles = StyleSheet.create({
   addIconContainer: {
     position: 'absolute', 
-    top: -30,  // Adjust this value to position the icon vertically
+    top: -30,  // Position the icon above the tab bar
     width: 60, 
     height: 60, 
     backgroundColor: 'white', 
@@ -257,8 +333,8 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-  addIcon:{
-    position: 'absolute'
+  addIcon: {
+    // No additional styles needed for this icon
   }
 });
 

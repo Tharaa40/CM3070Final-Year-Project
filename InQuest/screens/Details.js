@@ -1,16 +1,14 @@
 //this is the file after carousel
 
-import React, {useEffect, useState, useCallbac, useMemo, useRef} from 'react';
-import { SafeAreaView, View, StyleSheet, FlatList, TouchableOpacity, Alert, ScrollView, Animated, Dimensions,  } from 'react-native';
+import React, {useEffect, useState, useRef} from 'react';
+import { SafeAreaView, View, StyleSheet, FlatList, TouchableOpacity, Alert, Animated, Dimensions,  } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import { FIREBASE_AUTH, FIRESTORE_DB } from '../firebaseConfig';
-import { collection, getDocs, deleteDoc, doc, query, where, getDoc, setDoc } from 'firebase/firestore';
+import { collection, getDocs, deleteDoc, doc, query, where, getDoc } from 'firebase/firestore';
 import { useIsFocused } from '@react-navigation/native';
-import moment, { months } from 'moment';
-import { PaperProvider, Card, Text, useTheme } from 'react-native-paper';
-// import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
-import { GestureDetector, GestureHandlerRootView, Gesture } from 'react-native-gesture-handler';
+import moment from 'moment';
+import { Card, Text, useTheme } from 'react-native-paper';
 import Carousel from 'react-native-reanimated-carousel';
 
 const { width } = Dimensions.get('window');
@@ -116,11 +114,52 @@ export default function Details({navigation}){
                 renderItem={({ item: task }) => (
                     <Card style={[styles.card, {backgroundColor: theme.colors.surface, borderColor: theme.colors.border}]}>
                         <Card.Content>
-                            <Text variant='bodyLarge' style={{color: theme.colors.text, fontWeight: 'bold', marginBottom: 8}}>{task.title}</Text>
-                            <Text variant='bodyLarge' style={{color: theme.colors.textAlt}}>{task.description}</Text>
-                            <Text variant='bodyLarge' style={{color: theme.colors.textAlt}}>{task.deadline}</Text>
-                            <Text variant='bodyLarge' style={{color: theme.colors.textAlt}}>{task.selectedPriority}</Text>
-                            <Text variant='bodyLarge' style={{color: theme.colors.textAlt}}>{task.category}</Text>
+                            <Text 
+                                variant='bodyLarge' 
+                                style={{ 
+                                    color: theme.colors.text, 
+                                    marginBottom: 8, 
+                                    fontFamily: 'Montserrat-SemiBold'
+                                }}
+                            >
+                                {task.title}
+                            </Text>
+                            <Text 
+                                variant='bodyLarge' 
+                                style={{
+                                    color: theme.colors.textAlt, 
+                                    fontFamily: 'Roboto-Regular'
+                                }}
+                            >
+                                {task.description}
+                            </Text>
+                            <Text 
+                                variant='bodyLarge' 
+                                style={{
+                                    color: theme.colors.textAlt,
+                                    fontFamily: 'Roboto-Regular'
+                                }}
+                            >
+                                {task.deadline}
+                            </Text>
+                            <Text 
+                                variant='bodyLarge' 
+                                style={{
+                                    color: theme.colors.textAlt,
+                                    fontFamily: 'Roboto-Regular'
+                                }}
+                            >
+                                {task.selectedPriority}
+                            </Text>
+                            <Text 
+                                variant='bodyLarge' 
+                                style={{
+                                    color: theme.colors.textAlt,
+                                    fontFamily: 'Roboto-Regular'
+                                }}
+                            >
+                                {task.category}
+                            </Text>
                         </Card.Content>
                         <Card.Actions>
                             <TouchableOpacity onPress={() => handleEdit(task)}>
@@ -166,33 +205,22 @@ export default function Details({navigation}){
 const styles=StyleSheet.create({
     container: {
         flex:1,
-        // marginHorizontal: 10, 
-        // marginVertical: 10,
     }, 
     title: {
         textAlign: 'center',
-        fontWeight: 'bold',
+        fontFamily: 'PlayfairDisplay-Bold',
         fontSize: 30,
         marginVertical: 20,
-        // marginBottom: 20,
     },
     monthContainer: {
         paddingLeft: 5,
         paddingRight: 5,
     },
     monthTitle: {
-        // fontSize:20, 
-        marginHorizontal: 20
+        marginHorizontal: 20,
+        fontFamily: 'Lora-Medium'
     }, 
     card: {
-        // marginRight: '10%',
-        // marginBottom: 5, 
-        // elevation: 3,
-        // // backgroundColor: '#183D3D',
-        // borderWidth: 3, 
-        // // borderColor: '#5C8374',
-        // borderRadius: 30,
-
         borderRadius: 30,
         borderWidth: 2,
         padding: 5,

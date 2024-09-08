@@ -244,7 +244,6 @@ import { FIREBASE_AUTH, FIRESTORE_DB } from "../firebaseConfig";
 import { updateDoc, doc } from "firebase/firestore";
 import LottieView from 'lottie-react-native';
 import DynamicAnimation from './DynamicAnimation';
-// import { ProgressChart } from "react-native-chart-kit";
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -407,7 +406,7 @@ export default function VirtualPet({ points, xp, emotion }){
         <View style={ [styles.container, {backgroundColor} ]}>
             <View style={styles.header}>
                 <Text style={styles.title}>Pao Pao</Text>
-                <Text> is feeling {emotionText} </Text>
+                <Text style={{ fontFamily: 'Roboto-Regular' }}> is feeling {emotionText} </Text>
             </View>
             <View style={styles.animationContainer}>
                 <LottieView
@@ -500,13 +499,11 @@ export default function VirtualPet({ points, xp, emotion }){
 const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
-        // marginVertical: 10,
         flex: 1,
         justifyContent: 'center',
         borderRadius: 70,
     },
     header:{
-        // backgroundColor: 'pink', 
         padding: 5,
         marginVertical: 5,
         justifyContent: 'center', 
@@ -515,8 +512,8 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 24,
-        fontWeight: 'bold',
-        // backgroundColor: 'orange',
+        // fontWeight: 'bold',
+        fontFamily: 'PlayfairDisplay-Bold' 
     },
     animationContainer: {
         position: 'relative',
@@ -554,6 +551,7 @@ const styles = StyleSheet.create({
     attribute: {
         marginTop: 10,
         fontSize: 15,
+        fontFamily: 'Lora-Medium',
         // fontWeight: 'bold',
         color: '#333',
         textAlign: 'center',

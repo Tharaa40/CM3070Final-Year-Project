@@ -50,7 +50,7 @@ export default function TaskList ({ tasks, handleTaskPress, handleEditTask, hand
             contentContainerStyle={styles.list}
             horizontal
             showsHorizontalScrollIndicator={false}
-            ListEmptyComponent={<Text style={{ color: theme.colors.text , marginHorizontal: 10 }}>No tasks here!</Text>}
+            ListEmptyComponent={<Text style={{ color: theme.colors.text , marginHorizontal: 10, fontFamily: 'Roboto-Regular' }}>No tasks here!</Text>}
         />
     )
 }

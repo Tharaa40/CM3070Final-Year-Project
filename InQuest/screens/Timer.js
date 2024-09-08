@@ -1,6 +1,6 @@
 import React, {useState, useRef} from "react";
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from "react-native";
-import { useTheme } from "react-native-paper";
+import { View, TextInput, Button, StyleSheet, TouchableOpacity } from "react-native";
+import { useTheme, Text } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     },
     title:{
         fontSize: 24,
-        fontWeight: 'bold',
+        fontFamily: 'PlayfairDisplay-Bold',
         marginBottom: 20,
     },
     minuteContainer:{
@@ -135,6 +135,7 @@ const styles = StyleSheet.create({
     },
     minuteText:{
         fontSize: 18,
+        fontFamily: 'Lora-Medium',
         fontWeight: '600'
     },
     timerContainer:{
@@ -145,7 +146,6 @@ const styles = StyleSheet.create({
         height: 200,
         borderRadius: 100,
         borderWidth: 5,
-        // borderColor: 'white',
         justifyContent: 'center',
         alignItems: 'center',
         marginVertical: 50
@@ -153,6 +153,7 @@ const styles = StyleSheet.create({
     timerText:{
         fontSize: 40,
         fontWeight: 'bold',
+        fontFamily: 'Montserrat-Medium'
     },
     buttonsContainer:{
         flexDirection: 'row',
@@ -162,10 +163,6 @@ const styles = StyleSheet.create({
     button:{
         padding: 20,
         borderRadius: 10,
-        // backgroundColor: '#FFF',
-        // borderRadius: 50, 
-        // padding: 10, 
-        // elevation: 3,
     },
     buttonDisabled:{
         opacity: 0.5

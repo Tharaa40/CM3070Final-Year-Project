@@ -1,12 +1,10 @@
 //this is the homepage after refractoring
 
-import React, {useState, useEffect, useRef}  from "react";
+import React, {useState, useEffect}  from "react";
 import { ScrollView, View, StatusBar, Modal, StyleSheet, Dimensions, TouchableOpacity} from "react-native";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
-import moment from "moment";
-// import Svg, {Circle} from "react-native-svg";
-// import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import {  Text, Divider, useTheme} from 'react-native-paper';
+import moment from "moment";
 import { collection, getDocs, updateDoc, doc, getDoc, query, where } from "firebase/firestore";
 import { FIREBASE_AUTH, FIRESTORE_DB } from "../firebaseConfig";
 import TaskList from "../homeComponents/TaskList";
@@ -14,7 +12,6 @@ import Stats from "../homeComponents/Stats";
 import { calculateStats } from "../homeComponents/Stats";
 import Header from "../homeComponents/Header";
 import Chart from "../homeComponents/Chart";
-// import TaskCard from "../homeComponents/TaskCard";
 import { updateUserRewards } from "../rewardSystem/Points";
 
 
@@ -211,7 +208,6 @@ export default function HomePage({toggleTheme}){
 
 
     return(
-        // <PaperProvider>
         <>
             <StatusBar barStyle='light-content'/>
             <ScrollView style={[styles.container, {backgroundColor: theme.colors.background}]}>
@@ -222,10 +218,8 @@ export default function HomePage({toggleTheme}){
                     handleMenuItemClick={(item) => console.log(item)}
                     toggleTheme={toggleTheme}
                 />
-                {/* <Text style={styles.statLabel}>Points: {points}</Text> */}
-                {/* <Text style={styles.statLabel}>XP: {xp}</Text> */}
                 <View style={styles.mainContainer}>
-                    <Text variant="displaySmall" style={{ color: theme.colors.primary, fontSize: 30, marginBottom: 10 }}> Today </Text>
+                    <Text variant="displaySmall" style={[ styles.heading, { color: theme.colors.primary }]}> Today </Text>
                     <TaskList
                         tasks={todayTasks}
                         handleTaskPress={handleTaskPress}
@@ -235,7 +229,7 @@ export default function HomePage({toggleTheme}){
 
                     <Divider style={{backgroundColor:theme.colors.border, height: 2 }} />
 
-                    <Text variant="displaySmall" style={{ color: theme.colors.primary, fontSize: 30, marginBottom: 10 }}> Upcoming </Text>
+                    <Text variant="displaySmall" style={[ styles.heading, { color: theme.colors.primary }]}> Upcoming </Text>
                     <TaskList
                         tasks={otherTasks}
                         handleTaskPress={handleTaskPress}
@@ -245,7 +239,7 @@ export default function HomePage({toggleTheme}){
 
                     <Divider style={{backgroundColor: theme.colors.border, height: 2 }} />
 
-                    <Text variant="displaySmall" style={{ color: theme.colors.primary, fontSize: 30, marginVertical: 10 }}>Personal Stats</Text>
+                    <Text variant="displaySmall" style={[ styles.headingStats, { color: theme.colors.primary }]}>Personal Stats</Text>
                     <Stats stats={stats} />
                 </View>
                 <Chart 
@@ -253,7 +247,6 @@ export default function HomePage({toggleTheme}){
                     timeSpentData={timeSpentData} 
                     label={chartLabels}
                 />      
-                {/* <Chart data = {timeSpentData} label={chartLabels}/> */}
 
                 {selectedTask && (
                     <Modal
@@ -265,13 +258,13 @@ export default function HomePage({toggleTheme}){
                         <View style={styles.modalContainer}>
                             <View style={[styles.modalContent, {backgroundColor: theme.colors.surface}]}>
                                 <Text style={[styles.modalTitle, {color: theme.colors.primaryAlt}]}> {selectedTask.title} </Text>
-                                <Text style={{ color: theme.colors.textAlt }}>Description: {selectedTask.description}</Text>
-                                <Text style={{ color: theme.colors.textAlt }}>Deadline: {selectedTask.deadline}</Text>
-                                <Text style={{ color: theme.colors.textAlt  }}>Priority: {selectedTask.selectedPriority}</Text>
-                                <Text style={{ color: theme.colors.textAlt  }}>Category: {selectedTask.category}</Text>
-                                <Text style={{ color: theme.colors.textAlt  }}>Subtasks:</Text>
+                                <Text style={[ styles.modalText, { color: theme.colors.textAlt }]}>Description: {selectedTask.description}</Text>
+                                <Text style={[ styles.modalText, { color: theme.colors.textAlt }]}>Deadline: {selectedTask.deadline}</Text>
+                                <Text style={[ styles.modalText, { color: theme.colors.textAlt }]}>Priority: {selectedTask.selectedPriority}</Text>
+                                <Text style={[ styles.modalText, { color: theme.colors.textAlt }]}>Category: {selectedTask.category}</Text>
+                                <Text style={[ styles.modalText, { color: theme.colors.textAlt }]}>Subtasks:</Text>
                                 {selectedTask.subtasks.map((subtask, index) => (
-                                    <Text key={index} style={{ color: theme.colors.textAlt  }}> {subtask.text} - {subtask.checked ? 'Done' : 'Not Done'} </Text>
+                                    <Text key={index} style={[ styles.modalText, { color: theme.colors.textAlt }]}> {subtask.text} - {subtask.checked ? 'Done' : 'Not Done'} </Text>
                                 ))}
                                 <TouchableOpacity onPress={handleCloseModal}>
                                     <Text style={[styles.closeModal, {color: theme.colors.primaryAlt}]}> Close </Text>
@@ -283,9 +276,7 @@ export default function HomePage({toggleTheme}){
                 )}
 
             </ScrollView>
-        </>
-        // </PaperProvider>
-      
+        </>      
     );
 
 }
@@ -299,6 +290,16 @@ const styles = StyleSheet.create({
     mainContainer:{
         padding: 5,
     },
+    heading:{
+        fontFamily: 'PlayfairDisplay-Bold',
+        fontSize: 30,
+        marginBottom: 10,
+    },
+    headingStats:{
+        fontFamily: 'PlayfairDisplay-Bold',
+        fontSize: 30,
+        marginVertical: 10,
+    },
     modalContainer: { //using this
         flex: 1,
         justifyContent: 'center',
@@ -306,29 +307,23 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     modalContent: { //using this
-        // width: '80%',
-        // backgroundColor: '#fff',
-        // borderRadius: 10,
-        // padding: 20,
         alignItems: 'center',
-
         width: Dimensions.get('window').width - 40,
-        // backgroundColor: '#183D3D',
         padding: 20,
         borderRadius: 50,
     },
     modalTitle: { //using this
-        // fontSize: 18,
-        // fontWeight: 'bold',
-        // marginBottom: 10,
-
-        fontSize: 20,
-        fontWeight: 'bold',
-        // color: '#93B1A6',
+        fontFamily: 'PlayfairDisplay-Bold',
+        fontSize: 24,
         marginBottom: 10,
     },
+    modalText:{
+        fontFamily: 'Roboto-Regular',
+        fontSize: 16,
+        marginBottom: 5,
+    },
     closeModal: {
-        // color: '#5C8374',
+        fontFamily: 'Montserrat-SemiBold',
         marginTop: 20,
         textAlign: 'center',
         fontSize: 16,

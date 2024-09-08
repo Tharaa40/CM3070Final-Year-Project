@@ -63,6 +63,10 @@ export default function Chart({ taskCompletionData, timeSpentData, labels }){
         propsForBackgroundLines: {
           strokeDasharray: "",  // Adds dashed lines for better visibility
         },
+        propsForLabels: {
+            fontFamily: 'Lora-Medium'
+        },
+        decimalPlaces: 0
     };
 
     return(

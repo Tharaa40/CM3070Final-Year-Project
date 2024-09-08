@@ -94,45 +94,6 @@ export default function Stats ({ stats }){
 }
 
 const styles = StyleSheet.create({
-    // statsContainer: {
-    //     padding: 16,
-    //     margin: 16,
-    //     borderRadius: 12,
-    //     // backgroundColor: '#fff',
-    //     elevation: 2,
-    //     shadowColor: '#000',
-    //     shadowOpacity: 0.1,
-    //     shadowOffset: { width: 0, height: 2 },
-    //     shadowRadius: 4,
-    // },
-    // title: {
-    //     fontSize: 20,
-    //     fontWeight: 'bold',
-    //     marginBottom: 16,
-    //     textAlign: 'center',
-    // },
-    // statRow: {
-    //     flexDirection: 'row',
-    //     alignItems: 'center',
-    //     justifyContent: 'space-between',
-    //     marginVertical: 8,
-    // },
-    // statLabel: {
-    //     fontSize: 16,
-    //     fontWeight: '500',
-    //     flex: 1,
-    // },
-    // statValue: {
-    //     fontSize: 16,
-    //     fontWeight: 'bold',
-    // },
-    // streakAnimation: {
-    //     width: 30,
-    //     height: 30,
-    // },
-
-
-
     statsContainer: {
         padding: 20,
         borderRadius: 10,

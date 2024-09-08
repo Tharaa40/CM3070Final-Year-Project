@@ -90,20 +90,6 @@ export default function Header({ username, menuVisible, handleToggleMenu, handle
 
     const icon = <Icon name="heart-outline" size={30}/>
     return(
-        // <Appbar.Header style={styles.headerContainer} statusBarHeight={0}>
-        //     <Appbar.Content title= {`Hello, ${username}`} />
-        //     <Avatar.Image size={50} source={AvatarImg} style={styles.avatar}  />
-        //     {/* <TouchableOpacity onPress={handleAvatarClick}>
-        //         <Avatar.Image size={50} source={AvatarImg} style={styles.avatar}  />
-        //     </TouchableOpacity> */}
-        //     <AvatarMenu
-        //         menuVisible={menuVisible}
-        //         handleToggleMenu={handleToggleMenu}
-        //         handleMenuItemClick={handleMenuItemClick}
-        //         toggleTheme={toggleTheme}
-        //     />                      
-        // </Appbar.Header>
-
         <Appbar.Header style={styles.headerContainer} statusBarHeight={0}>
             <Appbar.Content 
                 title={`${username}'s Quest`} 
