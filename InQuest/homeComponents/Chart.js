@@ -80,7 +80,6 @@ export default function Chart({ taskCompletionData, timeSpentData, labels }){
                 chartConfig={chartConfig}
                 bezier
                 style={styles.chartStyle}
-                // style={{ marginVertical: 8, borderRadius: 16}}
             />
             <BarChart
                 data={{
@@ -94,7 +93,6 @@ export default function Chart({ taskCompletionData, timeSpentData, labels }){
                 yLabelsOffset={5}
                 chartConfig={chartConfig}
                 style={styles.chartStyle}
-                // style={{ marginVertical: 8, borderRadius: 16}}
             />
         </View>
     );
@@ -105,19 +103,6 @@ export default function Chart({ taskCompletionData, timeSpentData, labels }){
 
 
 const styles = StyleSheet.create({
-    // chartContainer: {
-    //     marginTop: 20,
-    //     paddingHorizontal: 20,
-    // },
-    // chartStyle: {
-    //     marginVertical: 8,
-    //     borderRadius: 10,
-    //     elevation: 3,
-    //     // paddingLeft: 10,
-    //     // paddingHorizontal: 13
-    // },
-
-
     chartContainer: {
         marginTop: 20,
         paddingHorizontal: 20,

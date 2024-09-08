@@ -158,35 +158,35 @@ export default function Avatar({ navigation }) {
     };
 
     // Upload avatar to Firebase
-    const uploadAvatar = async (uri) => {
-        try {
-            const response = await fetch(uri);
-            const blob = await response.blob();
-            const avatarRef = ref(FIREBASE_STORAGE, `avatars/${new Date().getTime()}.jpg`);
+    // const uploadAvatar = async (uri) => {
+    //     try {
+    //         const response = await fetch(uri);
+    //         const blob = await response.blob();
+    //         const avatarRef = ref(FIREBASE_STORAGE, `avatars/${new Date().getTime()}.jpg`);
 
-            await uploadBytes(avatarRef, blob);
-            const url = await getDownloadURL(avatarRef);
+    //         await uploadBytes(avatarRef, blob);
+    //         const url = await getDownloadURL(avatarRef);
 
-            const userId = FIREBASE_AUTH.currentUser.uid;
-            await setDoc(doc(FIRESTORE_DB, 'users', userId), { avatarURL: url }, { merge: true });
+    //         const userId = FIREBASE_AUTH.currentUser.uid;
+    //         await setDoc(doc(FIRESTORE_DB, 'users', userId), { avatarURL: url }, { merge: true });
 
-            setSelectedAvatar(url);
-            console.log("Avatar uploaded and URL updated in Firestore:", url); // Debug
-        } catch (error) {
-            console.error('Error uploading avatar:', error);
-        }
-    };
+    //         setSelectedAvatar(url);
+    //         console.log("Avatar uploaded and URL updated in Firestore:", url); // Debug
+    //     } catch (error) {
+    //         console.error('Error uploading avatar:', error);
+    //     }
+    // };
 
-    const handleAvatarSelect = async (avatar) => {
-        try {
-            console.log("Avatar selected: ", avatar);
-            setSelectedAvatar(avatar);
-            const userId = FIREBASE_AUTH.currentUser.uid;
-            await setDoc(doc(FIRESTORE_DB, 'users', userId), { avatarURL: avatar }, { merge: true });
-        } catch (error) {
-            console.error('Error selecting avatar: ', error);
-        }
-    };
+    // const handleAvatarSelect = async (avatar) => {
+    //     try {
+    //         console.log("Avatar selected: ", avatar);
+    //         setSelectedAvatar(avatar);
+    //         const userId = FIREBASE_AUTH.currentUser.uid;
+    //         await setDoc(doc(FIRESTORE_DB, 'users', userId), { avatarURL: avatar }, { merge: true });
+    //     } catch (error) {
+    //         console.error('Error selecting avatar: ', error);
+    //     }
+    // };
 
     return (
         <View style={styles.container}>
@@ -209,7 +209,7 @@ export default function Avatar({ navigation }) {
             </TouchableOpacity>
 
             {/**Rectangles with various avatars */}
-            <ScrollView contentContainerStyle={styles.avatarContainer}>
+            {/* <ScrollView contentContainerStyle={styles.avatarContainer}>
                 {avatars.length > 0 ? (
                     avatars.map((avatar, index) => (
                         <TouchableOpacity key={index} onPress={() => handleAvatarSelect(avatar)}>
@@ -221,7 +221,7 @@ export default function Avatar({ navigation }) {
                 ) : (
                     <Text>No avatars available</Text>
                 )}
-            </ScrollView>
+            </ScrollView> */}
         </View>
     );
 }

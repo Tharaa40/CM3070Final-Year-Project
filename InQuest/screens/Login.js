@@ -84,7 +84,7 @@ export default function Login (){
 
                 <Button 
                     mode="outlined"
-                    onPress={() => navigation.navigate('SignUp')}
+                    onPress={() => navigation.navigate('EmailSignUp')}
                     textColor={theme.colors.primaryLight}
                 >
                     Sign Up 

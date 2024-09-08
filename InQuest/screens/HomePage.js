@@ -32,9 +32,8 @@ export default function HomePage({toggleTheme}){
 
     const navigation = useNavigation();
     const isFocused = useIsFocused();
+    const theme = useTheme();
     const user = FIREBASE_AUTH.currentUser;
-
-    // const theme = useTheme();
 
     const [stats, setStats] = useState({
         totalTasks: 0,
@@ -59,37 +58,18 @@ export default function HomePage({toggleTheme}){
                 tasksList.push({...doc.data(), id: doc.id, checked: false});
             });
 
-            // console.log('Fetched tasks', tasksList);
             setTasks(tasksList);
             categorizeTasks(tasksList);
-
-            // Calculate and update stats
-            // const calculatedStats = calculateStats(tasksList);
-            // setStats(calculatedStats);
         }
     };
 
-    const fetchUserData = async () => { //This is the original 
+    const fetchUserData = async () => { 
         const user = FIREBASE_AUTH.currentUser;
         if(user){
             const userDoc = await getDoc(doc(FIRESTORE_DB, "users", user.uid));
             if(userDoc.exists()){
                 const userData = userDoc.data();
                 setUsername(userData.username);
-
-                // let{points: userPoints=0, xp: userXp=0} = userData; //possible glitching
-                // if(userPoints >= 20){
-                //     userPoints = userPoints - 20;
-                // }
-                // if(userXp >= 5){
-                //     userXp = userXp - 5;
-                // }
-                // setPoints(userPoints);
-                // setXp(userXp);
-                // await updateDoc(doc(FIRESTORE_DB, "users", user.uid), {
-                //     points: userPoints,
-                //     xp: userXp,
-                // });
                 setPoints(userData.points || 0);
                 setXp(userData.xp || 0);
             }
@@ -103,7 +83,6 @@ export default function HomePage({toggleTheme}){
             fetchUserData();
             const calculatedStats = calculateStats(tasks);
             setStats(calculatedStats);
-            // calculateStats();
         }   
     }, [isFocused, tasks]);
     {/** End of specific user code */}    
@@ -112,15 +91,10 @@ export default function HomePage({toggleTheme}){
         const today = moment().startOf('day');
         const threeDaysFromNow = moment().add(3, 'days').endOf('day');
     
-        // console.log(`Today: ${today.format()}`);
-        // console.log(`Three Days From Now: ${threeDaysFromNow.format()}`);
-        
-        
         const todayTasks = tasks.filter(task => { //2nd method
             if(task.completed){
                 return false;
             }
-            // console.log(`Task Deadline for Today: ${task.deadline}`);
             const tdyTaskDeadline = moment(task.deadline, `M/DD/YYYY h:mm A`);
             if(!tdyTaskDeadline.isValid()){
                 console.warn(`Invalid today task deadline format: ${task.deadline}`);
@@ -134,7 +108,6 @@ export default function HomePage({toggleTheme}){
             if (task.completed) {
                 return false; // Exclude completed tasks
             }
-            // console.log(`Task Deadline for Other: ${task.deadline}`);
             const othTaskDeadline = moment(task.deadline, 'MM/DD/YYYY h:mm A');
             if (!othTaskDeadline.isValid()) {
                 console.warn(`Invalid other task deadline format: ${task.deadline}`);
@@ -164,80 +137,14 @@ export default function HomePage({toggleTheme}){
         setSelectedTask(null);
     };
 
-    // const handleTaskComplete = async(task) => { //This is the original 
-    //     try{
-    //         // //Update the task's completed status in Firestore 
-    //         // const taskRef = doc(FIRESTORE_DB, 'tasks', task.id);
-    //         // await updateDoc(taskRef, {completed: !task.completed, completedAt: newStatus ? new Date().toISOString() : null,  timeSpent: task.timeSpent || 0});
-    //         // // await updateDoc(taskRef, {checked: !task.checked});
-
-    //         // //Re-fetch tasks and categorise them again 
-    //         // fetchTasks();
-
-
-    //         const newStatus = !task.completed;
-    //         const taskRef = doc(FIRESTORE_DB, 'tasks', task.id);
-    //         const taskDoc = await getDoc(taskRef);
-    //         const taskData = taskDoc.data();
-
-    //         // console.log("Task data before update:", taskData);
-
-    //         await updateDoc(taskRef, {
-    //             completed: newStatus, 
-    //             completedAt: newStatus ? new Date().toISOString() : null, 
-    //             timeSpent: task.timeSpent || 0,
-    //         });
-    //         const updatedTasks = tasks.map(t => 
-    //             t.id == task.id ? { ...t, completed: !t.completed, completedAt: !task.completed ? new Date().toISOString() : null } : t
-    //         );
-    //         setTasks(updatedTasks);
-    //         categorizeTasks(updatedTasks);
-    //         //Verify the update 
-    //         const updatedTaskDoc = await getDoc(taskRef);
-    //         // console.log("Task data after update:", updatedTaskDoc.data());
-
-    //         const updatedStats = calculateStats(updatedTasks);
-    //         setStats(updatedStats);
-
-    //         if(newStatus){
-    //             const {points: updatedPoints, xp: updatedXp} = await updateUserRewards(task);
-    //             // let finalPoints = updatedPoints; //possible glitching
-    //             // let finalXp = updatedXp;
-    //             // if(finalPoints >= 20){
-    //             //     finalPoints = finalPoints - 20;
-    //             // }
-    //             // if(finalXp >= 5){
-    //             //     finalXp = finalXp - 5;
-    //             // }
-    //             // setPoints(finalPoints);
-    //             // setXp(finalXp);
-    //             setPoints(updatedPoints);
-    //             setXp(updatedXp);
-    //         }
-    //         // fetchTasks();
-    //     }catch(error){
-    //         console.error("Error updating tasks:", error);
-    //     }
-       
-    // };
-
     const handleTaskComplete = async(task) => { 
         try{
-            // //Update the task's completed status in Firestore 
-            // const taskRef = doc(FIRESTORE_DB, 'tasks', task.id);
-            // await updateDoc(taskRef, {completed: !task.completed, completedAt: newStatus ? new Date().toISOString() : null,  timeSpent: task.timeSpent || 0});
-            // // await updateDoc(taskRef, {checked: !task.checked});
-
-            // //Re-fetch tasks and categorise them again 
-            // fetchTasks();
-
+            
 
             const newStatus = !task.completed;
             const taskRef = doc(FIRESTORE_DB, 'tasks', task.id);
             const taskDoc = await getDoc(taskRef);
             const taskData = taskDoc.data();
-
-            // console.log("Task data before update:", taskData);
 
             await updateDoc(taskRef, {
                 completed: newStatus, 
@@ -251,7 +158,6 @@ export default function HomePage({toggleTheme}){
             categorizeTasks(updatedTasks);
             //Verify the update 
             const updatedTaskDoc = await getDoc(taskRef);
-            // console.log("Task data after update:", updatedTaskDoc.data());
 
             const updatedStats = calculateStats(updatedTasks);
             setStats(updatedStats);
@@ -259,16 +165,6 @@ export default function HomePage({toggleTheme}){
             if(newStatus){
                 const {points: updatedPoints, xp: updatedXp} = await updateUserRewards(task);
                 console.log("Updated points:", updatedPoints);
-                // let finalPoints = updatedPoints; //possible glitching
-                // let finalXp = updatedXp;
-                // if(finalPoints >= 20){
-                //     finalPoints = finalPoints - 20;
-                // }
-                // if(finalXp >= 5){
-                //     finalXp = finalXp - 5;
-                // }
-                // setPoints(finalPoints);
-                // setXp(finalXp);
                 setPoints(updatedPoints);
                 setXp(updatedXp);
             }
@@ -278,60 +174,6 @@ export default function HomePage({toggleTheme}){
         }
        
     };
-
-    // const renderTask = ({ item }) => {
-    //     const completedSubtasks = item.subtasks ? item.subtasks.filter(subtask => subtask.checked).length : 0;
-    //     const totalSubtasks = item.subtasks ? item.subtasks.length : 0;
-    //     const progress = totalSubtasks > 0 ? (completedSubtasks / totalSubtasks) * 100 : 0;
-
-
-    //     return(
-    //         <TouchableRipple onPress={() => handleTaskPress(item)} rippleColor="rgba(0, 0, 0, .32)">
-    //             <View style={styles.innerShadowContainer}>
-    //                 <Card onPress={() => handleTaskPress(item)} style={styles.card}>
-    //                     <View style={styles.cardHeader}>
-    //                         <Card.Title title={item.title} titleVariant="titleLarge" titleStyle={styles.cardTitle} /> 
-    //                         <IconButton
-    //                             icon="pencil-outline"
-    //                             size={20}
-    //                             color="#93B1A6"
-    //                             onPress={() => handleEditTask(item)}
-    //                         />
-    //                     </View>
-    //                     <Card.Content>
-    //                         <Text variant="bodyMedium" style={styles.cardText}> Priority: {item.selectedPriority} </Text>
-    //                         <Text variant="bodyMedium" style={styles.cardText}> Category: {item.category}</Text>
-    //                         <Text variant="bodyMedium" style={styles.cardText}> Deadline: {item.deadline}</Text>
-    //                         <View style={styles.bottomRow}>
-    //                             {totalSubtasks > 0 && (
-    //                                 <AnimatedCircularProgress
-    //                                     size={40}
-    //                                     width={4}
-    //                                     backgroundColor="#5C8374"
-    //                                     fill={Math.round(progress)}
-    //                                     tintColor="black" //color of the progress line 
-    //                                     text = {Math.round(progress)}
-    //                                 >
-    //                                     {
-    //                                         (fill) => <Text style={styles.progressText}> {Math.round(progress)} %</Text>
-                                            
-    //                                     }
-    //                                 </AnimatedCircularProgress>
-    //                             )}
-    //                             <Checkbox
-    //                                 status={item.completed ? 'checked' : 'unchecked'}
-    //                                 onPress={() => {handleTaskComplete(item)}}
-    //                                 color="#5C8374"
-    //                             />
-    //                         </View>
-    //                     </Card.Content>
-    //                 </Card>
-    //             </View>
-    //         </TouchableRipple>
-    //     );
-    // }
-
-  
 
     const getTasksCompletedThisWeek = (tasks) => {
         const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -366,7 +208,6 @@ export default function HomePage({toggleTheme}){
 
     const chartLabels= ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
-    const theme = useTheme();
 
 
     return(
@@ -408,10 +249,10 @@ export default function HomePage({toggleTheme}){
                     <Stats stats={stats} />
                 </View>
                 <Chart 
-                        taskCompletionData = {taskCompletionData}
-                        timeSpentData={timeSpentData} 
-                        label={chartLabels}
-                    /> 
+                    taskCompletionData = {taskCompletionData}
+                    timeSpentData={timeSpentData} 
+                    label={chartLabels}
+                />      
                 {/* <Chart data = {timeSpentData} label={chartLabels}/> */}
 
                 {selectedTask && (
