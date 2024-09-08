@@ -1,21 +1,22 @@
 import { MD3LightTheme, MD3DarkTheme } from 'react-native-paper';
 import merge from 'deepmerge';
 
-  const CustomLightTheme = {
-    ...MD3LightTheme,
-    colors: {
-      ...MD3LightTheme.colors,
-      primary: '#769FCD', // Buttons, active icons, headers
-      primaryAlt: '#466A9B', // Darker alternative for primary
-      accent: '#FF6B6B', // Highlights and warnings
-      background: '#F7FBFC', // Main background
-      surface: '#D6E6F2', // Cards, modals, and dropdown menus
-      surfaceAlt: '#F0F4F8', // Slightly darker background
-      text: '#B9D7EA', // Lighter text
-      textAlt: '#5A7081', // Darker text for better readability
-      border: '#A4B0BF', // Borders and dividers
-    },
-  };
+
+const CustomLightTheme = {
+  ...MD3LightTheme,
+  colors: {
+    ...MD3LightTheme.colors,
+    primary: '#769FCD', // Buttons, active icons, headers
+    primaryAlt: '#466A9B', // Darker alternative for primary
+    accent: '#FF6B6B', // Highlights and warnings
+    background: '#F7FBFC', // Main background
+    surface: '#D6E6F2', // Cards, modals, and dropdown menus
+    surfaceAlt: '#F0F4F8', // Slightly darker background
+    text: '#B9D7EA', // Lighter text
+    textAlt: '#5A7081', // Darker text for better readability
+    border: '#A4B0BF', // Borders and dividers
+  },
+};
   
   const CustomDarkTheme = {
     ...MD3DarkTheme,

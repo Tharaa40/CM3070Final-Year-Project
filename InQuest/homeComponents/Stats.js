@@ -90,15 +90,6 @@ export default function Stats ({ stats }){
                 />
             </View>
         </View>
-        // <View style={styles.statsContainer}>
-        //     <Text style={styles.statLabel}>Total Tasks: {stats.totalTasks}</Text>
-        //     <Text style={styles.statLabel}>Completed Tasks: {stats.completedTasks}</Text>
-        //     <Text style={styles.statLabel}>Remaining Tasks: {stats.remainingTasks}</Text>
-        //     <Text style={styles.statLabel}>Completion Rate: {Math.round(stats.completionRate)}%</Text>
-        //     <Text style={styles.statLabel}>Tasks Completed This Week: {stats.tasksCompletedThisWeek}</Text>
-        //     <Text style={styles.statLabel}>Average Time Spent per Task: {Math.round(stats.averageTimeSpentPerTask)} mins</Text>
-        //     <Text style={styles.statLabel}>Productivity Streak: {stats.streaks} days</Text>
-        // </View>
     );
 }
 
@@ -153,8 +144,8 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
     },
     title: {
-        fontSize: 22,
-        fontWeight: 'bold',
+        fontSize: 24,
+        fontFamily: 'PlayfairDisplay-Bold',
         marginBottom: 10,
         textAlign: 'center',
     },
@@ -166,18 +157,17 @@ const styles = StyleSheet.create({
     statLabel: {
         flex: 1,
         fontSize: 16,
+        fontFamily: 'Lora-Medium',
         marginLeft: 10,
     },
     statValue: {
         fontSize: 16,
-        fontWeight: 'bold',
+        fontFamily: 'Montserrat-Medium',
     },
     highlightRow: {
-        // borderColor: theme.colors.accent,
         borderWidth: 1,
         borderRadius: 5,
         padding: 10,
-        // backgroundColor: theme.colors.surfaceAlt,
     },
     streakAnimation: {
         width: 40,

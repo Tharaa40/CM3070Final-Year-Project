@@ -16,34 +16,35 @@ export default function TaskCard({ task, onPress, onEdit, onComplete }){
             <View style={styles.innerShadowContainer}>
                 <Card onPress={onPress} style={[styles.card, backgroundColor=theme.colors.surface]}>
                     <View style={styles.cardHeader}>
-                        <Card.Title title={task.title} titleVariant="titleLarge" titleStyle={{color:theme.colors.primaryAlt}} /> 
+                        <Card.Title 
+                            title={task.title} 
+                            titleVariant="titleLarge" 
+                            titleStyle={{ color:theme.colors.primaryAlt, fontFamily: 'PlayfairDisplay-Bold' }} 
+                        /> 
                         <IconButton
                             icon="pencil-outline"
                             size={20}
                             iconColor={theme.colors.primary}
-                            // color="#93B1A6"
                             onPress={onEdit}
                         />
                     </View>
                     <Card.Content>
-                        <Text variant="bodyMedium" style={[styles.cardText, {color: theme.colors.text}]}> Priority: {task.selectedPriority} </Text>
-                        <Text variant="bodyMedium" style={[styles.cardText, {color: theme.colors.text}]}> Category: {task.category}</Text>
-                        <Text variant="bodyMedium" style={[styles.cardText, {color: theme.colors.text}]}> Deadline: {task.deadline}</Text>
+                        <Text variant="bodyMedium" style={[styles.cardText, {color: theme.colors.text, fontFamily: 'Lora-Medium'}]}> Priority: {task.selectedPriority} </Text>
+                        <Text variant="bodyMedium" style={[styles.cardText, {color: theme.colors.text, fontFamily: 'Lora-Medium'}]}> Category: {task.category}</Text>
+                        <Text variant="bodyMedium" style={[styles.cardText, {color: theme.colors.text, fontFamily: 'Lora-Medium'}]}> Deadline: {task.deadline}</Text>
                         <View style={styles.bottomRow}>
                             {totalSubtasks > 0 && (
                                 <AnimatedCircularProgress
                                     size={40}
                                     width={4}
                                     backgroundColor={theme.colors.primary}
-                                    // backgroundColor="#5C8374"
                                     fill={Math.round(progress)}
-                                    tintColor={theme.colors.primaryAlt}
-                                    // tintColor="black" //color of the progress line 
+                                    tintColor={theme.colors.primaryAlt}//color of the progress line 
                                     text = {Math.round(progress)}
                                 >
                                     {
                                         (fill) => 
-                                            <Text style={[styles.progressText, {color: theme.colors.primary}]}> 
+                                            <Text style={[styles.progressText, {color: theme.colors.primary, fontFamily: 'Montserrat-Medium'}]}> 
                                                 {Math.round(progress)} %
                                             </Text>
                                         
@@ -55,7 +56,6 @@ export default function TaskCard({ task, onPress, onEdit, onComplete }){
                                 onPress={onComplete}
                                 color={theme.colors.primary}
                                 uncheckedColor={theme.colors.primary}
-                                // color="#5C8374"
                             />
                         </View>
                     </Card.Content>
@@ -141,29 +141,21 @@ export default function TaskCard({ task, onPress, onEdit, onComplete }){
 
 const styles = StyleSheet.create({
     innerShadowContainer:{ //for task cards ; using this
-        // shadowColor: '#000',
         shadowColor:'#183D3D',
         shadowOffset: { width: -2, height: -2 },
         shadowOpacity: 0.2,
         shadowRadius: 4,
         elevation: 2,
-        // backgroundColor: '#183D3D',
         borderRadius: 8,
         marginRight: 10
     },
-    card: { //using this
-        // backgroundColor: '#183D3D',
-    }, 
     cardHeader:{ //using this
         flexDirection: 'row',
         justifyContent: 'space-between',
         paddingRight: 8,
     },
-    cardTitle:{ //using this
-        // color: '#93B1A6'
-    },
     cardText: { //using this
-        // color: '#93B1A6',
+        fontSize: 17,
         
     },
     bottomRow:{ //using this
@@ -175,6 +167,5 @@ const styles = StyleSheet.create({
     progressText:{ //using this
         fontSize: 10,
         fontWeight: 'bold',
-        // color: 'white'
     },
 });

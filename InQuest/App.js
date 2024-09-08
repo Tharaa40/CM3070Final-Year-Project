@@ -6,7 +6,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import merge from 'deepmerge';
-import { PaperProvider, MD3LightTheme, MD3DarkTheme } from 'react-native-paper';
+import { PaperProvider } from 'react-native-paper';
+import { useFonts } from "expo-font";
 
 import Details from './screens/Details'; //using
 import Settings from './screens/Settings'; //using
@@ -31,6 +32,7 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
+
 
 
 const screenOptions = ({ route }) => ({
@@ -187,6 +189,25 @@ export default function App () {
 
   const currentTheme = isDarkTheme ? themes.dark : themes.light;
 
+  const [fontsLoaded] = useFonts({
+    "PlayfairDisplay-Bold": require("./assets/fonts/PlayfairDisplay-Bold.ttf"),
+    "Lora-Medium": require("./assets/fonts/Lora-Medium.ttf"),
+    "Montserrat-Medium": require("./assets/fonts/Montserrat-Medium.ttf"),
+    "Montserrat-SemiBold": require("./assets/fonts/Montserrat-SemiBold.ttf"),
+    "Roboto-Regular": require("./assets/fonts/Roboto-Regular.ttf"),
+    "SourceSans3-Regular": require("./assets/fonts/SourceSans3-Regular.ttf"),
+  });
+
+  if (!fontsLoaded) {
+    return (
+      <GestureHandlerRootView style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <GestureDetectorProvider>
+          <Text> Getting Ready</Text> 
+        </GestureDetectorProvider>
+      </GestureHandlerRootView>
+    );
+  }
+
   return(
     <GestureHandlerRootView style={{flex: 1}}>
       <GestureDetectorProvider>
@@ -200,7 +221,6 @@ export default function App () {
                     <Stack.Screen name='Login' component={Login} /> 
                     <Stack.Screen name='SignUp' component={SignUps} />
                     <Stack.Screen name='EmailSignUp' component={EmailSignUp}/> 
-                    {/* <Stack.Screen name='HomeTab' component={BottomTab}  /> really not using*/} 
                     <Stack.Screen name='HomeTab'>
                       {props => <BottomTab {...props} toggleTheme={toggleTheme} />}
                     </Stack.Screen>

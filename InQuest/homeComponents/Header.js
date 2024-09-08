@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { StyleSheet, TouchableOpacity, Alert, View, Animated, Text } from "react-native";
-import { Appbar, Avatar, useTheme } from 'react-native-paper';
+import { StyleSheet, TouchableOpacity, Alert, View, Animated } from "react-native";
+import { Appbar, Avatar, useTheme, Text } from 'react-native-paper';
 import AvatarMenu from "./AvatarMenu";
 import AvatarImg from '../assets/assetsPack/char_walk_left.gif';
 import { FIREBASE_AUTH, FIRESTORE_DB } from "../firebaseConfig";
@@ -105,7 +105,11 @@ export default function Header({ username, menuVisible, handleToggleMenu, handle
         // </Appbar.Header>
 
         <Appbar.Header style={styles.headerContainer} statusBarHeight={0}>
-            <Appbar.Content title={`${username}'s Quest`} color={theme.colors.textAlt} />
+            <Appbar.Content 
+                title={`${username}'s Quest`} 
+                color={theme.colors.textAlt} 
+                titleStyle={{ fontFamily: 'PlayfairDisplay-Bold'}}
+            />
             <View>
                 <TouchableOpacity onPress={flipCard}>
                     {isFlipped ? (
@@ -170,13 +174,12 @@ const styles = StyleSheet.create({
     },
     avatar: {
         marginLeft: 10,
-        borderWidth: 1, // Optional: add border for better visibility
+        borderWidth: 1, 
     },
     flipCard: {
         backfaceVisibility: 'hidden',
-        borderRadius: 10, // Rounded corners for a smoother look
+        borderRadius: 10, 
         paddingHorizontal: 5,
-        // padding: 10, // Optional: add padding inside the card
     },
     pointsContainer: {
         flexDirection: 'row',
@@ -184,6 +187,7 @@ const styles = StyleSheet.create({
     },
     pointsText: {
         fontSize: 18,
+        fontFamily: 'Lora-Medium',
         textAlign: 'center',
     },
 });

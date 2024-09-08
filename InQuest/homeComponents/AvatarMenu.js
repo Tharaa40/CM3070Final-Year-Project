@@ -35,20 +35,18 @@ export default function AvatarMenu ({ menuVisible, handleToggleMenu, toggleTheme
 
     return(
         <Menu
-        visible={menuVisible}
-        onDismiss={handleToggleMenu}
-        anchor={
-            <Animated.View style={{ transform: [{ rotate }] }}>
-                <Appbar.Action
-                    icon='dots-vertical'
-                    // color={colors.text}
-                    color={theme.colors.primaryAlt}
-                    // onPress={handleToggleMenu}
-                    onPress={handlePress}
-                />
-            </Animated.View>
-        }
-        style={{ marginTop: 60 }}
+            visible={menuVisible}
+            onDismiss={handleToggleMenu}
+            anchor={
+                <Animated.View style={{ transform: [{ rotate }] }}>
+                    <Appbar.Action
+                        icon='dots-vertical'
+                        color={theme.colors.primaryAlt}
+                        onPress={handlePress}
+                    />
+                </Animated.View>
+            }
+            style={{ marginTop: 60 }}
         >
             <Menu.Item
                 onPress={() => {
@@ -57,6 +55,7 @@ export default function AvatarMenu ({ menuVisible, handleToggleMenu, toggleTheme
                     toggleTheme();
                 }}
                 title='Toggle theme'
+                titleStyle= {{ fontFamily: 'Lora-Medium', color: theme.colors.textAlt }}
                 leadingIcon='theme-light-dark'
             />
             <Menu.Item
@@ -65,11 +64,13 @@ export default function AvatarMenu ({ menuVisible, handleToggleMenu, toggleTheme
                     navigation.navigate('Settings');
                 }}
                 title='Settings'
+                titleStyle= {{ fontFamily: 'Lora-Medium', color: theme.colors.textAlt  }}
                 leadingIcon='cog-outline'
             />
             <Menu.Item
                 onPress={() => navigation.navigate('Progress')}
                 title = 'Progress'
+                titleStyle= {{ fontFamily: 'Lora-Medium', color: theme.colors.textAlt  }}
                 leadingIcon='loading'
             />
 
