@@ -263,7 +263,7 @@ export default function TaskBottomSheet({ navigation, route, props}) {
 
     // renders
     return (
-        <PaperProvider>
+        // <PaperProvider>
             <View style={styles.container}>
                 <BottomSheet
                     ref={bottomSheetRef}
@@ -329,7 +329,6 @@ export default function TaskBottomSheet({ navigation, route, props}) {
                                                 name={subtask.checked ? 'check-square' : 'square-o'}
                                                 size={20}
                                                 color={subtask.checked ? theme.colors.primary : theme.colors.border}
-                                                // color={subtask.checked ? 'green' : 'red'}
                                                 style={styles.checkboxIcon}
                                             />
                                         </TouchableOpacity>
@@ -416,7 +415,7 @@ export default function TaskBottomSheet({ navigation, route, props}) {
                                     )}
                                     <TextInputA
                                         mode='outlined'
-                                        style={[styles.inputA, {backgroundColor: theme.colors.surface }]}
+                                        style={[styles.inputA, {backgroundColor: theme.colors.surface}]}
                                         value={deadline}
                                         onChangeText={setDeadline}
                                         placeholder='Select deadline'
@@ -537,18 +536,16 @@ export default function TaskBottomSheet({ navigation, route, props}) {
                                     Save
                                 </ButtonA>
                             </View>
-                            {/* SourceSans3-Regular */}
-
                         </View>
                     </BottomSheetScrollView>
                 </BottomSheet>
             </View>
-        </PaperProvider>
+        // </PaperProvider>
     );
 }
 
 const styles = StyleSheet.create({
-    container: { //using
+    container: { 
         ...StyleSheet.absoluteFillObject, 
         backgroundColor: 'grey',
         overflow: 'hidden'
@@ -556,7 +553,6 @@ const styles = StyleSheet.create({
     contentContainer: { //using
         paddingHorizontal: 16,
     }, 
-
     header: {
         textAlign: 'center',
         fontFamily: 'PlayfairDisplay-Bold',
@@ -565,13 +561,11 @@ const styles = StyleSheet.create({
     },
 
     //title, description
-    section:{       
+    section:{ //referring to the 6 sections    
         marginBottom: 20, 
     },
-    sectionHeader:{
-        // color: '#93B1A6',
+    sectionHeader:{ //used for the 6 section header
         fontFamily: 'Lora-Medium',
-        // fontWeight: '500',
         marginBottom: 3
     },
     input:{ //when 'react-native' textinput was used 
@@ -593,10 +587,8 @@ const styles = StyleSheet.create({
     inputA:{
         height: 50,
         borderRadius: 10,
-        // paddingHorizontal: 22,
         paddingRight: 50, // Space for icons
         fontFamily: 'Roboto-Regular',
-        // fontSize: 16,
         shadowColor: '#000',
         shadowOpacity: 0.05,
         shadowOffset: { width: 0, height: 2 },
@@ -613,7 +605,7 @@ const styles = StyleSheet.create({
     checkboxIcon:{
         marginRight: 10
     },
-    iconButton:{
+    iconButton:{ //for the '+' icon
         alignItems: 'center',
         justifyContent: 'center',
         padding: 10,
@@ -621,12 +613,12 @@ const styles = StyleSheet.create({
     },
 
     //deadline
-    textInputWithIcon:{
+    textInputWithIcon:{ //for textinput + icons
         flex: 1, 
         flexDirection: 'row',
         alignItems: 'center',
     },
-    datePicker:{
+    datePicker:{ 
         width: '100%', 
     },
     pickerButtonContainer:{
@@ -655,7 +647,7 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 16,
     },
-    cancelDatebutton:{
+    cancelDatebutton:{ //not using 
         height: 50, 
         justifyContent: 'center',
         alignItems: 'center',
@@ -676,7 +668,6 @@ const styles = StyleSheet.create({
 
     //priority
     priorityButton: {
-        // backgroundColor: '#183D3D', 
         borderWidth: 1, 
         rippleColor: 'rgba(50, 92, 62, 0.8)',
     },
@@ -715,26 +706,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         marginTop: 16,
-        // alignItems: 'center'
     },
     cancelButton:{
-        // flex: 1,
         marginRight: '34%',
-        marginBottom: '50%',
-        // padding: 16,
-        // borderRadius: 8,
-        // backgroundColor: '#183D3D',
-        // alignItems: 'center',
+        marginBottom: '20%',
     },
     saveButton:{
-        // flex: 1,
-        // marginLeft: 8,
-        // marginRight: '34%',
-        marginBottom: '50%',
-        // padding: 16,
-        // borderRadius: 8,
-        // backgroundColor: '#5C8374',
-        // alignItems: 'center',
+        marginBottom: '20%',
     },
     buttonText:{
         color: 'black',

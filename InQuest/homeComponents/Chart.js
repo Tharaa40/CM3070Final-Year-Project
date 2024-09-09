@@ -96,7 +96,7 @@ export default function Chart({ taskCompletionData, timeSpentData, labels }){
                 yAxisSuffix=" mins"
                 yLabelsOffset={5}
                 chartConfig={chartConfig}
-                style={styles.chartStyle}
+                style={styles.chartStyle2}
             />
         </View>
     );
@@ -109,6 +109,7 @@ export default function Chart({ taskCompletionData, timeSpentData, labels }){
 const styles = StyleSheet.create({
     chartContainer: {
         marginTop: 20,
+        // marginVertical: 20,
         paddingHorizontal: 20,
     },
     chartStyle: {
@@ -120,4 +121,14 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.2,
         shadowRadius: 3,
     },
+    chartStyle2:{
+        // marginVertical: 8,
+        marginBottom: '30%',
+        borderRadius: 10,
+        elevation: 4,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+    }
 });

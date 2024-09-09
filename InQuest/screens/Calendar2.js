@@ -120,7 +120,7 @@ export default function CalendarView2() {
           options={{
             style: { paddingTop: 5, marginHorizontal: 10, position: 'relative', top: 5 },
           }}
-          titleStyle={{marginTop: -15, fontFamily: 'Montserrat-SemiBold'}}
+          titleStyle={{marginTop: -15, fontFamily: 'Montserrat-SemiBold', color: theme.colors.text}}
         />
       )}
     </View>
@@ -130,6 +130,7 @@ export default function CalendarView2() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginBottom: '20%',
   },
   calendar: {
     height: 100,
@@ -141,6 +142,7 @@ const styles = StyleSheet.create({
     padding: 5,
     borderRadius: 5,
     overflow: 'hidden',
+    // marginBottom: '20%'
   },
   descriptionStyle: {
     padding: 10,

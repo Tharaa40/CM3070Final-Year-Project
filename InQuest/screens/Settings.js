@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useContext } from 'react';
-import { View, TouchableOpacity, StyleSheet, Switch } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, Switch, ScrollView } from 'react-native';
 import { FontAwesome5 } from 'react-native-vector-icons';
 import { Appbar, useTheme, Button, Text, TextInput } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
@@ -209,120 +209,133 @@ export default function Settings(){
 
    
     return(
-        <View style={styles.container}>
-            <Appbar.Header style={styles.headerContainer} statusBarHeight={0}>
-                <Appbar.Content 
-                    title = {`${username}'s Settings`} 
-                    color={theme.colors.textAlt} 
-                    titleStyle={{ fontFamily: 'PlayfairDisplay-Bold'}} 
-                />
-                <FontAwesome5  name="angle-left" size={30} color='black' onPress={() => navigation.goBack()} />
-            </Appbar.Header>
-            <View style={styles.mainContentCont}>
-                {/**Profile Display */}
-                <View style={styles.profileUpload}>
-                    <TouchableOpacity style={styles.textIconContainer} onPress={pickImage}>
-                        <Text style={styles.mainText}> Upload Your Photo </Text>
-                        <FontAwesome5 name='user' size={30} color='#183D3D' solid={false} />
-                    </TouchableOpacity>
-                </View>
-
-                {/**Lofi Beats */}
-                <View style={styles.textIconContainer}>
-                    <Text style={styles.mainText}>Lofi Beats</Text>
-                    <FontAwesome5 name='music' size={30} color='#183D3D' solid={false} />
-                    <Switch
-                        value={musicEnabled}
-                        onValueChange={handleMusicToggle}
+        <View style={[styles.container, {backgroundColor: theme.colors.background}]}>
+            <ScrollView showsVerticalScrollIndicator={false}>
+                <Appbar.Header style={[styles.headerContainer, {backgroundColor: theme.colors.surface}]} statusBarHeight={0}>
+                    <FontAwesome5  name="chevron-left" size={30} color={theme.colors.textAlt} onPress={() => navigation.goBack()} />
+                    <Appbar.Content 
+                        title = {`${username}'s Settings`} 
+                        color={theme.colors.textAlt} 
+                        titleStyle={{ fontFamily: 'PlayfairDisplay-Bold'}} 
+                        alignItems='center'
                     />
-                </View>
+                </Appbar.Header>
+                <View style={styles.mainContentCont}>
+                    {/**Profile Display */}
+                    <View style={styles.profileUpload}>
+                        <TouchableOpacity style={styles.textIconContainer} onPress={pickImage}>
+                            <Text style={[styles.mainText, {color: theme.colors.primary}]}> Upload Your Photo </Text>
+                            <FontAwesome5 name='user' size={30} color={theme.colors.primaryAlt} solid={false} />
+                        </TouchableOpacity>
+                    </View>
 
-                {/**Volume Slider */}
-                {musicEnabled && (
-                    <View style={styles.sliderContainer}>
-                        <Text style={styles.volumeLabel}>Volume</Text>
-                        <Slider
-                            style={{ width: 300, height: 40 }}
-                            minimumValue={0}
-                            maximumValue={1}
-                            value={volume}
-                            onValueChange={setVolume}
-                            minimumTrackTintColor="#183D3D"
-                            maximumTrackTintColor="#000000"
-                            thumbTintColor="#183D3D"
+                    {/**Lofi Beats */}
+                    <View style={styles.textIconContainer}>
+                        <View style={styles.iconTextContainer}>
+                            <Text style={[styles.mainText, {color: theme.colors.primary}]}>Lofi Beats</Text>
+                            <FontAwesome5 name='music' size={30} color={theme.colors.primaryAlt} solid={false} />
+                        </View>
+                        <Switch
+                            value={musicEnabled}
+                            onValueChange={handleMusicToggle}
                         />
                     </View>
-                )}
 
-                {/**Notifications Toggle */}
-                <View style={styles.textIconContainer}>
-                    <Text style={styles.mainText}> Notifications </Text>
-                    <FontAwesome5 name='bell' size={30} color="#183D3D" solid={false} />
-                    <Switch
-                        value={notificationsEnabled}
-                        onValueChange={handleNotificationsToggle}
-                    />
-                </View>
+                    {/**Volume Slider */}
+                    {musicEnabled && (
+                        <View style={styles.sliderContainer}>
+                            <Text style={[styles.volumeLabel, {color: theme.colors.primary}]}>Volume</Text>
+                            <Slider
+                                style={{ width: 300, height: 40 }}
+                                minimumValue={0}
+                                maximumValue={1}
+                                value={volume}
+                                onValueChange={setVolume}
+                                // minimumTrackTintColor="#183D3D"
+                                // maximumTrackTintColor="#000000"
+                                // thumbTintColor="#183D3D"
+                                minimumTrackTintColor={theme.colors.primary}
+                                maximumTrackTintColor={theme.colors.border}
+                                thumbTintColor={theme.colors.accent}
+                            />
+                        </View>
+                    )}
 
-                {/**Password reset section */}
-                <View style={styles.passwordUpdateContainer}>
-                    <Text style={styles.passwordUpdateText}>Update Password</Text>
-                    <TextInput
-                        placeholder="Current Password"
-                        placeholderTextColor={theme.colors.text}
-                        secureTextEntry
-                        value={currentPassword}
-                        onChangeText={setCurrentPassword}
-                        style={styles.input}
-                    />
-                    <TextInput
-                        placeholder="New Password"
-                        placeholderTextColor={theme.colors.text}
-                        secureTextEntry
-                        value={newPassword}
-                        onChangeText={setNewPassword}
-                        style={styles.input}
-                    />
-                    <TextInput
-                        placeholder="Confirm New Password"
-                        placeholderTextColor={theme.colors.text}
-                        secureTextEntry
-                        value={confirmNewPassword}
-                        onChangeText={setConfirmNewPassword}
-                        style={styles.input}
-                    />
+                    {/**Notifications Toggle */}
+                    <View style={styles.textIconContainer}>
+                        <View style={styles.iconTextContainer}>
+                            <Text style={[styles.mainText, {color: theme.colors.primary}]}> Notifications </Text>
+                            <FontAwesome5 name='bell' size={30} color={theme.colors.primaryAlt} solid={false} />
+                        </View>
+                        <Switch
+                            value={notificationsEnabled}
+                            onValueChange={handleNotificationsToggle}
+                        />
+                    </View>
+
+                    {/**Password reset section */}
+                    <View style={styles.passwordUpdateContainer}>
+                        <Text style={[styles.passwordUpdateText, {color: theme.colors.primary}]}>Update Password</Text>
+                        <TextInput
+                            mode='outlined'
+                            placeholder="Current Password"
+                            placeholderTextColor={theme.colors.text}
+                            outlineColor={theme.colors.textAlt}
+                            activeOutlineColor={theme.colors.surfaceAlt}
+                            secureTextEntry
+                            value={currentPassword}
+                            onChangeText={setCurrentPassword}
+                            style={styles.input}
+                            theme={{ roundness: 20, }}
+                        />
+                        <TextInput
+                            mode='outlined'
+                            placeholder="New Password"
+                            placeholderTextColor={theme.colors.text}
+                            outlineColor={theme.colors.textAlt}
+                            activeOutlineColor={theme.colors.surfaceAlt}
+                            secureTextEntry
+                            value={newPassword}
+                            onChangeText={setNewPassword}
+                            style={styles.input}
+                            theme={{ roundness: 20}}
+                        />
+                        <TextInput
+                            mode='outlined'
+                            placeholder="Confirm New Password"
+                            placeholderTextColor={theme.colors.text}
+                            outlineColor={theme.colors.textAlt}
+                            activeOutlineColor={theme.colors.surfaceAlt}
+                            secureTextEntry
+                            value={confirmNewPassword}
+                            onChangeText={setConfirmNewPassword}
+                            style={styles.input}
+                            theme={{ roundness: 20}}
+                        />
+                        <Button
+                            mode="contained"
+                            onPress={handlePasswordUpdate}
+                            style={styles.updateButton}
+                            labelStyle={{fontFamily: 'Montserrat-Medium', fontSize: 16}}
+                        >
+                            Update Password
+                        </Button>
+                        {passwordUpdateSuccess && <Text style={styles.successMessage}>Password updated successfully.</Text>}
+                    </View>
+
+                    {/**Logout Button */}
                     <Button
-                        mode="contained"
-                        onPress={handlePasswordUpdate}
-                        style={styles.updateButton}
+                        mode='contained'
+                        icon='logout'
+                        onPress={handleLogout}
+                        style={styles.logoutButton}
+                        buttonColor={theme.colors.accent}
                         labelStyle={{fontFamily: 'Montserrat-Medium', fontSize: 16}}
                     >
-                        Update Password
+                        Logout
                     </Button>
-                    {passwordUpdateSuccess && <Text style={styles.successMessage}>Password updated successfully.</Text>}
                 </View>
-
-                <View style={styles.textIconContainer}>
-                    <Text style={styles.mainText}> Account Settings </Text>
-                    
-                </View>
-
-                <View style={styles.textIconContainer}>
-                    <Text style={styles.mainText}> About app </Text>
-                    
-                </View>
-
-                {/**Logout Button */}
-                <Button
-                    mode='contained'
-                    icon='logout'
-                    onPress={handleLogout}
-                    style={styles.logoutButton}
-                    labelStyle={{fontFamily: 'Montserrat-Medium', fontSize: 16}}
-                >
-                    Logout
-                </Button>
-            </View>
+            </ScrollView>
         </View>
     );
 
@@ -370,26 +383,27 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     headerContainer: {
-        backgroundColor: '#ffffff',
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
         paddingHorizontal: 10,
     },
     mainContentCont: {
-        padding: 20,
+        margin: 20,
     },
     profileUpload: {
-        marginVertical: 20,
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
+        justifyContent: 'center'
     },
     textIconContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
         marginVertical: 10,
+    },
+    iconTextContainer:{
+        flexDirection: 'row',
+        alignItems: 'center',
+        flex: 1,
     },
     mainText: {
         fontSize: 18,
@@ -407,19 +421,16 @@ const styles = StyleSheet.create({
     },
     logoutButton: {
         marginTop: 30,
-        backgroundColor: '#ff5252',
+        // backgroundColor: '#ff5252',
     },
     input: {
         fontFamily: 'Roboto-Regular',
-        backgroundColor: '#F5F5F5',
         borderRadius: 5,
-        paddingHorizontal: 10,
+        paddingHorizontal: 5,
         marginVertical: 10,
         height: 50,
-        color: '#183D3D',
         fontSize: 16,
     },
-
 
 
     passwordUpdateContainer: {

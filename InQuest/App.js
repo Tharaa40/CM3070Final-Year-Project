@@ -1,30 +1,33 @@
-import React, { useEffect, useState, useRef, useMemo } from 'react';
-import { StyleSheet, StatusBar, TouchableOpacity, Text, View } from 'react-native';
-import { NavigationContainer, useIsFocused } from '@react-navigation/native';
+import React, { useEffect, useState,  } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import merge from 'deepmerge';
 import { PaperProvider } from 'react-native-paper';
 import { useFonts } from "expo-font";
-
-import Details from './screens/Details'; //using
-import Settings from './screens/Settings'; //using
-import Timer from './screens/Timer'; //using
-import Login from './screens/Login'; //using
-import SignUps from './screens/SignUp'; //using
-import EmailSignUp from './screens/EmailSignUp'; //using
-import CalendarView2 from './screens/Calendar2'; //using
-import Avatar from './screens/Avatar';  //using
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { GestureDetectorProvider } from 'react-native-screens/gesture-handler'
-import TaskBottomSheet from './screens/BottomSheet'; //using
+
+import Login from './screens/Login'; //using
+// import SignUps from './screens/SignUp'; //not using
+
 import HomePage from './screens/HomePage';//using
+import Details from './screens/Details'; //using
+import TaskBottomSheet from './screens/BottomSheet'; //using
+import CalendarView2 from './screens/Calendar2'; //using
+import Timer from './screens/Timer'; //using
+import Settings from './screens/Settings'; //using
 import Progress from './screens/Progress';
+
+
+
+import EmailSignUp from './screens/EmailSignUp'; //using
+// import Avatar from './screens/Avatar';  //using
+
 import themes from './components/Theme';
 import { MusicProvider } from './components/MusicContext';
-import AvatarMenu from './homeComponents/AvatarMenu';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { FIRESTORE_DB } from './firebaseConfig';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
@@ -265,24 +268,26 @@ export default function App () {
       <GestureDetectorProvider>
           <PaperProvider theme={currentTheme}>
             <MusicProvider>
-              <NavigationContainer>
-                  <Stack.Navigator
-                    screenOptions={{headerShown: false}}
-                    initialRouteName='Login'
-                  >
-                    <Stack.Screen name='Login' component={Login} /> 
-                    <Stack.Screen name='SignUp' component={SignUps} />
-                    <Stack.Screen name='EmailSignUp' component={EmailSignUp}/> 
-                    <Stack.Screen name='HomeTab'>
-                      {props => <BottomTab {...props} toggleTheme={toggleTheme} />}
-                    </Stack.Screen>
-                    <Stack.Screen name='CreateTaskStack' component={CreateTaskStack} />
-                    <Stack.Screen name='Settings' component={Settings}/>
-                    <Stack.Screen name='Progress' component={Progress} />
-                    <Stack.Screen name='Avatar' component={Avatar}/>
-                    {/* <Stack.Screen name='Addtask' component={TaskBottomSheet} options={{headerShown: false}}/> really not using */}
-                  </Stack.Navigator>
-              </NavigationContainer>
+              <SafeAreaProvider>
+                <NavigationContainer>
+                    <Stack.Navigator
+                      screenOptions={{headerShown: false}}
+                      initialRouteName='Login'
+                    >
+                      <Stack.Screen name='Login' component={Login} /> 
+                      {/* <Stack.Screen name='SignUp' component={SignUps} /> */}
+                      <Stack.Screen name='EmailSignUp' component={EmailSignUp}/> 
+                      <Stack.Screen name='HomeTab'>
+                        {props => <BottomTab {...props} toggleTheme={toggleTheme} />}
+                      </Stack.Screen>
+                      <Stack.Screen name='CreateTaskStack' component={CreateTaskStack} />
+                      <Stack.Screen name='Settings' component={Settings}/>
+                      <Stack.Screen name='Progress' component={Progress} />
+                      {/* <Stack.Screen name='Avatar' component={Avatar}/> */}
+                      {/* <Stack.Screen name='Addtask' component={TaskBottomSheet} options={{headerShown: false}}/> really not using */}
+                    </Stack.Navigator>
+                </NavigationContainer>
+              </SafeAreaProvider>
             </MusicProvider>
           </PaperProvider>
       </GestureDetectorProvider>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, ScrollView, Image, StyleSheet } from "react-native";
+import { View, ScrollView, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { FIREBASE_AUTH, FIRESTORE_DB } from "../firebaseConfig";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useNavigation } from "@react-navigation/native";
@@ -82,25 +82,26 @@ export default function Progress() {
         };
         fetchUserData();
     }, [points, xp]);   
-    // if(emotion == null) return null;
     
     return(
         <ScrollView contentContainerStyle={[styles.container, {backgroundColor: theme.colors.background}]}>
             <View style={styles.header}>
-                <FontAwesome5  name="angle-left" size={30} color='black' onPress={() => navigation.goBack()} />
-                <Text variant="headlineMedium" style={[styles.title, {color: theme.colors.primary}]}>User Progress</Text>
+                {/* <FontAwesome5 name="angle-left" size={30} color={theme.colors.textAlt} style={styles.backArrow} onPress={() => navigation.goBack()} /> */}
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.titleContainer}>
+                    <Text variant="headlineMedium" style={[styles.title, {color: theme.colors.primary}]}>User Progress</Text>
+                </TouchableOpacity>
             </View>
 
             <View style={styles.petContainer}>
                 <VirtualPet points={points} xp={xp} emotion={emotion}/>
             </View>
 
-            <View style={[styles.chartContainer, {backgroundColor: theme.colors.surface, borderColor: theme.colors.border}]}>
+            <View style={[styles.chartContainer, {backgroundColor: theme.colors.surfaceAlt, borderColor: theme.colors.border}]}>
                 <View style={styles.labelContainer}>
                     <Text variant="headlineSmall" style={{ fontFamily: 'Lora-Medium', color: theme.colors.text }}>Points</Text>
                     <View style={styles.pointXPIcon}>
-                        <Text variant="titleMedium" style={{ fontFamily: 'Roboto-Regular' }}> {points} </Text>
-                        <Icon name="heart-outline" size={30} />
+                        <Text variant="titleMedium" style={{ fontFamily: 'Roboto-Regular', color: theme.colors.text }}> {points} </Text>
+                        <Icon name="heart-outline" size={30} color={theme.colors.textAlt} />
                     </View>
                 </View>
                 <ProgressBar
@@ -109,23 +110,23 @@ export default function Progress() {
                     style={[styles.progressBar, {backgroundColor: theme.colors.background}]} 
                 />
             </View>
-            <View style={[styles.chartContainer, {backgroundColor: theme.colors.surface, borderColor: theme.colors.border}]}>
+            <View style={[styles.chartContainer, {backgroundColor: theme.colors.surfaceAlt, borderColor: theme.colors.border}]}>
                 <View style={styles.labelContainer}>
-                    <Text variant="headlineSmall" style={{ fontFamily: 'Lora-Medium' }}>XP</Text>
+                    <Text variant="headlineSmall" style={{ fontFamily: 'Lora-Medium', color: theme.colors.text }}>XP</Text>
                     <View style={styles.pointXPIcon}>
-                        <Text variant="titleMedium" style={{ fontFamily: 'Roboto-Regular' }}> {xp} </Text>
-                        <Icon name="diamond-outline" size={30} />
+                        <Text variant="titleMedium" style={{ fontFamily: 'Roboto-Regular', color: theme.colors.text }}> {xp} </Text>
+                        <Icon name="diamond-outline" size={30} color={theme.colors.textAlt} />
                     </View>
                 </View>
                 <ProgressBar 
                     progress={xp / 1000} 
                     color="#FF5722" 
-                    style={[styles.progressBar, {backgroundColor: theme.colors.primary}]} 
+                    style={[styles.progressBar, {backgroundColor: theme.colors.background}]} 
                 />
             </View>
 
             <View style={styles.badgesContainer}>
-                <Text variant="headlineSmall" style={[styles.label, {color: theme.colors.textAlt}]}>Unlocked Badges</Text>
+                <Text variant="headlineSmall" style={[styles.label, {color: theme.colors.text}]}>Unlocked Badges</Text>
                 <View style={styles.badgeRow}>
                     <View style={styles.badgeTextCont}>
                         <Text variant="titleLarge" style={[styles.badgeLabel, {color: theme.colors.textAlt}]}> Bronze </Text>
@@ -166,9 +167,8 @@ export default function Progress() {
 const styles = StyleSheet.create({
     container: {
         flexGrow: 1,
-        // backgroundColor: '#f5f5f5',
-        marginVertical: 7,
-        marginHorizontal: 7,
+        // marginVertical: 7,
+        // marginHorizontal: 7,
         paddingBottom: '20%',
     },
     header:{
@@ -179,10 +179,14 @@ const styles = StyleSheet.create({
         position: 'relative',
         marginBottom: 15,
     },
-    backArrow:{
-        position: 'absolute', 
-        left: 10
+    titleContainer:{
+        position: 'absolute',
+        top: '15%'
     },
+    // backArrow:{
+    //     position: 'absolute', 
+    //     left: 30,
+    // },
     title: {
         flex: 1, 
         textAlign: 'center', 
@@ -192,12 +196,9 @@ const styles = StyleSheet.create({
 
     chartContainer: {
         marginVertical: 10,
-        // backgroundColor: 'lightgreen',
         paddingHorizontal: 10,
         borderRadius: 10, 
         padding: 10,
-        // width: '100%',
-        // marginBottom: 30,
     },
     labelContainer:{
         flexDirection: 'row', 
