@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Modal, TouchableOpacity } from 'react-native';
+import { View, StyleSheet,  } from 'react-native';
 import { Card, IconButton, Text, Checkbox, TouchableRipple, useTheme } from "react-native-paper";
 import { AnimatedCircularProgress } from "react-native-circular-progress";
-import { getPointsAndXP, checkForBadgeUnlock, updateUserRewards } from "../rewardSystem/Points";
 
 
 export default function TaskCard({ task, onPress, onEdit, onComplete }){

@@ -129,7 +129,8 @@ const screenOptions = ({ route }) => ({
   tabBarInactiveTintColor: 'gray',
   tabBarStyle: {
     height: 60,
-    backgroundColor: '#fff',
+    // backgroundColor: '#fff',
+    backgroundColor: '#F0EAD6',
     borderTopWidth: 1,
     borderTopColor: '#ddd',
     shadowColor: '#000',
