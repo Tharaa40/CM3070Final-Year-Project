@@ -96,7 +96,7 @@ export default function Login (){
                 <Text 
                     variant="titleSmall"
                     onPress={() => setShowResetModal(true)}
-                    style={styles.forgetText}
+                    style={[styles.forgetText, {color: theme.colors.textAlt}]}
                 >
                     Forgot your password
                 </Text>
@@ -104,10 +104,10 @@ export default function Login (){
 
 
             <View style={styles.switchContainer}>
-                <Text style={styles.switchLabel}>Login with username</Text>
+                <Text style={[styles.switchLabel, {color: theme.colors.textAlt}]}>Login with username</Text>
                 <Switch
                     value={username}
-                    onValueChange={text => setUsername(text)}
+                    onValueChange={text => setUsername(text)}                    
                 />
             </View>
             

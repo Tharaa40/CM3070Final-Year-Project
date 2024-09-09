@@ -297,7 +297,7 @@ export default function TaskBottomSheet({ navigation, route, props}) {
                                     activeOutlineColor='#ddd'
                                     cursorColor={theme.colors.border}
                                     textColor='#333'
-                                    theme={{ roundness: 10 }}
+                                    theme={{ roundness: 10}}
                                 />
                             </View>
 

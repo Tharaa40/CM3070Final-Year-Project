@@ -11,8 +11,6 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { GestureDetectorProvider } from 'react-native-screens/gesture-handler'
 
 import Login from './screens/Login'; //using
-// import SignUps from './screens/SignUp'; //not using
-
 import HomePage from './screens/HomePage';//using
 import Details from './screens/Details'; //using
 import TaskBottomSheet from './screens/BottomSheet'; //using
@@ -20,11 +18,7 @@ import CalendarView2 from './screens/Calendar2'; //using
 import Timer from './screens/Timer'; //using
 import Settings from './screens/Settings'; //using
 import Progress from './screens/Progress';
-
-
-
 import EmailSignUp from './screens/EmailSignUp'; //using
-// import Avatar from './screens/Avatar';  //using
 
 import themes from './components/Theme';
 import { MusicProvider } from './components/MusicContext';
@@ -330,7 +324,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white', 
     borderRadius: 30, 
     borderWidth: 2, 
-    borderColor: 'red',
+    borderColor: 'aliceblue',
     justifyContent: 'center', 
     alignItems: 'center',
     shadowColor: 'black',
